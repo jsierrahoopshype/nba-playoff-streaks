@@ -1,0 +1,10 @@
+# Data files (large Kaggle dataset — never commit)
+data/
+*.csv
+*.parquet
+
+# Build / analysis scripts
+*.py
+
+# Python
+__pycache__/

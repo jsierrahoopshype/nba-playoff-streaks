@@ -1,0 +1,947 @@
+"""
+build_all.py — generate the full NBA Iron Man Streaks static site.
+
+Outputs:
+  index.html      (Playoffs leaderboard)
+  regular.html    (Regular Season leaderboard)
+  combined.html   (Combined leaderboard)
+  reasons.html    (Absence reasons detail)
+  players/<slug>.html   (one page per player)
+
+Streaks are recomputed from PlayerStatistics.csv + Games.csv (same logic as
+streak_analysis.py): Playoffs use calendar-year seasons with NO tenure window;
+Regular/Combined use NBA-season-start-year seasons WITH a tenure window (so a
+mid-season trade doesn't create spurious breaks). The timeline display, by
+contrast, shows the FULL team schedule for every season a player was rostered.
+
+Usage:
+  python build_all.py            # skip player pages that already exist
+  python build_all.py --force    # regenerate every player page
+"""
+
+import os
+import re
+import sys
+import json
+import html
+import unicodedata
+from collections import defaultdict, Counter
+
+import pandas as pd
+
+# --------------------------------------------------------------------------- #
+# Paths / constants
+# --------------------------------------------------------------------------- #
+BASE_DIR = r"C:\nba-streaks"
+DATA_DIR = os.path.join(BASE_DIR, "data")
+GAMES_CSV = os.path.join(DATA_DIR, "Games.csv")
+PLAYERSTATS_CSV = os.path.join(DATA_DIR, "PlayerStatistics.csv")
+PLAYERS_META_CSV = os.path.join(DATA_DIR, "Players.csv")
+PLAYERS_DIR = os.path.join(BASE_DIR, "players")
+
+REGULAR = "Regular Season"
+PLAYOFFS = "Playoffs"
+UNIVERSE = {REGULAR, PLAYOFFS}
+MIN_IRON = 5  # minimum length to list a streak in the Iron Man Streaks section
+
+# Design system
+BG, CARD, ORANGE, TEXT, SECONDARY = "#0f0f1a", "#1a1a2e", "#e8612a", "#ffffff", "#8892a4"
+GREEN, RED, GRAY = "#22c55e", "#ef4444", "#374151"
+SUBTITLE = "Longest consecutive games played, 1947–present"
+
+esc = lambda s: html.escape(str(s), quote=True)
+
+TYPES = ["playoff", "regular", "combined"]
+TYPE_LABEL = {"playoff": "Playoffs", "regular": "Regular Season", "combined": "Combined"}
+# (seo word, leaderboard display name, href-from-players-dir)
+TYPE_META = {
+    "playoff":  ("Playoff", "Playoffs", "../index.html"),
+    "regular":  ("Regular Season", "Regular Season", "../regular.html"),
+    "combined": ("Combined", "Combined", "../combined.html"),
+}
+BADGE_TEXT = {
+    "playoff": "Playoffs Iron Man",
+    "regular": "Regular Season Iron Man",
+    "combined": "Combined Iron Man",
+}
+
+
+# --------------------------------------------------------------------------- #
+# Reason normalization + glossary (#13, #10)
+# --------------------------------------------------------------------------- #
+BODY = {"ankle", "ankles", "knee", "knees", "foot", "feet", "hand", "hands",
+        "wrist", "shoulder", "hip", "hips", "groin", "hamstring", "hamstrings",
+        "calf", "thigh", "elbow", "back", "toe", "finger", "thumb", "quad",
+        "quadriceps", "achilles", "neck", "rib", "ribs", "abdomen", "abductor",
+        "adductor", "oblique", "heel", "shin", "forearm", "bicep", "biceps",
+        "tricep", "triceps", "pelvis", "jaw", "nose", "eye", "head", "chest",
+        "glute", "glutes", "leg", "arm"}
+ACRONYMS = {"acl", "mcl", "pcl", "lcl"}
+WORD_EXPAND = {"rt": "Right", "lt": "Left", "sprd": "Sprained",
+               "str": "Strain", "sore": "Soreness"}
+
+
+def normalize_reason(raw):
+    """Map a raw DNP/DND/NWT comment to a clean, proper-cased reason string."""
+    if raw is None:
+        return "—"
+    s = str(raw).strip()
+    if not s:
+        return "—"
+    s = s.rstrip(". ").strip()
+    if not s:
+        return "—"
+
+    prefix = None
+    rest = s
+    m = re.match(r"^(DNP|DND|NWT)\b[\s:\-]*(.*)$", s, re.IGNORECASE)
+    if m:
+        prefix = m.group(1).upper()
+        rest = m.group(2).strip()
+
+    if rest == "":
+        return {"DNP": "Did Not Play", "DND": "Did Not Dress",
+                "NWT": "Not With Team"}.get(prefix, "—")
+
+    low = rest.lower()
+    if low in ("cd", "coach's decision", "coachs decision", "coaches decision"):
+        return "Coach's Decision"
+    if low in ("injury/illness", "injury / illness"):
+        return "Injury"
+    if "g league" in low or "g-league" in low or low == "gleague":
+        return "G League Assignment"
+    if "suspen" in low:
+        return "Suspension"
+    if low in ("personal", "personal reasons"):
+        return "Personal Reasons"
+    if low in ("rest", "dnp - rest"):
+        return "Rest"
+
+    tokens = re.split(r"\s+", rest)
+    out = []
+    for i, tok in enumerate(tokens):
+        t = tok.strip(",.")
+        tl = t.lower()
+        nxt = tokens[i + 1].lower().strip(",.") if i + 1 < len(tokens) else ""
+        if not t:
+            continue
+        if tl in WORD_EXPAND:
+            out.append(WORD_EXPAND[tl])
+        elif tl in ("l", "r") and nxt in BODY:
+            out.append("Left" if tl == "l" else "Right")
+        elif tl in ACRONYMS:
+            out.append(t.upper())
+        else:
+            out.append(t[:1].upper() + t[1:].lower())
+    res = " ".join(out).strip()
+    res = res.replace("Injury/illness", "Injury").replace("Injury/Illness", "Injury")
+    return res if res else "—"
+
+
+GLOSSARY_CANDIDATES = [
+    ("dnp", "DNP", "Did Not Play"),
+    ("dnd", "DND", "Did Not Dress (active roster, didn't suit up)"),
+    ("nwt", "NWT", "Not With Team"),
+    ("coach", "Coach's Decision", "Healthy scratch — the coach chose not to play them"),
+    ("injury/illness", "Injury / Illness", "Out with an injury or illness"),
+    ("rt", "Rt", "Right (side of the body)"),
+    ("lt", "Lt", "Left (side of the body)"),
+    ("sore", "Sore", "Soreness"),
+    ("sprain", "Sprained", "A stretched or torn ligament"),
+    ("strain", "Strain", "A stretched or torn muscle or tendon"),
+    ("suspen", "Suspension", "Suspended by the league or team"),
+    ("rest", "Rest", "Rested (load management)"),
+    ("g league", "G League", "Assigned to the G League"),
+]
+
+
+def build_glossary_html(corpus_lower):
+    rows = []
+    for trigger, term, meaning in GLOSSARY_CANDIDATES:
+        if any(trigger in c for c in corpus_lower):
+            rows.append(f"<tr><td><b>{esc(term)}</b></td><td>{esc(meaning)}</td></tr>")
+    if not rows:
+        return "<p>No coded reasons found.</p>"
+    return ('<table class="dtable"><thead><tr><th>Code</th><th>Meaning</th></tr>'
+            '</thead><tbody>' + "".join(rows) + "</tbody></table>")
+
+
+# --------------------------------------------------------------------------- #
+# Country flags (#4)
+# --------------------------------------------------------------------------- #
+COUNTRY_ISO = {
+    "USA": "US", "United States": "US", "Canada": "CA", "France": "FR",
+    "Serbia": "RS", "Australia": "AU", "Croatia": "HR", "Spain": "ES",
+    "Brazil": "BR", "Lithuania": "LT", "Argentina": "AR", "Germany": "DE",
+    "Senegal": "SN", "Turkey": "TR", "Slovenia": "SI", "Nigeria": "NG",
+    "Greece": "GR", "Italy": "IT", "Russia": "RU", "Ukraine": "UA",
+    "Puerto Rico": "PR", "United Kingdom": "GB", "England": "GB", "Georgia": "GE",
+    "Latvia": "LV", "Montenegro": "ME", "Bosnia and Herzegovina": "BA",
+    "Bosnia & Herzegovina": "BA", "Dominican Republic": "DO", "Cameroon": "CM",
+    "Switzerland": "CH", "Mexico": "MX", "China": "CN", "Japan": "JP",
+    "Israel": "IL", "Czech Republic": "CZ", "Czechia": "CZ", "Poland": "PL",
+    "Netherlands": "NL", "Sweden": "SE", "Finland": "FI", "Austria": "AT",
+    "Belgium": "BE", "Angola": "AO", "Sudan": "SD", "South Sudan": "SS",
+    "Democratic Republic of the Congo": "CD", "Republic of the Congo": "CG",
+    "Congo": "CG", "Mali": "ML", "Ivory Coast": "CI", "Tunisia": "TN",
+    "Egypt": "EG", "Morocco": "MA", "New Zealand": "NZ", "Jamaica": "JM",
+    "Bahamas": "BS", "Trinidad and Tobago": "TT", "Venezuela": "VE",
+    "Colombia": "CO", "Panama": "PA", "Haiti": "HT", "Cape Verde": "CV",
+    "Cabo Verde": "CV", "Guinea": "GN", "Gabon": "GA", "Ghana": "GH",
+    "Iran": "IR", "Lebanon": "LB", "Philippines": "PH", "South Korea": "KR",
+    "Korea": "KR", "India": "IN", "Estonia": "EE", "Hungary": "HU",
+    "Romania": "RO", "Bulgaria": "BG", "Slovakia": "SK", "Portugal": "PT",
+    "Ireland": "IE", "Norway": "NO", "Denmark": "DK", "Uruguay": "UY",
+    "Macedonia": "MK", "North Macedonia": "MK", "Kazakhstan": "KZ",
+    "U.S. Virgin Islands": "VI", "US Virgin Islands": "VI",
+}
+
+
+def flag_emoji(iso2):
+    return "".join(chr(0x1F1E6 + ord(ch) - 65) for ch in iso2.upper())
+
+
+def load_flags():
+    if not os.path.exists(PLAYERS_META_CSV):
+        print("Players.csv not found — skipping country flags.")
+        return {}, False
+    p = pd.read_csv(PLAYERS_META_CSV, usecols=["personId", "country"], low_memory=False)
+    flags = {}
+    for r in p.itertuples(index=False):
+        c = r.country
+        if isinstance(c, str) and c.strip():
+            iso = COUNTRY_ISO.get(c.strip())
+            if iso:
+                flags[int(r.personId)] = flag_emoji(iso)
+    print(f"Loaded {len(flags)} player flags from Players.csv.")
+    return flags, True
+
+
+# --------------------------------------------------------------------------- #
+# Load games / players
+# --------------------------------------------------------------------------- #
+def nba_season(d):
+    return d.year if d.month >= 7 else d.year - 1
+
+
+def slugify(first, last, pid):
+    s = f"{first} {last}".lower().replace("'", "")
+    s = unicodedata.normalize("NFKD", s).encode("ascii", "ignore").decode("ascii")
+    s = re.sub(r"[^a-z0-9]+", "-", s).strip("-")
+    return f"{s}-{pid}"
+
+
+def load_games():
+    df = pd.read_csv(
+        GAMES_CSV,
+        usecols=["gameId", "gameDate", "gameType", "hometeamId", "hometeamCity",
+                 "hometeamName", "awayteamId", "awayteamCity", "awayteamName"],
+        low_memory=False,
+    )
+    df = df[df["gameType"].isin(UNIVERSE)].copy()
+    df["gameId"] = df["gameId"].astype(str)
+    df["gameDate"] = pd.to_datetime(df["gameDate"], errors="coerce")
+    df = df.dropna(subset=["gameDate", "hometeamId", "awayteamId"])
+
+    game_info = {}
+    ts_pf, ts_reg, ts_comb = defaultdict(list), defaultdict(list), defaultdict(list)
+    for r in df.itertuples(index=False):
+        gid = r.gameId
+        d = r.gameDate.date()
+        gt = r.gameType
+        hid, aid = int(r.hometeamId), int(r.awayteamId)
+        game_info[gid] = (d, gt, hid, r.hometeamCity, r.hometeamName,
+                          aid, r.awayteamCity, r.awayteamName)
+        nk = nba_season(d)
+        ts_comb[(hid, nk)].append((d, gid))
+        ts_comb[(aid, nk)].append((d, gid))
+        if gt == PLAYOFFS:
+            yr = d.year
+            ts_pf[(hid, yr)].append((d, gid))
+            ts_pf[(aid, yr)].append((d, gid))
+        else:
+            ts_reg[(hid, nk)].append((d, gid))
+            ts_reg[(aid, nk)].append((d, gid))
+    for store in (ts_pf, ts_reg, ts_comb):
+        for k in store:
+            store[k].sort()
+    print(f"Loaded {len(game_info)} games.")
+    return game_info, ts_pf, ts_reg, ts_comb
+
+
+def load_players(game_info):
+    cols = ["firstName", "lastName", "personId", "gameId", "playerteamId",
+            "gameType", "numMinutes", "points", "assists", "reboundsTotal", "comment"]
+    df = pd.read_csv(PLAYERSTATS_CSV, usecols=cols, low_memory=False)
+    df = df[df["gameType"].isin(UNIVERSE)].copy()
+    df["gameId"] = df["gameId"].astype(str)
+    df = df.dropna(subset=["playerteamId"])
+    df["numMinutes"] = pd.to_numeric(df["numMinutes"], errors="coerce").fillna(0.0)
+    for c in ("points", "assists", "reboundsTotal"):
+        df[c] = pd.to_numeric(df[c], errors="coerce").fillna(0.0)
+    df["comment"] = df["comment"].fillna("").astype(str)
+
+    games, names, appeared = {}, {}, defaultdict(set)
+    for r in df.itertuples(index=False):
+        gid = r.gameId
+        if gid not in game_info:
+            continue
+        pid = int(r.personId)
+        if pid not in names:
+            names[pid] = (r.firstName, r.lastName)
+        mins = float(r.numMinutes)
+        games.setdefault(pid, {})[gid] = (
+            int(r.playerteamId), mins, r.comment,
+            float(r.points), float(r.assists), float(r.reboundsTotal), r.gameType,
+        )
+        if mins > 0:
+            appeared[pid].add(gid)
+    print(f"Loaded rows for {len(games)} players.")
+    return games, names, appeared
+
+
+# --------------------------------------------------------------------------- #
+# Streak / absence machinery
+# --------------------------------------------------------------------------- #
+def team_city_name(game_info, gid, team_id):
+    info = game_info[gid]
+    if team_id == info[2]:
+        return info[3], info[4]
+    return info[6], info[7]
+
+
+def opponent_and_home(game_info, gid, team_id):
+    info = game_info[gid]
+    if team_id == info[2]:
+        return info[6], info[7], True
+    return info[3], info[4], False
+
+
+def parts_windows(prows, game_info, season_of, gt_ok):
+    parts, win = set(), {}
+    for gid, row in prows.items():
+        if not gt_ok(row[6]):
+            continue
+        d = game_info[gid][0]
+        tid = row[0]
+        s = season_of(d)
+        parts.add((s, tid))
+        key = (s, tid)
+        w = win.get(key)
+        if w is None:
+            win[key] = [d, d]
+        else:
+            if d < w[0]:
+                w[0] = d
+            if d > w[1]:
+                w[1] = d
+    return parts, win
+
+
+def build_sequence(parts, win, teamseason, windowed):
+    seq = {}
+    for (s, tid) in parts:
+        for (d, gid) in teamseason.get((tid, s), ()):
+            if windowed:
+                lo, hi = win[(s, tid)]
+                if not (lo <= d <= hi):
+                    continue
+            seq[gid] = d
+    return sorted(seq.items(), key=lambda kv: (kv[1], kv[0]))
+
+
+def walk_runs(seq, appeared_set):
+    """Return (appearance_runs, absence_runs); each run is a list of (date, gid)."""
+    app_runs, abs_runs = [], []
+    run, run_app = [], None
+    for gid, date in seq:
+        a = gid in appeared_set
+        if run and a != run_app:
+            (app_runs if run_app else abs_runs).append(run)
+            run = []
+        run_app = a
+        run.append((date, gid))
+    if run:
+        (app_runs if run_app else abs_runs).append(run)
+    return app_runs, abs_runs
+
+
+# --------------------------------------------------------------------------- #
+# Per-player analysis
+# --------------------------------------------------------------------------- #
+def analyze(pid, full, games, appeared, game_info, ts_pf, ts_reg, ts_comb,
+            tracked_seasons=None):
+    prows = games[pid]
+    app = appeared.get(pid, set())
+
+    pf_parts, pf_win = parts_windows(prows, game_info, lambda d: d.year,
+                                     lambda gt: gt == PLAYOFFS)
+    reg_parts, reg_win = parts_windows(prows, game_info, nba_season,
+                                       lambda gt: gt == REGULAR)
+    comb_parts, comb_win = parts_windows(prows, game_info, nba_season,
+                                         lambda gt: True)
+
+    pf_app, pf_abs = walk_runs(build_sequence(pf_parts, pf_win, ts_pf, False), app)
+    reg_app, reg_abs = walk_runs(build_sequence(reg_parts, reg_win, ts_reg, True), app)
+    comb_app, comb_abs = walk_runs(build_sequence(comb_parts, comb_win, ts_comb, True), app)
+
+    def best(runs):
+        if not runs:
+            return {"len": 0, "start": None, "end": None, "team": ("", "")}
+        r = max(runs, key=len)
+        tid = prows[r[-1][1]][0]
+        return {"len": len(r), "start": r[0][0], "end": r[-1][0],
+                "team": team_city_name(game_info, r[-1][1], tid)}
+
+    streaks = {"playoff": best(pf_app), "regular": best(reg_app), "combined": best(comb_app)}
+    if not full:
+        return {"streaks": streaks}
+
+    # Iron Man Streaks: every run of MIN_IRON+ across all three types
+    iron = []
+    for label, runs in (("Playoffs", pf_app), ("Regular Season", reg_app),
+                        ("Combined", comb_app)):
+        for r in runs:
+            if len(r) >= MIN_IRON:
+                tid = prows[r[-1][1]][0]
+                city, name = team_city_name(game_info, r[-1][1], tid)
+                iron.append({"type": label, "games": len(r), "start": r[0][0],
+                             "end": r[-1][0], "team": f"{city} {name}".strip()})
+    iron.sort(key=lambda x: x["games"], reverse=True)
+
+    # Absences (consecutive missed runs) across all three types
+    absences = []
+    for label, runs in (("Playoffs", pf_abs), ("Regular Season", reg_abs),
+                        ("Combined", comb_abs)):
+        for run in runs:
+            reasons = [prows[g][2] for (_, g) in run if g in prows and prows[g][2]]
+            reason = normalize_reason(Counter(reasons).most_common(1)[0][0]) if reasons else "—"
+            frm, to = run[0][0], run[-1][0]
+            absences.append({"type": label, "count": len(run), "days": (to - frm).days,
+                             "frm": frm, "to": to, "reason": reason})
+    absences.sort(key=lambda a: (a["count"], a["days"]), reverse=True)
+
+    missed = missed_seasons(prows, app, game_info, ts_comb, tracked_seasons)
+    timeline = build_timeline(prows, app, game_info, ts_comb)
+    return {"streaks": streaks, "iron": iron, "absences": absences,
+            "missed": missed, "timeline": timeline}
+
+
+def missed_seasons(prows, app, game_info, ts_comb, tracked_seasons=None):
+    season_app = defaultdict(int)
+    season_team_rows = defaultdict(lambda: defaultdict(int))
+    season_comments = defaultdict(list)
+    for gid, row in prows.items():
+        d = game_info[gid][0]
+        s = nba_season(d)
+        if row[1] > 0:
+            season_app[s] += 1
+        season_team_rows[s][row[0]] += 1
+        if row[1] == 0 and row[2]:
+            season_comments[s].append(row[2])
+
+    out = []
+    for s, teams in season_team_rows.items():
+        if season_app.get(s, 0) != 0:
+            continue  # played at least one game that season
+        # Guard against pre-1951 seasons where minutes weren't tracked (every
+        # row looks like 0 minutes): only flag a missed season in seasons where
+        # the league actually recorded playing time (someone appeared).
+        if tracked_seasons is not None and s not in tracked_seasons:
+            continue
+        tid = max(teams, key=teams.get)
+        team_games = ts_comb.get((tid, s), [])
+        if not team_games:
+            continue
+        city, name = team_city_name(game_info, team_games[0][1], tid)
+        reason = (normalize_reason(Counter(season_comments[s]).most_common(1)[0][0])
+                  if season_comments[s] else "—")
+        out.append({"label": f"{s}-{(s + 1) % 100:02d}", "team": f"{city} {name}".strip(),
+                    "games": len(team_games), "reason": reason})
+    out.sort(key=lambda m: m["label"])
+    return out
+
+
+def build_timeline(prows, app, game_info, ts_comb):
+    """#12: for every (season, team) the player was rostered on, show ALL of that
+    team's games from the player's first row that season onward — including
+    trailing games after the last appearance (red/gray)."""
+    roster = {}
+    for gid, row in prows.items():
+        d = game_info[gid][0]
+        key = (nba_season(d), row[0])
+        if key not in roster or d < roster[key]:
+            roster[key] = d
+
+    rows = []
+    for (s, tid), start in roster.items():
+        allg = [(d, g) for (d, g) in ts_comb.get((tid, s), ()) if d >= start]
+        reg = sorted([(d, g) for d, g in allg if game_info[g][1] == REGULAR])
+        pf = sorted([(d, g) for d, g in allg if game_info[g][1] == PLAYOFFS])
+        if reg:
+            rows.append(_trow(s, "reg", tid, reg, prows, app, game_info))
+        if pf:
+            rows.append(_trow(s, "pf", tid, pf, prows, app, game_info))
+    rows.sort(key=lambda r: r["sort"])
+    return rows
+
+
+def _trow(season, kind, tid, games, prows, app, game_info):
+    city, name = team_city_name(game_info, games[0][1], tid)
+    label = f"{season}-{(season + 1) % 100:02d}" if kind == "reg" else f"{season + 1} Playoffs"
+    squares = []
+    for (d, gid) in games:
+        opp_city, opp_name, home = opponent_and_home(game_info, gid, tid)
+        vs = "vs" if home else "@"
+        row = prows.get(gid)
+        if gid in app:
+            cls = "g"
+            _, mins, _, pts, ast, reb, _ = row
+            detail = f"{int(round(mins))} min · {int(pts)} pts · {int(reb)} reb · {int(ast)} ast"
+        elif row is not None and row[2]:
+            cls = "d"
+            detail = f"DNP: {normalize_reason(row[2])}"
+        elif row is not None:
+            cls = "r"
+            detail = "Did not play (0 min)"
+        else:
+            cls = "r"
+            detail = "Missed (no record)"
+        squares.append((cls, f"{d.isoformat()} · {vs} {opp_city} {opp_name} · {detail}"))
+    return {"sort": games[0][0], "label": label, "team": f"{city} {name}", "squares": squares}
+
+
+# --------------------------------------------------------------------------- #
+# HTML: shared scaffolding
+# --------------------------------------------------------------------------- #
+CSS = """
+:root{--bg:#0f0f1a;--card:#1a1a2e;--orange:#e8612a;--text:#fff;--muted:#8892a4;
+--green:#22c55e;--red:#ef4444;--gray:#374151;--border:#2a2a44;--soft:rgba(232,97,42,.14);}
+*{box-sizing:border-box;}html,body{margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);line-height:1.45;
+font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;-webkit-font-smoothing:antialiased;}
+a{color:inherit;}
+.nav{display:flex;gap:6px;flex-wrap:wrap;padding:12px 20px;background:var(--card);border-bottom:1px solid var(--border);}
+.nav a{color:var(--muted);text-decoration:none;font-weight:600;font-size:14px;padding:8px 14px;border-radius:8px;}
+.nav a:hover{color:#fff;background:rgba(255,255,255,.05);}
+.nav a.active{color:#fff;background:var(--orange);}
+.wrap{max-width:1000px;margin:0 auto;padding:26px 20px 70px;}
+h1{font-size:clamp(24px,5vw,38px);font-weight:800;letter-spacing:-.02em;margin:0 0 6px;}
+h1 .accent{color:var(--orange);}
+h2{font-size:18px;font-weight:700;margin:30px 0 8px;display:flex;align-items:center;gap:8px;}
+h3{font-size:15px;font-weight:700;margin:18px 0 6px;}
+.subtitle{color:var(--muted);font-size:15px;font-weight:500;margin:0;}
+.backtop{display:inline-block;color:var(--orange);text-decoration:none;font-weight:600;margin:2px 0 14px;}
+.controls{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:22px 0 12px;}
+#search{flex:1 1 100%;background:var(--card);border:1px solid var(--border);border-radius:10px;color:#fff;
+font-size:15px;font-family:inherit;padding:12px 14px;outline:none;}
+#search::placeholder{color:var(--muted);}
+#search:focus{border-color:var(--orange);box-shadow:0 0 0 3px var(--soft);}
+.count{color:var(--muted);font-size:14px;font-weight:500;}
+.count b{color:var(--orange);font-weight:700;}
+.table-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:auto;}
+table.board{width:100%;border-collapse:collapse;font-size:14.5px;}
+table.board thead th{position:sticky;top:0;background:#22223e;color:var(--muted);text-align:left;
+font-weight:600;font-size:12.5px;letter-spacing:.04em;text-transform:uppercase;padding:13px 16px;
+cursor:pointer;user-select:none;white-space:nowrap;border-bottom:1px solid var(--border);z-index:2;}
+table.board thead th:hover{color:#fff;}
+table.board thead th.active{color:#fff;}
+table.board thead th .arrow{color:var(--orange);font-size:11px;margin-left:5px;}
+th.col-streak,td.col-streak{text-align:right;}
+table.board tbody td{padding:11px 16px;border-bottom:1px solid rgba(42,42,68,.6);white-space:nowrap;}
+table.board tbody tr:nth-child(even){background:rgba(255,255,255,.02);}
+table.board tbody tr:hover{background:var(--soft);}
+.col-rank{color:var(--muted);font-variant-numeric:tabular-nums;width:60px;}
+.col-streak{font-weight:700;color:var(--orange);font-variant-numeric:tabular-nums;}
+.col-date{color:var(--muted);font-variant-numeric:tabular-nums;}
+.plink{color:#fff;text-decoration:none;font-weight:600;border-bottom:1px dotted rgba(232,97,42,.5);}
+.plink:hover{color:var(--orange);}
+.empty{padding:40px 16px;text-align:center;color:var(--muted);}
+/* player page */
+.badges{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 4px;}
+.badge{padding:8px 14px;border-radius:999px;font-weight:600;font-size:13.5px;border:1px solid var(--border);}
+.badge.on{background:var(--soft);border-color:var(--orange);}
+.badge.on b{color:var(--orange);}
+.badge.off{background:rgba(255,255,255,.03);color:var(--muted);}
+.legend{display:flex;gap:16px;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:6px 0 14px;}
+.legend span{display:inline-flex;align-items:center;gap:6px;}
+.sq{display:inline-block;width:11px;height:11px;margin:1.5px;border-radius:2px;vertical-align:middle;}
+.sq.g{background:var(--green);}.sq.r{background:var(--red);}.sq.d{background:var(--gray);}
+.trow{display:flex;gap:14px;align-items:flex-start;padding:10px 0;border-bottom:1px solid rgba(42,42,68,.5);}
+.tlabel{width:170px;flex:none;}
+.tseason{display:block;font-weight:700;font-size:14px;}
+.tteam{display:block;color:var(--muted);font-size:12.5px;}
+.tsquares{flex:1;min-width:0;line-height:1;}
+.dtable{width:100%;border-collapse:collapse;font-size:14px;margin-top:10px;}
+.dtable th{text-align:left;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04em;padding:8px 12px;border-bottom:1px solid var(--border);}
+.dtable td{padding:8px 12px;border-bottom:1px solid rgba(42,42,68,.5);}
+.dtable .num{font-variant-numeric:tabular-nums;}
+.showall{margin-top:10px;background:var(--card);color:#fff;border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-family:inherit;font-weight:600;cursor:pointer;}
+.showall:hover{border-color:var(--orange);}
+.gbtn{background:none;border:1px solid var(--border);color:var(--muted);border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:13px;line-height:1;padding:0;}
+.gbtn:hover{color:#fff;border-color:var(--orange);}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:50;padding:20px;}
+.modal.open{display:flex;}
+.modal-card{background:var(--card);border:1px solid var(--border);border-radius:14px;max-width:540px;width:100%;max-height:80vh;overflow:auto;padding:22px;}
+.simgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:6px;}
+.simcard{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px;text-decoration:none;color:#fff;display:block;}
+.simcard:hover{border-color:var(--orange);}
+.simcard .nm{font-weight:600;font-size:14px;}
+.simcard .st{color:var(--orange);font-weight:700;font-size:13px;margin-top:4px;}
+.reasonblock{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin-bottom:14px;}
+.reasonblock h2{margin:0 0 4px;font-size:17px;}
+.rcount{color:var(--muted);font-size:13px;font-weight:600;}
+@media(max-width:560px){.wrap{padding:18px 12px 52px;}.trow{flex-direction:column;gap:4px;}.tlabel{width:auto;}}
+"""
+
+
+def nav(prefix, active):
+    items = [("regular.html", "Regular Season", "regular"),
+             ("index.html", "Playoffs", "playoff"),
+             ("combined.html", "Combined", "combined"),
+             ("reasons.html", "Absence Reasons", "reasons")]
+    parts = []
+    for href, label, key in items:
+        cls = ' class="active"' if key == active else ''
+        parts.append(f'<a href="{prefix}{href}"{cls}>{label}</a>')
+    return f'<nav class="nav">{"".join(parts)}</nav>'
+
+
+def page(title, body, scripts=""):
+    return (
+        "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n"
+        "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n"
+        f"<title>{title}</title>\n"
+        "<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n"
+        "<link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n"
+        "<link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap\" rel=\"stylesheet\">\n"
+        f"<style>{CSS}</style>\n</head>\n<body>\n{body}\n{scripts}\n</body>\n</html>\n"
+    )
+
+
+# --------------------------------------------------------------------------- #
+# HTML: leaderboards
+# --------------------------------------------------------------------------- #
+LEADERBOARD_JS = r"""
+<script>
+const DATA = __DATA__;
+const NUMERIC = new Set([0,2]); const DATES = new Set([3,4]);
+let sortKey = 0, sortAsc = true;
+const tbody=document.getElementById('tbody'),search=document.getElementById('search'),
+countEl=document.getElementById('count'),headers=Array.from(document.querySelectorAll('thead th'));
+function escapeHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+function compare(a,b,k){let av=a[k],bv=b[k];if(NUMERIC.has(k)){av=+av;bv=+bv;}else if(DATES.has(k)){av=av||'';bv=bv||'';}else{av=String(av).toLowerCase();bv=String(bv).toLowerCase();}return av<bv?-1:av>bv?1:0;}
+function render(){
+  const q=search.value.trim().toLowerCase();
+  let rows=q?DATA.filter(r=>r[1].toLowerCase().includes(q)):DATA.slice();
+  rows.sort((a,b)=>{const c=compare(a,b,sortKey);return sortAsc?c:-c;});
+  if(!rows.length){tbody.innerHTML='<tr><td class="empty" colspan="5">No players match “'+escapeHtml(search.value)+'”</td></tr>';}
+  else{const f=[];for(const r of rows){f.push('<tr><td class="col-rank">'+r[0]+'</td><td class="col-player">'+(r[6]?r[6]+' ':'')+'<a class="plink" href="players/'+r[5]+'.html">'+escapeHtml(r[1])+'</a></td><td class="col-streak">'+r[2]+'</td><td class="col-date">'+r[3]+'</td><td class="col-date">'+r[4]+'</td></tr>');}tbody.innerHTML=f.join('');}
+  countEl.innerHTML='<b>'+rows.length+'</b> of '+DATA.length+' players';
+  headers.forEach(h=>{const k=+h.dataset.key;h.classList.toggle('active',k===sortKey);const e=h.querySelector('.arrow');if(e)e.remove();if(k===sortKey){const s=document.createElement('span');s.className='arrow';s.textContent=sortAsc?'▲':'▼';h.appendChild(s);}});
+}
+headers.forEach(h=>h.addEventListener('click',()=>{const k=+h.dataset.key;if(k===sortKey){sortAsc=!sortAsc;}else{sortKey=k;sortAsc=!(NUMERIC.has(k)||DATES.has(k));}render();}));
+search.addEventListener('input',render);render();
+</script>
+"""
+
+
+def leaderboard_page(title_html, data_rows, active):
+    body = (
+        f"{nav('', active)}\n<div class=\"wrap\">\n"
+        f"<header><h1>{title_html}</h1><p class=\"subtitle\">{SUBTITLE}</p></header>\n"
+        "<div class=\"controls\">"
+        "<input id=\"search\" type=\"search\" placeholder=\"Search by player name…\" autocomplete=\"off\" spellcheck=\"false\">"
+        "<div class=\"count\" id=\"count\"></div></div>\n"
+        "<div class=\"table-card\"><table class=\"board\"><thead><tr>"
+        "<th data-key=\"0\" class=\"col-rank\">Rank</th>"
+        "<th data-key=\"1\">Player</th>"
+        "<th data-key=\"2\" class=\"col-streak\">Streak (games)</th>"
+        "<th data-key=\"3\">Start Date</th>"
+        "<th data-key=\"4\">End Date</th>"
+        "</tr></thead><tbody id=\"tbody\"></tbody></table></div>\n</div>"
+    )
+    scripts = LEADERBOARD_JS.replace("__DATA__", json.dumps(data_rows, separators=(",", ":"), ensure_ascii=False))
+    return page(re.sub("<[^>]+>", "", title_html), body, scripts)
+
+
+# --------------------------------------------------------------------------- #
+# HTML: player page
+# --------------------------------------------------------------------------- #
+def table_showall(sec_id, headers, row_cells, top=10):
+    head = "<tr>" + "".join(f"<th>{h}</th>" for h in headers) + "</tr>"
+    body = []
+    for i, cells in enumerate(row_cells):
+        if i >= top:
+            body.append(f'<tr class="{sec_id}-x" style="display:none">{cells}</tr>')
+        else:
+            body.append(f"<tr>{cells}</tr>")
+    tbl = f'<table class="dtable"><thead>{head}</thead><tbody>{"".join(body)}</tbody></table>'
+    if len(row_cells) > top:
+        tbl += (f'<button class="showall" data-sec="{sec_id}" onclick="showAll(this)">'
+                f'Show all {len(row_cells)}</button>')
+    return tbl
+
+
+PLAYER_JS = r"""
+<script>
+function showAll(b){var s=b.dataset.sec;document.querySelectorAll('.'+s+'-x').forEach(function(e){e.style.display='';});b.style.display='none';}
+function og(){document.getElementById('gmodal').classList.add('open');}
+function cg(e){if(!e||e.target.id==='gmodal'||e.target.classList.contains('gclose'))document.getElementById('gmodal').classList.remove('open');}
+</script>
+"""
+
+
+def player_page(pid, name, flag, data, similar, glossary_html):
+    first, last = name
+    full = f"{first} {last}"
+    streaks = data["streaks"]
+    lens = {t: streaks[t]["len"] for t in TYPES}
+    priority = {"combined": 3, "regular": 2, "playoff": 1}
+    best = max(lens, key=lambda t: (lens[t], priority[t]))
+    seo_word, back_name, back_href = TYPE_META[best]
+    title = f"{full}: {lens[best]} Consecutive {seo_word} Games | NBA Iron Man Streaks"
+    name_html = (esc(flag) + " " if flag else "") + esc(full)
+
+    badges = []
+    for t in TYPES:
+        n = lens[t]
+        cls = "on" if n > 0 else "off"
+        badges.append(f'<span class="badge {cls}">{BADGE_TEXT[t]}: <b>{n}</b> consecutive games</span>')
+    badges_html = "".join(badges)
+
+    # timeline
+    legend = ('<div class="legend"><span><i class="sq g"></i> Appeared</span>'
+              '<span><i class="sq r"></i> Missed</span>'
+              '<span><i class="sq d"></i> DNP (coach/inactive)</span></div>')
+    trows = []
+    for row in data["timeline"]:
+        sq = "".join(f'<i class="sq {c}" title="{esc(t)}"></i>' for c, t in row["squares"])
+        trows.append(
+            f'<div class="trow"><div class="tlabel"><span class="tseason">{esc(row["label"])}</span>'
+            f'<span class="tteam">{esc(row["team"])}</span></div>'
+            f'<div class="tsquares">{sq}</div></div>'
+        )
+    timeline_html = legend + "".join(trows) if trows else '<p class="subtitle">No games on record.</p>'
+
+    # iron man streaks
+    if data["iron"]:
+        cells = [
+            (f'<td>{esc(s["type"])}</td><td class="num">{s["games"]}</td>'
+             f'<td class="num">{s["start"].isoformat()}</td><td class="num">{s["end"].isoformat()}</td>'
+             f'<td>{esc(s["team"])}</td>')
+            for s in data["iron"]
+        ]
+        iron_html = table_showall("iron", ["Type", "Games", "Start", "End", "Team"], cells)
+    else:
+        iron_html = f'<p class="subtitle">No streaks of {MIN_IRON}+ games.</p>'
+
+    # missed seasons
+    if data["missed"]:
+        mrows = "".join(
+            f'<tr><td>{esc(m["label"])}</td><td>{esc(m["team"])}</td>'
+            f'<td class="num">{m["games"]}</td><td>{esc(m["reason"])}</td></tr>'
+            for m in data["missed"]
+        )
+        missed_html = (
+            '<h3>Missed Seasons</h3><table class="dtable"><thead><tr><th>Season</th>'
+            '<th>Team</th><th>Games Missed</th><th>Reason</th></tr></thead>'
+            f'<tbody>{mrows}</tbody></table>'
+        )
+    else:
+        missed_html = ""
+
+    # absences
+    if data["absences"]:
+        cells = [
+            (f'<td>{esc(a["type"])}</td><td class="num">{a["count"]}</td>'
+             f'<td class="num">{a["days"]}</td><td class="num">{a["frm"].isoformat()}</td>'
+             f'<td class="num">{a["to"].isoformat()}</td><td>{esc(a["reason"])}</td>')
+            for a in data["absences"]
+        ]
+        abs_html = table_showall("abs", ["Type", "Games Missed", "Days", "From", "To", "Reason"], cells)
+    else:
+        abs_html = '<p class="subtitle">No absences — never missed a game their team played.</p>'
+
+    # similar players
+    sim_cards = "".join(
+        f'<a class="simcard" href="{esc(s["slug"])}.html">'
+        f'<div class="nm">{(esc(s["flag"]) + " ") if s["flag"] else ""}{esc(s["name"])}</div>'
+        f'<div class="st">{s["top"]} game streak</div></a>'
+        for s in similar
+    )
+
+    back_top = f'<a class="backtop" href="{back_href}">← Back to {back_name} Leaderboard</a>'
+    body = (
+        f"{nav('../', None)}\n<div class=\"wrap\">\n{back_top}\n"
+        f"<header><h1>{name_html}</h1><div class=\"badges\">{badges_html}</div></header>\n"
+        f"<section><h2>Season Timeline</h2>{timeline_html}</section>\n"
+        f"<section><h2>Iron Man Streaks</h2>{iron_html}</section>\n"
+        f'<section><h2>Absences <button class="gbtn" title="What do these codes mean?" onclick="og()">ⓘ</button></h2>'
+        f"{missed_html}{abs_html}</section>\n"
+        f'<section><h2>Similar Players</h2><div class="simgrid">{sim_cards}</div></section>\n'
+        f'<a class="backtop" href="{back_href}">← Back to {back_name} Leaderboard</a>\n</div>\n'
+        f'<div class="modal" id="gmodal" onclick="cg(event)"><div class="modal-card">'
+        f'<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">'
+        f'<h3 style="margin:0;">Absence reason glossary</h3>'
+        f'<button class="gbtn gclose" onclick="cg()">✕</button></div>{glossary_html}</div></div>'
+    )
+    return page(title, body, PLAYER_JS)
+
+
+# --------------------------------------------------------------------------- #
+# HTML: reasons page
+# --------------------------------------------------------------------------- #
+def reasons_page(reason_total, reason_player, names):
+    blocks = []
+    for reason, total in sorted(reason_total.items(), key=lambda kv: (-kv[1], kv[0])):
+        top = reason_player[reason].most_common(10)
+        rows = "".join(
+            f'<tr><td><a class="plink" href="players/{slugify(names[p][0], names[p][1], p)}.html">'
+            f'{esc(names[p][0])} {esc(names[p][1])}</a></td><td class="num">{cnt}</td></tr>'
+            for p, cnt in top
+        )
+        blocks.append(
+            f'<div class="reasonblock"><h2>{esc(reason)} '
+            f'<span class="rcount">{total} games missed across all players</span></h2>'
+            f'<table class="dtable"><thead><tr><th>Most affected player</th>'
+            f'<th>Games</th></tr></thead><tbody>{rows}</tbody></table></div>'
+        )
+    body = (
+        f"{nav('', 'reasons')}\n<div class=\"wrap\">\n"
+        "<header><h1>Absence <span class=\"accent\">Reasons</span></h1>"
+        "<p class=\"subtitle\">Every normalized reason in the data — how Iron Man streaks end.</p></header>\n"
+        + "".join(blocks) + "\n</div>"
+    )
+    return page("Absence Reasons | NBA Iron Man Streaks", body)
+
+
+# --------------------------------------------------------------------------- #
+# Main
+# --------------------------------------------------------------------------- #
+def main():
+    force = "--force" in sys.argv
+    os.makedirs(PLAYERS_DIR, exist_ok=True)
+
+    game_info, ts_pf, ts_reg, ts_comb = load_games()
+    games, names, appeared = load_players(game_info)
+    flags, flags_on = load_flags()
+
+    players = sorted(pid for pid in games if appeared.get(pid))
+    total = len(players)
+
+    # Seasons in which the league recorded minutes (someone actually appeared).
+    # Used to suppress false "missed seasons" in pre-1951 minutes-less data.
+    tracked_seasons = set()
+    for gs in appeared.values():
+        for gid in gs:
+            tracked_seasons.add(nba_season(game_info[gid][0]))
+
+    # ---- pass 1: streaks, summaries, leaderboard rows, reason aggregation --- #
+    print(f"\nPass 1: computing streaks for {total} players...")
+    boards = {t: [] for t in TYPES}
+    summaries = {}
+    reason_total = Counter()
+    reason_player = defaultdict(Counter)
+    corpus_lower = set()
+
+    for pid in players:
+        res = analyze(pid, False, games, appeared, game_info, ts_pf, ts_reg, ts_comb)
+        st = res["streaks"]
+        lens = {t: st[t]["len"] for t in TYPES}
+        first, last = names[pid]
+        slug = slugify(first, last, pid)
+        flag = flags.get(pid, "")
+        for t in TYPES:
+            s = st[t]
+            if s["len"] > 0:
+                boards[t].append({
+                    "first": first, "last": last, "name": f"{first} {last}",
+                    "slug": slug, "flag": flag, "len": s["len"],
+                    "start": s["start"].isoformat() if s["start"] else "",
+                    "end": s["end"].isoformat() if s["end"] else "",
+                })
+        summaries[pid] = {"clen": lens["combined"], "top": max(lens.values()),
+                          "name": f"{first} {last}", "slug": slug, "flag": flag}
+        # reason aggregation straight from rows (true games-missed counts)
+        for gid, row in games[pid].items():
+            if row[1] == 0 and row[2]:
+                corpus_lower.add(row[2].lower())
+                r = normalize_reason(row[2])
+                if r and r != "—":
+                    reason_total[r] += 1
+                    reason_player[r][pid] += 1
+
+    glossary_html = build_glossary_html(corpus_lower)
+
+    # similar-player index (sorted by combined length)
+    order = sorted(players, key=lambda p: summaries[p]["clen"])
+    pos = {p: i for i, p in enumerate(order)}
+
+    def similar_for(pid):
+        i = pos[pid]
+        n = len(order)
+        lo, hi = i - 1, i + 1
+        picks = []
+        clen = summaries[pid]["clen"]
+        while len(picks) < 6 and (lo >= 0 or hi < n):
+            cand = []
+            if lo >= 0:
+                cand.append((abs(summaries[order[lo]]["clen"] - clen), lo, "lo"))
+            if hi < n:
+                cand.append((abs(summaries[order[hi]]["clen"] - clen), hi, "hi"))
+            cand.sort()
+            _, idx, side = cand[0]
+            picks.append(summaries[order[idx]])
+            if side == "lo":
+                lo -= 1
+            else:
+                hi += 1
+        return picks
+
+    # ---- pass 2: write player pages ---------------------------------------- #
+    print(f"Pass 2: writing player pages...\n")
+    generated = 0
+    for i, pid in enumerate(players, start=1):
+        out_path = os.path.join(PLAYERS_DIR, f"{summaries[pid]['slug']}.html")
+        if force or not os.path.exists(out_path):
+            res = analyze(pid, True, games, appeared, game_info, ts_pf, ts_reg, ts_comb,
+                          tracked_seasons)
+            html_str = player_page(pid, names[pid], flags.get(pid, ""), res,
+                                    similar_for(pid), glossary_html)
+            with open(out_path, "w", encoding="utf-8") as f:
+                f.write(html_str)
+            generated += 1
+        if i % 100 == 0:
+            print(f"Generating player pages... {i}/{total}")
+
+    # ---- leaderboards ------------------------------------------------------ #
+    def board_data(rows):
+        rows = sorted(rows, key=lambda r: (-r["len"], r["last"].lower(), r["first"].lower()))
+        return [[idx + 1, r["name"], r["len"], r["start"], r["end"], r["slug"], r["flag"]]
+                for idx, r in enumerate(rows)]
+
+    titles = {
+        "regular": ('NBA Regular Season <span class="accent">Iron Man</span> Streaks',
+                    os.path.join(BASE_DIR, "regular.html")),
+        "playoff": ('NBA Playoff <span class="accent">Iron Man</span> Streaks',
+                    os.path.join(BASE_DIR, "index.html")),
+        "combined": ('NBA <span class="accent">Iron Man</span> Streaks (Regular Season + Playoffs)',
+                     os.path.join(BASE_DIR, "combined.html")),
+    }
+    for t, (title_html, path) in titles.items():
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(leaderboard_page(title_html, board_data(boards[t]), t))
+        print(f"Wrote {os.path.basename(path)} ({len(boards[t])} players).")
+
+    # ---- reasons page ------------------------------------------------------ #
+    with open(os.path.join(BASE_DIR, "reasons.html"), "w", encoding="utf-8") as f:
+        f.write(reasons_page(reason_total, reason_player, names))
+    print(f"Wrote reasons.html ({len(reason_total)} unique reasons).")
+
+    note = "" if flags_on else " (flags skipped — Players.csv not found)"
+    print(f"\nDone. 4 leaderboard/detail pages + {generated} player pages generated.{note}")
+
+
+if __name__ == "__main__":
+    main()

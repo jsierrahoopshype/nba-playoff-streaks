@@ -8,59 +8,55 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0f0f1a;--card:#1a1a2e;--orange:#e8612a;--text:#ffffff;--muted:#8892a4;
+:root{--bg:#0f0f1a;--card:#1a1a2e;--orange:#e8612a;--text:#fff;--muted:#8892a4;
 --green:#22c55e;--red:#ef4444;--gray:#374151;--border:#2a2a44;--soft:rgba(232,97,42,.14);}
-*{box-sizing:border-box;}
-html,body{margin:0;padding:0;}
+*{box-sizing:border-box;}html,body{margin:0;padding:0;}
 body{background:var(--bg);color:var(--text);line-height:1.45;
-font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
--webkit-font-smoothing:antialiased;}
+font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;-webkit-font-smoothing:antialiased;}
 a{color:inherit;}
-.nav{display:flex;gap:6px;flex-wrap:wrap;padding:14px 20px;background:var(--card);
-border-bottom:1px solid var(--border);position:sticky;top:0;z-index:5;}
-.nav a{color:var(--muted);text-decoration:none;font-weight:600;font-size:14px;
-padding:8px 14px;border-radius:8px;}
-.nav a:hover{color:var(--text);background:rgba(255,255,255,.05);}
+.nav{display:flex;gap:6px;flex-wrap:wrap;padding:12px 20px;background:var(--card);border-bottom:1px solid var(--border);}
+.nav a{color:var(--muted);text-decoration:none;font-weight:600;font-size:14px;padding:8px 14px;border-radius:8px;}
+.nav a:hover{color:#fff;background:rgba(255,255,255,.05);}
 .nav a.active{color:#fff;background:var(--orange);}
-.wrap{max-width:1000px;margin:0 auto;padding:28px 20px 64px;}
+.wrap{max-width:1000px;margin:0 auto;padding:26px 20px 70px;}
 h1{font-size:clamp(24px,5vw,38px);font-weight:800;letter-spacing:-.02em;margin:0 0 6px;}
 h1 .accent{color:var(--orange);}
-h2{font-size:18px;font-weight:700;margin:30px 0 12px;}
+h2{font-size:18px;font-weight:700;margin:30px 0 8px;display:flex;align-items:center;gap:8px;}
+h3{font-size:15px;font-weight:700;margin:18px 0 6px;}
 .subtitle{color:var(--muted);font-size:15px;font-weight:500;margin:0;}
-.controls{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:24px 0 12px;}
-#search{flex:1 1 260px;background:var(--card);border:1px solid var(--border);border-radius:10px;
-color:var(--text);font-size:15px;font-family:inherit;padding:12px 14px;outline:none;}
+.backtop{display:inline-block;color:var(--orange);text-decoration:none;font-weight:600;margin:2px 0 14px;}
+.controls{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:22px 0 12px;}
+#search{flex:1 1 100%;background:var(--card);border:1px solid var(--border);border-radius:10px;color:#fff;
+font-size:15px;font-family:inherit;padding:12px 14px;outline:none;}
 #search::placeholder{color:var(--muted);}
 #search:focus{border-color:var(--orange);box-shadow:0 0 0 3px var(--soft);}
-.count{color:var(--muted);font-size:14px;font-weight:500;white-space:nowrap;}
+.count{color:var(--muted);font-size:14px;font-weight:500;}
 .count b{color:var(--orange);font-weight:700;}
-.table-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
-.table-scroll{overflow-x:auto;}
-table{width:100%;border-collapse:collapse;font-size:14.5px;}
-thead th{position:sticky;top:53px;background:#22223e;color:var(--muted);text-align:left;
+.table-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:auto;}
+table.board{width:100%;border-collapse:collapse;font-size:14.5px;}
+table.board thead th{position:sticky;top:0;background:#22223e;color:var(--muted);text-align:left;
 font-weight:600;font-size:12.5px;letter-spacing:.04em;text-transform:uppercase;padding:13px 16px;
-cursor:pointer;user-select:none;white-space:nowrap;border-bottom:1px solid var(--border);}
-thead th:hover{color:var(--text);}
-thead th.active{color:var(--text);}
-thead th .arrow{color:var(--orange);font-size:11px;margin-left:5px;}
+cursor:pointer;user-select:none;white-space:nowrap;border-bottom:1px solid var(--border);z-index:2;}
+table.board thead th:hover{color:#fff;}
+table.board thead th.active{color:#fff;}
+table.board thead th .arrow{color:var(--orange);font-size:11px;margin-left:5px;}
 th.col-streak,td.col-streak{text-align:right;}
-tbody td{padding:11px 16px;border-bottom:1px solid rgba(42,42,68,.6);white-space:nowrap;}
-tbody tr:nth-child(even){background:rgba(255,255,255,.02);}
-tbody tr:hover{background:var(--soft);}
+table.board tbody td{padding:11px 16px;border-bottom:1px solid rgba(42,42,68,.6);white-space:nowrap;}
+table.board tbody tr:nth-child(even){background:rgba(255,255,255,.02);}
+table.board tbody tr:hover{background:var(--soft);}
 .col-rank{color:var(--muted);font-variant-numeric:tabular-nums;width:60px;}
 .col-streak{font-weight:700;color:var(--orange);font-variant-numeric:tabular-nums;}
 .col-date{color:var(--muted);font-variant-numeric:tabular-nums;}
 .plink{color:#fff;text-decoration:none;font-weight:600;border-bottom:1px dotted rgba(232,97,42,.5);}
 .plink:hover{color:var(--orange);}
 .empty{padding:40px 16px;text-align:center;color:var(--muted);}
-footer{margin-top:28px;color:var(--muted);font-size:13px;text-align:center;}
 /* player page */
 .badges{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 4px;}
-.badge{padding:8px 14px;border-radius:999px;font-weight:700;font-size:14px;border:1px solid var(--border);}
-.badge.on{background:var(--soft);border-color:var(--orange);color:#fff;}
+.badge{padding:8px 14px;border-radius:999px;font-weight:600;font-size:13.5px;border:1px solid var(--border);}
+.badge.on{background:var(--soft);border-color:var(--orange);}
 .badge.on b{color:var(--orange);}
 .badge.off{background:rgba(255,255,255,.03);color:var(--muted);}
-.legend{display:flex;gap:16px;flex-wrap:wrap;color:var(--muted);font-size:13px;margin-bottom:14px;}
+.legend{display:flex;gap:16px;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:6px 0 14px;}
 .legend span{display:inline-flex;align-items:center;gap:6px;}
 .sq{display:inline-block;width:11px;height:11px;margin:1.5px;border-radius:2px;vertical-align:middle;}
 .sq.g{background:var(--green);}.sq.r{background:var(--red);}.sq.d{background:var(--gray);}
@@ -69,29 +65,46 @@ footer{margin-top:28px;color:var(--muted);font-size:13px;text-align:center;}
 .tseason{display:block;font-weight:700;font-size:14px;}
 .tteam{display:block;color:var(--muted);font-size:12.5px;}
 .tsquares{flex:1;min-width:0;line-height:1;}
-.absbtn{background:var(--card);color:#fff;border:1px solid var(--border);border-radius:10px;
-padding:10px 16px;font-family:inherit;font-size:15px;font-weight:600;cursor:pointer;}
-.absbtn:hover{border-color:var(--orange);}
-.abstable{width:100%;border-collapse:collapse;font-size:14px;margin-top:12px;}
-.abstable th{text-align:left;color:var(--muted);font-size:12px;text-transform:uppercase;
-letter-spacing:.04em;padding:9px 12px;border-bottom:1px solid var(--border);}
-.abstable td{padding:9px 12px;border-bottom:1px solid rgba(42,42,68,.5);}
-.abstable .num{font-variant-numeric:tabular-nums;}
-.backlink{margin-top:30px;}
-.backlink a{color:var(--orange);text-decoration:none;font-weight:600;}
-@media(max-width:560px){.wrap{padding:20px 12px 48px;}.trow{flex-direction:column;gap:4px;}
-.tlabel{width:auto;}thead th{top:0;position:static;}}
+.dtable{width:100%;border-collapse:collapse;font-size:14px;margin-top:10px;}
+.dtable th{text-align:left;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04em;padding:8px 12px;border-bottom:1px solid var(--border);}
+.dtable td{padding:8px 12px;border-bottom:1px solid rgba(42,42,68,.5);}
+.dtable .num{font-variant-numeric:tabular-nums;}
+.showall{margin-top:10px;background:var(--card);color:#fff;border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-family:inherit;font-weight:600;cursor:pointer;}
+.showall:hover{border-color:var(--orange);}
+.gbtn{background:none;border:1px solid var(--border);color:var(--muted);border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:13px;line-height:1;padding:0;}
+.gbtn:hover{color:#fff;border-color:var(--orange);}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:50;padding:20px;}
+.modal.open{display:flex;}
+.modal-card{background:var(--card);border:1px solid var(--border);border-radius:14px;max-width:540px;width:100%;max-height:80vh;overflow:auto;padding:22px;}
+.simgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:6px;}
+.simcard{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px;text-decoration:none;color:#fff;display:block;}
+.simcard:hover{border-color:var(--orange);}
+.simcard .nm{font-weight:600;font-size:14px;}
+.simcard .st{color:var(--orange);font-weight:700;font-size:13px;margin-top:4px;}
+.reasonblock{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin-bottom:14px;}
+.reasonblock h2{margin:0 0 4px;font-size:17px;}
+.rcount{color:var(--muted);font-size:13px;font-weight:600;}
+@media(max-width:560px){.wrap{padding:18px 12px 52px;}.trow{flex-direction:column;gap:4px;}.tlabel{width:auto;}}
 </style>
 </head>
 <body>
-<nav class="nav"><a href="../index.html">Playoffs</a><a href="../regular.html">Regular Season</a><a href="../combined.html">Combined</a></nav>
+<nav class="nav"><a href="../regular.html">Regular Season</a><a href="../index.html">Playoffs</a><a href="../combined.html">Combined</a><a href="../reasons.html">Absence Reasons</a></nav>
 <div class="wrap">
-<header><h1>Jack Parr</h1><div class="badges"><span class="badge off">Playoffs: <b>0</b> games</span><span class="badge on">Regular: <b>1</b> games</span><span class="badge on">Combined: <b>1</b> games</span></div></header>
+<a class="backtop" href="../combined.html">← Back to Combined Leaderboard</a>
+<header><h1>🇺🇸 Jack Parr</h1><div class="badges"><span class="badge off">Playoffs Iron Man: <b>0</b> consecutive games</span><span class="badge on">Regular Season Iron Man: <b>1</b> consecutive games</span><span class="badge on">Combined Iron Man: <b>1</b> consecutive games</span></div></header>
 <section><h2>Season Timeline</h2><div class="legend"><span><i class="sq g"></i> Appeared</span><span><i class="sq r"></i> Missed</span><span><i class="sq d"></i> DNP (coach/inactive)</span></div><div class="trow"><div class="tlabel"><span class="tseason">1958-59</span><span class="tteam">Cincinnati Royals</span></div><div class="tsquares"><i class="sq r" title="1958-10-22 · @ Minneapolis Lakers · Did not play (0 min)"></i><i class="sq r" title="1958-10-25 · vs Minneapolis Lakers · Did not play (0 min)"></i><i class="sq r" title="1958-10-31 · @ Detroit Pistons · Did not play (0 min)"></i><i class="sq r" title="1958-11-01 · @ Syracuse Nationals · Did not play (0 min)"></i><i class="sq r" title="1958-11-02 · vs St. Louis Hawks · Did not play (0 min)"></i><i class="sq r" title="1958-11-05 · vs New York Knicks · Did not play (0 min)"></i><i class="sq r" title="1958-11-09 · vs Philadelphia Warriors · Did not play (0 min)"></i><i class="sq r" title="1958-11-12 · vs Syracuse Nationals · Did not play (0 min)"></i><i class="sq g" title="1958-11-15 · @ Boston Celtics · 18 min · 7 pts · 4 reb · 0 ast"></i><i class="sq r" title="1958-11-19 · vs Boston Celtics · Did not play (0 min)"></i><i class="sq r" title="1958-11-21 · @ Philadelphia Warriors · Did not play (0 min)"></i><i class="sq r" title="1958-11-22 · @ Detroit Pistons · Did not play (0 min)"></i><i class="sq r" title="1958-11-23 · vs St. Louis Hawks · Did not play (0 min)"></i><i class="sq r" title="1958-11-25 · @ New York Knicks · Did not play (0 min)"></i><i class="sq r" title="1958-11-26 · vs Detroit Pistons · Did not play (0 min)"></i><i class="sq r" title="1958-11-28 · @ Minneapolis Lakers · Missed (no record)"></i><i class="sq r" title="1958-11-29 · @ St. Louis Hawks · Did not play (0 min)"></i><i class="sq r" title="1958-11-30 · vs Minneapolis Lakers · Did not play (0 min)"></i><i class="sq r" title="1958-12-02 · @ St. Louis Hawks · Did not play (0 min)"></i><i class="sq r" title="1958-12-03 · vs New York Knicks · Did not play (0 min)"></i><i class="sq r" title="1958-12-06 · vs Minneapolis Lakers · Did not play (0 min)"></i><i class="sq r" title="1958-12-07 · vs Philadelphia Warriors · Missed (no record)"></i><i class="sq r" title="1958-12-10 · vs Syracuse Nationals · Did not play (0 min)"></i><i class="sq g" title="1958-12-12 · @ Boston Celtics · 43 min · 9 pts · 14 reb · 0 ast"></i><i class="sq r" title="1958-12-16 · @ New York Knicks · Did not play (0 min)"></i><i class="sq r" title="1958-12-18 · vs Boston Celtics · Did not play (0 min)"></i><i class="sq r" title="1958-12-20 · @ Syracuse Nationals · Did not play (0 min)"></i><i class="sq r" title="1958-12-25 · vs St. Louis Hawks · Did not play (0 min)"></i><i class="sq r" title="1958-12-26 · @ Detroit Pistons · Did not play (0 min)"></i><i class="sq r" title="1958-12-28 · vs Minneapolis Lakers · Missed (no record)"></i><i class="sq r" title="1958-12-29 · @ St. Louis Hawks · Did not play (0 min)"></i><i class="sq g" title="1958-12-30 · vs St. Louis Hawks · 11 min · 0 pts · 2 reb · 0 ast"></i><i class="sq r" title="1959-01-02 · vs Detroit Pistons · Did not play (0 min)"></i><i class="sq r" title="1959-01-04 · vs Boston Celtics · Did not play (0 min)"></i><i class="sq r" title="1959-01-06 · @ Boston Celtics · Did not play (0 min)"></i><i class="sq r" title="1959-01-08 · vs Syracuse Nationals · Did not play (0 min)"></i><i class="sq r" title="1959-01-09 · @ St. Louis Hawks · Did not play (0 min)"></i><i class="sq r" title="1959-01-10 · vs Detroit Pistons · Missed (no record)"></i><i class="sq r" title="1959-01-11 · @ Syracuse Nationals · Did not play (0 min)"></i><i class="sq g" title="1959-01-13 · @ Detroit Pistons · 18 min · 4 pts · 8 reb · 0 ast"></i><i class="sq r" title="1959-01-16 · vs Minneapolis Lakers · Did not play (0 min)"></i><i class="sq r" title="1959-01-17 · @ New York Knicks · Did not play (0 min)"></i><i class="sq r" title="1959-01-18 · vs Detroit Pistons · Did not play (0 min)"></i><i class="sq g" title="1959-01-20 · vs New York Knicks · 15 min · 6 pts · 9 reb · 0 ast"></i><i class="sq r" title="1959-01-21 · vs New York Knicks · Did not play (0 min)"></i><i class="sq r" title="1959-01-24 · @ Syracuse Nationals · Did not play (0 min)"></i><i class="sq r" title="1959-01-25 · vs Syracuse Nationals · Did not play (0 min)"></i><i class="sq r" title="1959-01-27 · vs Philadelphia Warriors · Missed (no record)"></i><i class="sq r" title="1959-01-28 · @ Philadelphia Warriors · Missed (no record)"></i><i class="sq r" title="1959-01-30 · @ St. Louis Hawks · Did not play (0 min)"></i><i class="sq r" title="1959-01-31 · @ Detroit Pistons · Did not play (0 min)"></i><i class="sq r" title="1959-02-03 · vs Philadelphia Warriors · Did not play (0 min)"></i><i class="sq g" title="1959-02-08 · @ Boston Celtics · 24 min · 9 pts · 7 reb · 0 ast"></i><i class="sq r" title="1959-02-09 · @ Detroit Pistons · Did not play (0 min)"></i><i class="sq r" title="1959-02-10 · @ Minneapolis Lakers · Did not play (0 min)"></i><i class="sq r" title="1959-02-11 · @ Minneapolis Lakers · Did not play (0 min)"></i><i class="sq r" title="1959-02-12 · vs Minneapolis Lakers · Did not play (0 min)"></i><i class="sq r" title="1959-02-14 · @ Philadelphia Warriors · Did not play (0 min)"></i><i class="sq r" title="1959-02-15 · @ New York Knicks · Did not play (0 min)"></i><i class="sq r" title="1959-02-18 · vs New York Knicks · Did not play (0 min)"></i><i class="sq g" title="1959-02-21 · @ St. Louis Hawks · 17 min · 1 pts · 5 reb · 0 ast"></i><i class="sq r" title="1959-02-22 · vs Boston Celtics · Did not play (0 min)"></i><i class="sq g" title="1959-02-24 · @ Syracuse Nationals · 24 min · 7 pts · 11 reb · 0 ast"></i><i class="sq r" title="1959-02-25 · @ Minneapolis Lakers · Did not play (0 min)"></i><i class="sq r" title="1959-02-26 · vs Detroit Pistons · Did not play (0 min)"></i><i class="sq r" title="1959-02-28 · vs St. Louis Hawks · Did not play (0 min)"></i><i class="sq r" title="1959-03-01 · @ Detroit Pistons · Did not play (0 min)"></i><i class="sq g" title="1959-03-03 · @ St. Louis Hawks · 27 min · 6 pts · 9 reb · 0 ast"></i><i class="sq r" title="1959-03-04 · vs Minneapolis Lakers · Missed (no record)"></i><i class="sq r" title="1959-03-07 · @ Philadelphia Warriors · Did not play (0 min)"></i><i class="sq g" title="1959-03-08 · @ Boston Celtics · 5 min · 6 pts · 2 reb · 0 ast"></i><i class="sq r" title="1959-03-10 · vs Philadelphia Warriors · Did not play (0 min)"></i></div></div></section>
-<section><h2>Absences</h2><button id="abstoggle" class="absbtn" onclick="toggleAbs()">▸ Absences (22)</button><div id="absbody" style="display:none;margin-top:12px;"><table class="abstable"><thead><tr><th>Type</th><th>Games Missed</th><th>Days</th><th>From</th><th>To</th><th>Reason</th></tr></thead><tbody><tr><td>Regular Season</td><td class="num">14</td><td class="num">21</td><td class="num">1958-11-19</td><td class="num">1958-12-10</td><td>—</td></tr><tr><td>Combined</td><td class="num">14</td><td class="num">21</td><td class="num">1958-11-19</td><td class="num">1958-12-10</td><td>—</td></tr><tr><td>Regular Season</td><td class="num">8</td><td class="num">21</td><td class="num">1958-10-22</td><td class="num">1958-11-12</td><td>—</td></tr><tr><td>Combined</td><td class="num">8</td><td class="num">21</td><td class="num">1958-10-22</td><td class="num">1958-11-12</td><td>—</td></tr><tr><td>Regular Season</td><td class="num">8</td><td class="num">13</td><td class="num">1959-01-21</td><td class="num">1959-02-03</td><td>—</td></tr><tr><td>Combined</td><td class="num">8</td><td class="num">13</td><td class="num">1959-01-21</td><td class="num">1959-02-03</td><td>—</td></tr><tr><td>Regular Season</td><td class="num">7</td><td class="num">13</td><td class="num">1958-12-16</td><td class="num">1958-12-29</td><td>—</td></tr><tr><td>Combined</td><td class="num">7</td><td class="num">13</td><td class="num">1958-12-16</td><td class="num">1958-12-29</td><td>—</td></tr><tr><td>Regular Season</td><td class="num">7</td><td class="num">9</td><td class="num">1959-01-02</td><td class="num">1959-01-11</td><td>—</td></tr><tr><td>Regular Season</td><td class="num">7</td><td class="num">9</td><td class="num">1959-02-09</td><td class="num">1959-02-18</td><td>—</td></tr><tr><td>Combined</td><td class="num">7</td><td class="num">9</td><td class="num">1959-01-02</td><td class="num">1959-01-11</td><td>—</td></tr><tr><td>Combined</td><td class="num">7</td><td class="num">9</td><td class="num">1959-02-09</td><td class="num">1959-02-18</td><td>—</td></tr><tr><td>Regular Season</td><td class="num">4</td><td class="num">4</td><td class="num">1959-02-25</td><td class="num">1959-03-01</td><td>—</td></tr><tr><td>Combined</td><td class="num">4</td><td class="num">4</td><td class="num">1959-02-25</td><td class="num">1959-03-01</td><td>—</td></tr><tr><td>Regular Season</td><td class="num">3</td><td class="num">2</td><td class="num">1959-01-16</td><td class="num">1959-01-18</td><td>—</td></tr><tr><td>Combined</td><td class="num">3</td><td class="num">2</td><td class="num">1959-01-16</td><td class="num">1959-01-18</td><td>—</td></tr><tr><td>Regular Season</td><td class="num">2</td><td class="num">3</td><td class="num">1959-03-04</td><td class="num">1959-03-07</td><td>—</td></tr><tr><td>Combined</td><td class="num">2</td><td class="num">3</td><td class="num">1959-03-04</td><td class="num">1959-03-07</td><td>—</td></tr><tr><td>Regular Season</td><td class="num">1</td><td class="num">0</td><td class="num">1959-02-22</td><td class="num">1959-02-22</td><td>—</td></tr><tr><td>Regular Season</td><td class="num">1</td><td class="num">0</td><td class="num">1959-03-10</td><td class="num">1959-03-10</td><td>—</td></tr><tr><td>Combined</td><td class="num">1</td><td class="num">0</td><td class="num">1959-02-22</td><td class="num">1959-02-22</td><td>—</td></tr><tr><td>Combined</td><td class="num">1</td><td class="num">0</td><td class="num">1959-03-10</td><td class="num">1959-03-10</td><td>—</td></tr></tbody></table></div></section>
-<div class="backlink"><a href="../combined.html">← Back to Combined</a></div>
-<footer>Data: Kaggle / eoinamoore · Updated through 2025–26 season</footer>
+<section><h2>Iron Man Streaks</h2><p class="subtitle">No streaks of 5+ games.</p></section>
+<section><h2>Absences <button class="gbtn" title="What do these codes mean?" onclick="og()">ⓘ</button></h2><table class="dtable"><thead><tr><th>Type</th><th>Games Missed</th><th>Days</th><th>From</th><th>To</th><th>Reason</th></tr></thead><tbody><tr><td>Regular Season</td><td class="num">14</td><td class="num">21</td><td class="num">1958-11-19</td><td class="num">1958-12-10</td><td>—</td></tr><tr><td>Combined</td><td class="num">14</td><td class="num">21</td><td class="num">1958-11-19</td><td class="num">1958-12-10</td><td>—</td></tr><tr><td>Regular Season</td><td class="num">8</td><td class="num">21</td><td class="num">1958-10-22</td><td class="num">1958-11-12</td><td>—</td></tr><tr><td>Combined</td><td class="num">8</td><td class="num">21</td><td class="num">1958-10-22</td><td class="num">1958-11-12</td><td>—</td></tr><tr><td>Regular Season</td><td class="num">8</td><td class="num">13</td><td class="num">1959-01-21</td><td class="num">1959-02-03</td><td>—</td></tr><tr><td>Combined</td><td class="num">8</td><td class="num">13</td><td class="num">1959-01-21</td><td class="num">1959-02-03</td><td>—</td></tr><tr><td>Regular Season</td><td class="num">7</td><td class="num">13</td><td class="num">1958-12-16</td><td class="num">1958-12-29</td><td>—</td></tr><tr><td>Combined</td><td class="num">7</td><td class="num">13</td><td class="num">1958-12-16</td><td class="num">1958-12-29</td><td>—</td></tr><tr><td>Regular Season</td><td class="num">7</td><td class="num">9</td><td class="num">1959-01-02</td><td class="num">1959-01-11</td><td>—</td></tr><tr><td>Regular Season</td><td class="num">7</td><td class="num">9</td><td class="num">1959-02-09</td><td class="num">1959-02-18</td><td>—</td></tr><tr class="abs-x" style="display:none"><td>Combined</td><td class="num">7</td><td class="num">9</td><td class="num">1959-01-02</td><td class="num">1959-01-11</td><td>—</td></tr><tr class="abs-x" style="display:none"><td>Combined</td><td class="num">7</td><td class="num">9</td><td class="num">1959-02-09</td><td class="num">1959-02-18</td><td>—</td></tr><tr class="abs-x" style="display:none"><td>Regular Season</td><td class="num">4</td><td class="num">4</td><td class="num">1959-02-25</td><td class="num">1959-03-01</td><td>—</td></tr><tr class="abs-x" style="display:none"><td>Combined</td><td class="num">4</td><td class="num">4</td><td class="num">1959-02-25</td><td class="num">1959-03-01</td><td>—</td></tr><tr class="abs-x" style="display:none"><td>Regular Season</td><td class="num">3</td><td class="num">2</td><td class="num">1959-01-16</td><td class="num">1959-01-18</td><td>—</td></tr><tr class="abs-x" style="display:none"><td>Combined</td><td class="num">3</td><td class="num">2</td><td class="num">1959-01-16</td><td class="num">1959-01-18</td><td>—</td></tr><tr class="abs-x" style="display:none"><td>Regular Season</td><td class="num">2</td><td class="num">3</td><td class="num">1959-03-04</td><td class="num">1959-03-07</td><td>—</td></tr><tr class="abs-x" style="display:none"><td>Combined</td><td class="num">2</td><td class="num">3</td><td class="num">1959-03-04</td><td class="num">1959-03-07</td><td>—</td></tr><tr class="abs-x" style="display:none"><td>Regular Season</td><td class="num">1</td><td class="num">0</td><td class="num">1959-02-22</td><td class="num">1959-02-22</td><td>—</td></tr><tr class="abs-x" style="display:none"><td>Regular Season</td><td class="num">1</td><td class="num">0</td><td class="num">1959-03-10</td><td class="num">1959-03-10</td><td>—</td></tr><tr class="abs-x" style="display:none"><td>Combined</td><td class="num">1</td><td class="num">0</td><td class="num">1959-02-22</td><td class="num">1959-02-22</td><td>—</td></tr><tr class="abs-x" style="display:none"><td>Combined</td><td class="num">1</td><td class="num">0</td><td class="num">1959-03-10</td><td class="num">1959-03-10</td><td>—</td></tr></tbody></table><button class="showall" data-sec="abs" onclick="showAll(this)">Show all 22</button></section>
+<section><h2>Similar Players</h2><div class="simgrid"><a class="simcard" href="claude-overton-77780.html"><div class="nm">🇺🇸 Claude Overton</div><div class="st">1 game streak</div></a><a class="simcard" href="don-otten-77778.html"><div class="nm">🇺🇸 Don Otten</div><div class="st">1 game streak</div></a><a class="simcard" href="kevin-oshea-77773.html"><div class="nm">🇺🇸 Kevin O&#x27;Shea</div><div class="st">1 game streak</div></a><a class="simcard" href="buckshot-obrien-77743.html"><div class="nm">🇺🇸 Buckshot O&#x27;Brien</div><div class="st">1 game streak</div></a><a class="simcard" href="howard-nathan-77690.html"><div class="nm">🇺🇸 Howard Nathan</div><div class="st">1 game streak</div></a><a class="simcard" href="richard-morton-77652.html"><div class="nm">🇺🇸 Richard Morton</div><div class="st">1 game streak</div></a></div></section>
+<a class="backtop" href="../combined.html">← Back to Combined Leaderboard</a>
 </div>
-<script>function toggleAbs(){var b=document.getElementById('absbody'),t=document.getElementById('abstoggle');var open=b.style.display!=='none';b.style.display=open?'none':'block';t.textContent=(open?'\u25b8':'\u25be')+' Absences (22)';}</script>
+<div class="modal" id="gmodal" onclick="cg(event)"><div class="modal-card"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;"><h3 style="margin:0;">Absence reason glossary</h3><button class="gbtn gclose" onclick="cg()">✕</button></div><table class="dtable"><thead><tr><th>Code</th><th>Meaning</th></tr></thead><tbody><tr><td><b>DNP</b></td><td>Did Not Play</td></tr><tr><td><b>DND</b></td><td>Did Not Dress (active roster, didn&#x27;t suit up)</td></tr><tr><td><b>NWT</b></td><td>Not With Team</td></tr><tr><td><b>Coach&#x27;s Decision</b></td><td>Healthy scratch — the coach chose not to play them</td></tr><tr><td><b>Injury / Illness</b></td><td>Out with an injury or illness</td></tr><tr><td><b>Rt</b></td><td>Right (side of the body)</td></tr><tr><td><b>Lt</b></td><td>Left (side of the body)</td></tr><tr><td><b>Sore</b></td><td>Soreness</td></tr><tr><td><b>Sprained</b></td><td>A stretched or torn ligament</td></tr><tr><td><b>Strain</b></td><td>A stretched or torn muscle or tendon</td></tr><tr><td><b>Suspension</b></td><td>Suspended by the league or team</td></tr><tr><td><b>Rest</b></td><td>Rested (load management)</td></tr></tbody></table></div></div>
+
+<script>
+function showAll(b){var s=b.dataset.sec;document.querySelectorAll('.'+s+'-x').forEach(function(e){e.style.display='';});b.style.display='none';}
+function og(){document.getElementById('gmodal').classList.add('open');}
+function cg(e){if(!e||e.target.id==='gmodal'||e.target.classList.contains('gclose'))document.getElementById('gmodal').classList.remove('open');}
+</script>
+
 </body>
 </html>

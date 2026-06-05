@@ -3,8 +3,5 @@ data/
 *.csv
 *.parquet
 
-# Build / analysis scripts
-*.py
-
 # Python
 __pycache__/

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cory Higgins: 19 Consecutive Combined Games | NBA Iron Man Streaks</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0f0f1a;--card:#1a1a2e;--orange:#e8612a;--text:#ffffff;--muted:#8892a4;
+--green:#22c55e;--red:#ef4444;--gray:#374151;--border:#2a2a44;--soft:rgba(232,97,42,.14);}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);line-height:1.45;
+font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+-webkit-font-smoothing:antialiased;}
+a{color:inherit;}
+.nav{display:flex;gap:6px;flex-wrap:wrap;padding:14px 20px;background:var(--card);
+border-bottom:1px solid var(--border);position:sticky;top:0;z-index:5;}
+.nav a{color:var(--muted);text-decoration:none;font-weight:600;font-size:14px;
+padding:8px 14px;border-radius:8px;}
+.nav a:hover{color:var(--text);background:rgba(255,255,255,.05);}
+.nav a.active{color:#fff;background:var(--orange);}
+.wrap{max-width:1000px;margin:0 auto;padding:28px 20px 64px;}
+h1{font-size:clamp(24px,5vw,38px);font-weight:800;letter-spacing:-.02em;margin:0 0 6px;}
+h1 .accent{color:var(--orange);}
+h2{font-size:18px;font-weight:700;margin:30px 0 12px;}
+.subtitle{color:var(--muted);font-size:15px;font-weight:500;margin:0;}
+.controls{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:24px 0 12px;}
+#search{flex:1 1 260px;background:var(--card);border:1px solid var(--border);border-radius:10px;
+color:var(--text);font-size:15px;font-family:inherit;padding:12px 14px;outline:none;}
+#search::placeholder{color:var(--muted);}
+#search:focus{border-color:var(--orange);box-shadow:0 0 0 3px var(--soft);}
+.count{color:var(--muted);font-size:14px;font-weight:500;white-space:nowrap;}
+.count b{color:var(--orange);font-weight:700;}
+.table-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+.table-scroll{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:14.5px;}
+thead th{position:sticky;top:53px;background:#22223e;color:var(--muted);text-align:left;
+font-weight:600;font-size:12.5px;letter-spacing:.04em;text-transform:uppercase;padding:13px 16px;
+cursor:pointer;user-select:none;white-space:nowrap;border-bottom:1px solid var(--border);}
+thead th:hover{color:var(--text);}
+thead th.active{color:var(--text);}
+thead th .arrow{color:var(--orange);font-size:11px;margin-left:5px;}
+th.col-streak,td.col-streak{text-align:right;}
+tbody td{padding:11px 16px;border-bottom:1px solid rgba(42,42,68,.6);white-space:nowrap;}
+tbody tr:nth-child(even){background:rgba(255,255,255,.02);}
+tbody tr:hover{background:var(--soft);}
+.col-rank{color:var(--muted);font-variant-numeric:tabular-nums;width:60px;}
+.col-streak{font-weight:700;color:var(--orange);font-variant-numeric:tabular-nums;}
+.col-date{color:var(--muted);font-variant-numeric:tabular-nums;}
+.plink{color:#fff;text-decoration:none;font-weight:600;border-bottom:1px dotted rgba(232,97,42,.5);}
+.plink:hover{color:var(--orange);}
+.empty{padding:40px 16px;text-align:center;color:var(--muted);}
+footer{margin-top:28px;color:var(--muted);font-size:13px;text-align:center;}
+/* player page */
+.badges{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 4px;}
+.badge{padding:8px 14px;border-radius:999px;font-weight:700;font-size:14px;border:1px solid var(--border);}
+.badge.on{background:var(--soft);border-color:var(--orange);color:#fff;}
+.badge.on b{color:var(--orange);}
+.badge.off{background:rgba(255,255,255,.03);color:var(--muted);}
+.legend{display:flex;gap:16px;flex-wrap:wrap;color:var(--muted);font-size:13px;margin-bottom:14px;}
+.legend span{display:inline-flex;align-items:center;gap:6px;}
+.sq{display:inline-block;width:11px;height:11px;margin:1.5px;border-radius:2px;vertical-align:middle;}
+.sq.g{background:var(--green);}.sq.r{background:var(--red);}.sq.d{background:var(--gray);}
+.trow{display:flex;gap:14px;align-items:flex-start;padding:10px 0;border-bottom:1px solid rgba(42,42,68,.5);}
+.tlabel{width:170px;flex:none;}
+.tseason{display:block;font-weight:700;font-size:14px;}
+.tteam{display:block;color:var(--muted);font-size:12.5px;}
+.tsquares{flex:1;min-width:0;line-height:1;}
+.absbtn{background:var(--card);color:#fff;border:1px solid var(--border);border-radius:10px;
+padding:10px 16px;font-family:inherit;font-size:15px;font-weight:600;cursor:pointer;}
+.absbtn:hover{border-color:var(--orange);}
+.abstable{width:100%;border-collapse:collapse;font-size:14px;margin-top:12px;}
+.abstable th{text-align:left;color:var(--muted);font-size:12px;text-transform:uppercase;
+letter-spacing:.04em;padding:9px 12px;border-bottom:1px solid var(--border);}
+.abstable td{padding:9px 12px;border-bottom:1px solid rgba(42,42,68,.5);}
+.abstable .num{font-variant-numeric:tabular-nums;}
+.backlink{margin-top:30px;}
+.backlink a{color:var(--orange);text-decoration:none;font-weight:600;}
+@media(max-width:560px){.wrap{padding:20px 12px 48px;}.trow{flex-direction:column;gap:4px;}
+.tlabel{width:auto;}thead th{top:0;position:static;}}
+</style>
+</head>
+<body>
+<nav class="nav"><a href="../index.html">Playoffs</a><a href="../regular.html">Regular Season</a><a href="../combined.html">Combined</a></nav>
+<div class="wrap">
+<header><h1>Cory Higgins</h1><div class="badges"><span class="badge off">Playoffs: <b>0</b> games</span><span class="badge on">Regular: <b>19</b> games</span><span class="badge on">Combined: <b>19</b> games</span></div></header>
+<section><h2>Season Timeline</h2><div class="legend"><span><i class="sq g"></i> Appeared</span><span><i class="sq r"></i> Missed</span><span><i class="sq d"></i> DNP (coach/inactive)</span></div><div class="trow"><div class="tlabel"><span class="tseason">2011-12</span><span class="tteam">Charlotte Bobcats</span></div><div class="tsquares"><i class="sq d" title="2011-12-26 · vs Milwaukee Bucks · DNP: DNP - Coach&#x27;s Decision"></i><i class="sq d" title="2011-12-28 · vs Miami Heat · DNP: DNP - Coach&#x27;s Decision"></i><i class="sq d" title="2011-12-30 · vs Orlando Magic · DNP: DNP - Coach&#x27;s Decision"></i><i class="sq g" title="2012-01-01 · @ Miami Heat · 9 min · 5 pts · 2 reb · 0 ast"></i><i class="sq g" title="2012-01-03 · @ Cleveland Cavaliers · 2 min · 2 pts · 0 reb · 0 ast"></i><i class="sq d" title="2012-01-04 · @ New York Knicks · DNP: DNP - Coach&#x27;s Decision"></i><i class="sq d" title="2012-01-06 · vs Atlanta Hawks · DNP: DNP - Coach&#x27;s Decision"></i><i class="sq g" title="2012-01-07 · @ Indiana Pacers · 3 min · 0 pts · 0 reb · 1 ast"></i><i class="sq d" title="2012-01-09 · @ New York Knicks · DNP: DNP - Coach&#x27;s Decision"></i><i class="sq d" title="2012-01-10 · vs Houston Rockets · DNP: DNP - Coach&#x27;s Decision"></i><i class="sq g" title="2012-01-12 · @ Atlanta Hawks · 12 min · 6 pts · 2 reb · 1 ast"></i><i class="sq g" title="2012-01-13 · vs Detroit Pistons · 9 min · 7 pts · 0 reb · 0 ast"></i><i class="sq g" title="2012-01-14 · vs Golden State Warriors · 15 min · 2 pts · 4 reb · 0 ast"></i><i class="sq g" title="2012-01-16 · vs Cleveland Cavaliers · 11 min · 2 pts · 0 reb · 0 ast"></i><i class="sq g" title="2012-01-17 · @ Orlando Magic · 10 min · 0 pts · 0 reb · 1 ast"></i><i class="sq g" title="2012-01-21 · @ Chicago Bulls · 15 min · 10 pts · 4 reb · 3 ast"></i><i class="sq g" title="2012-01-22 · @ New Jersey Nets · 19 min · 10 pts · 0 reb · 1 ast"></i><i class="sq g" title="2012-01-24 · vs New York Knicks · 14 min · 6 pts · 1 reb · 2 ast"></i><i class="sq g" title="2012-01-25 · @ Washington Wizards · 20 min · 13 pts · 0 reb · 3 ast"></i><i class="sq g" title="2012-01-27 · @ Philadelphia 76ers · 15 min · 0 pts · 1 reb · 1 ast"></i><i class="sq g" title="2012-01-28 · vs Washington Wizards · 9 min · 2 pts · 2 reb · 0 ast"></i><i class="sq g" title="2012-01-31 · @ Los Angeles Lakers · 13 min · 0 pts · 0 reb · 2 ast"></i><i class="sq g" title="2012-02-01 · @ Portland Trail Blazers · 18 min · 3 pts · 1 reb · 3 ast"></i><i class="sq g" title="2012-02-04 · @ Phoenix Suns · 6 min · 2 pts · 3 reb · 0 ast"></i><i class="sq g" title="2012-02-07 · @ Boston Celtics · 9 min · 0 pts · 0 reb · 1 ast"></i><i class="sq g" title="2012-02-10 · vs Chicago Bulls · 16 min · 8 pts · 0 reb · 0 ast"></i><i class="sq g" title="2012-02-11 · vs Los Angeles Clippers · 19 min · 8 pts · 2 reb · 2 ast"></i><i class="sq g" title="2012-02-13 · vs Philadelphia 76ers · 5 min · 0 pts · 0 reb · 0 ast"></i><i class="sq g" title="2012-02-15 · @ Minnesota Timberwolves · 4 min · 2 pts · 0 reb · 0 ast"></i><i class="sq d" title="2012-02-17 · @ Toronto Raptors · DNP: DNP - Coach&#x27;s Decision"></i><i class="sq g" title="2012-02-19 · @ Indiana Pacers · 5 min · 3 pts · 1 reb · 1 ast"></i><i class="sq g" title="2012-02-22 · vs Indiana Pacers · 3 min · 4 pts · 0 reb · 0 ast"></i><i class="sq r" title="2012-02-29 · @ Detroit Pistons · Missed (no record)"></i><i class="sq r" title="2012-03-02 · @ San Antonio Spurs · Missed (no record)"></i><i class="sq d" title="2012-03-04 · vs New Jersey Nets · DNP: DNP - Coach&#x27;s Decision"></i><i class="sq r" title="2012-03-06 · vs Orlando Magic · Missed (no record)"></i><i class="sq r" title="2012-03-07 · vs Utah Jazz · Missed (no record)"></i><i class="sq d" title="2012-03-09 · vs New Jersey Nets · DNP: DNP - Coach&#x27;s Decision"></i><i class="sq d" title="2012-03-10 · @ Oklahoma City Thunder · DNP: DNP - Coach&#x27;s Decision"></i><i class="sq d" title="2012-03-12 · @ New Orleans Hornets · DNP: DNP - Coach&#x27;s Decision"></i><i class="sq r" title="2012-03-14 · @ Houston Rockets · Missed (no record)"></i><i class="sq r" title="2012-03-15 · @ Dallas Mavericks · Missed (no record)"></i><i class="sq d" title="2012-03-17 · vs Toronto Raptors · DNP: DNP - Coach&#x27;s Decision"></i><i class="sq g" title="2012-03-19 · vs Philadelphia 76ers · 4 min · 4 pts · 1 reb · 0 ast"></i><i class="sq g" title="2012-03-23 · vs Milwaukee Bucks · 3 min · 3 pts · 0 reb · 0 ast"></i><i class="sq g" title="2012-03-24 · @ New Jersey Nets · 1 min · 0 pts · 0 reb · 0 ast"></i><i class="sq d" title="2012-03-26 · vs Boston Celtics · DNP: DNP - Coach&#x27;s Decision"></i><i class="sq r" title="2012-03-28 · vs Minnesota Timberwolves · Missed (no record)"></i><i class="sq d" title="2012-03-30 · vs Denver Nuggets · DNP: DNP - Coach&#x27;s Decision"></i><i class="sq d" title="2012-03-31 · @ Detroit Pistons · DNP: DNP - Coach&#x27;s Decision"></i><i class="sq d" title="2012-04-03 · @ Toronto Raptors · DNP: DNP - Coach&#x27;s Decision"></i><i class="sq r" title="2012-04-04 · @ Atlanta Hawks · Missed (no record)"></i><i class="sq g" title="2012-04-06 · @ Milwaukee Bucks · 6 min · 0 pts · 0 reb · 1 ast"></i><i class="sq g" title="2012-04-07 · vs Atlanta Hawks · 24 min · 22 pts · 3 reb · 3 ast"></i><i class="sq g" title="2012-04-09 · vs Washington Wizards · 25 min · 6 pts · 3 reb · 2 ast"></i><i class="sq d" title="2012-04-10 · @ Cleveland Cavaliers · DNP: DNP - Coach&#x27;s Decision"></i><i class="sq g" title="2012-04-12 · vs Detroit Pistons · 6 min · 5 pts · 0 reb · 2 ast"></i><i class="sq g" title="2012-04-13 · @ Miami Heat · 12 min · 5 pts · 0 reb · 0 ast"></i><i class="sq d" title="2012-04-15 · vs Boston Celtics · DNP: DNP - Coach&#x27;s Decision"></i><i class="sq g" title="2012-04-16 · vs New Orleans Hornets · 6 min · 3 pts · 0 reb · 1 ast"></i><i class="sq g" title="2012-04-18 · vs Chicago Bulls · 19 min · 2 pts · 1 reb · 3 ast"></i><i class="sq g" title="2012-04-20 · vs Memphis Grizzlies · 11 min · 2 pts · 3 reb · 1 ast"></i><i class="sq g" title="2012-04-22 · vs Sacramento Kings · 15 min · 2 pts · 1 reb · 1 ast"></i><i class="sq g" title="2012-04-23 · @ Washington Wizards · 4 min · 0 pts · 0 reb · 0 ast"></i><i class="sq d" title="2012-04-25 · @ Orlando Magic · DNP: DNP - Coach&#x27;s Decision"></i><i class="sq g" title="2012-04-26 · vs New York Knicks · 5 min · 1 pts · 0 reb · 0 ast"></i></div></div><div class="trow"><div class="tlabel"><span class="tseason">2012-13</span><span class="tteam">Charlotte Bobcats</span></div><div class="tsquares"><i class="sq d" title="2012-11-02 · vs Indiana Pacers · DNP: DNP - Coach&#x27;s Decision"></i><i class="sq g" title="2012-11-03 · @ Dallas Mavericks · 4 min · 0 pts · 0 reb · 1 ast"></i><i class="sq d" title="2012-11-07 · vs Phoenix Suns · DNP: DNP - Coach&#x27;s Decision"></i><i class="sq d" title="2012-11-09 · @ New Orleans Hornets · DNP: DNP - Coach&#x27;s Decision"></i><i class="sq r" title="2012-11-10 · vs Dallas Mavericks · Did not play (0 min)"></i><i class="sq g" title="2012-11-13 · vs Washington Wizards · 5 min · 0 pts · 0 reb · 0 ast"></i><i class="sq g" title="2012-11-14 · @ Minnesota Timberwolves · 2 min · 0 pts · 0 reb · 0 ast"></i><i class="sq d" title="2012-11-17 · vs Memphis Grizzlies · DNP: DNP - Coach&#x27;s Decision"></i><i class="sq d" title="2012-11-19 · vs Milwaukee Bucks · DNP: DNP - Coach&#x27;s Decision"></i><i class="sq d" title="2012-11-21 · vs Toronto Raptors · DNP: DNP - Coach&#x27;s Decision"></i><i class="sq d" title="2012-11-23 · vs Atlanta Hawks · DNP: DNP - Coach&#x27;s Decision"></i><i class="sq d" title="2012-11-24 · @ Washington Wizards · DNP: DNP - Coach&#x27;s Decision"></i><i class="sq g" title="2012-11-26 · @ Oklahoma City Thunder · 13 min · 7 pts · 2 reb · 3 ast"></i><i class="sq d" title="2012-11-28 · @ Atlanta Hawks · DNP: DNP - Coach&#x27;s Decision"></i><i class="sq d" title="2012-11-30 · vs Philadelphia 76ers · DNP: DNP - Coach&#x27;s Decision"></i><i class="sq d" title="2012-12-03 · vs Portland Trail Blazers · DNP: DNP - Coach&#x27;s Decision"></i><i class="sq d" title="2012-12-05 · vs New York Knicks · DNP: DNP - Coach&#x27;s Decision"></i><i class="sq d" title="2012-12-07 · @ Milwaukee Bucks · DNP: DNP - Coach&#x27;s Decision"></i><i class="sq g" title="2012-12-08 · vs San Antonio Spurs · 5 min · 7 pts · 1 reb · 1 ast"></i></div></div></section>
+<section><h2>Absences</h2><button id="abstoggle" class="absbtn" onclick="toggleAbs()">▸ Absences (26)</button><div id="absbody" style="display:none;margin-top:12px;"><table class="abstable"><thead><tr><th>Type</th><th>Games Missed</th><th>Days</th><th>From</th><th>To</th><th>Reason</th></tr></thead><tbody><tr><td>Regular Season</td><td class="num">11</td><td class="num">17</td><td class="num">2012-02-29</td><td class="num">2012-03-17</td><td>DNP - Coach&#x27;s Decision</td></tr><tr><td>Combined</td><td class="num">11</td><td class="num">17</td><td class="num">2012-02-29</td><td class="num">2012-03-17</td><td>DNP - Coach&#x27;s Decision</td></tr><tr><td>Regular Season</td><td class="num">6</td><td class="num">9</td><td class="num">2012-03-26</td><td class="num">2012-04-04</td><td>DNP - Coach&#x27;s Decision</td></tr><tr><td>Combined</td><td class="num">6</td><td class="num">9</td><td class="num">2012-03-26</td><td class="num">2012-04-04</td><td>DNP - Coach&#x27;s Decision</td></tr><tr><td>Regular Season</td><td class="num">5</td><td class="num">9</td><td class="num">2012-11-28</td><td class="num">2012-12-07</td><td>DNP - Coach&#x27;s Decision</td></tr><tr><td>Combined</td><td class="num">5</td><td class="num">9</td><td class="num">2012-11-28</td><td class="num">2012-12-07</td><td>DNP - Coach&#x27;s Decision</td></tr><tr><td>Regular Season</td><td class="num">5</td><td class="num">7</td><td class="num">2012-11-17</td><td class="num">2012-11-24</td><td>DNP - Coach&#x27;s Decision</td></tr><tr><td>Combined</td><td class="num">5</td><td class="num">7</td><td class="num">2012-11-17</td><td class="num">2012-11-24</td><td>DNP - Coach&#x27;s Decision</td></tr><tr><td>Regular Season</td><td class="num">3</td><td class="num">4</td><td class="num">2011-12-26</td><td class="num">2011-12-30</td><td>DNP - Coach&#x27;s Decision</td></tr><tr><td>Combined</td><td class="num">3</td><td class="num">4</td><td class="num">2011-12-26</td><td class="num">2011-12-30</td><td>DNP - Coach&#x27;s Decision</td></tr><tr><td>Regular Season</td><td class="num">3</td><td class="num">3</td><td class="num">2012-11-07</td><td class="num">2012-11-10</td><td>DNP - Coach&#x27;s Decision</td></tr><tr><td>Combined</td><td class="num">3</td><td class="num">3</td><td class="num">2012-11-07</td><td class="num">2012-11-10</td><td>DNP - Coach&#x27;s Decision</td></tr><tr><td>Regular Season</td><td class="num">2</td><td class="num">2</td><td class="num">2012-01-04</td><td class="num">2012-01-06</td><td>DNP - Coach&#x27;s Decision</td></tr><tr><td>Combined</td><td class="num">2</td><td class="num">2</td><td class="num">2012-01-04</td><td class="num">2012-01-06</td><td>DNP - Coach&#x27;s Decision</td></tr><tr><td>Regular Season</td><td class="num">2</td><td class="num">1</td><td class="num">2012-01-09</td><td class="num">2012-01-10</td><td>DNP - Coach&#x27;s Decision</td></tr><tr><td>Combined</td><td class="num">2</td><td class="num">1</td><td class="num">2012-01-09</td><td class="num">2012-01-10</td><td>DNP - Coach&#x27;s Decision</td></tr><tr><td>Regular Season</td><td class="num">1</td><td class="num">0</td><td class="num">2012-02-17</td><td class="num">2012-02-17</td><td>DNP - Coach&#x27;s Decision</td></tr><tr><td>Regular Season</td><td class="num">1</td><td class="num">0</td><td class="num">2012-04-10</td><td class="num">2012-04-10</td><td>DNP - Coach&#x27;s Decision</td></tr><tr><td>Regular Season</td><td class="num">1</td><td class="num">0</td><td class="num">2012-04-15</td><td class="num">2012-04-15</td><td>DNP - Coach&#x27;s Decision</td></tr><tr><td>Regular Season</td><td class="num">1</td><td class="num">0</td><td class="num">2012-04-25</td><td class="num">2012-04-25</td><td>DNP - Coach&#x27;s Decision</td></tr><tr><td>Regular Season</td><td class="num">1</td><td class="num">0</td><td class="num">2012-11-02</td><td class="num">2012-11-02</td><td>DNP - Coach&#x27;s Decision</td></tr><tr><td>Combined</td><td class="num">1</td><td class="num">0</td><td class="num">2012-02-17</td><td class="num">2012-02-17</td><td>DNP - Coach&#x27;s Decision</td></tr><tr><td>Combined</td><td class="num">1</td><td class="num">0</td><td class="num">2012-04-10</td><td class="num">2012-04-10</td><td>DNP - Coach&#x27;s Decision</td></tr><tr><td>Combined</td><td class="num">1</td><td class="num">0</td><td class="num">2012-04-15</td><td class="num">2012-04-15</td><td>DNP - Coach&#x27;s Decision</td></tr><tr><td>Combined</td><td class="num">1</td><td class="num">0</td><td class="num">2012-04-25</td><td class="num">2012-04-25</td><td>DNP - Coach&#x27;s Decision</td></tr><tr><td>Combined</td><td class="num">1</td><td class="num">0</td><td class="num">2012-11-02</td><td class="num">2012-11-02</td><td>DNP - Coach&#x27;s Decision</td></tr></tbody></table></div></section>
+<div class="backlink"><a href="../combined.html">← Back to Combined</a></div>
+<footer>Data: Kaggle / eoinamoore · Updated through 2025–26 season</footer>
+</div>
+<script>function toggleAbs(){var b=document.getElementById('absbody'),t=document.getElementById('abstoggle');var open=b.style.display!=='none';b.style.display=open?'none':'block';t.textContent=(open?'\u25b8':'\u25be')+' Absences (26)';}</script>
+</body>
+</html>

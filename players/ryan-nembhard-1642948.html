@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ryan Nembhard: 33 Consecutive Combined Games | NBA Iron Man Streaks</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0f0f1a;--card:#1a1a2e;--orange:#e8612a;--text:#ffffff;--muted:#8892a4;
+--green:#22c55e;--red:#ef4444;--gray:#374151;--border:#2a2a44;--soft:rgba(232,97,42,.14);}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);line-height:1.45;
+font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+-webkit-font-smoothing:antialiased;}
+a{color:inherit;}
+.nav{display:flex;gap:6px;flex-wrap:wrap;padding:14px 20px;background:var(--card);
+border-bottom:1px solid var(--border);position:sticky;top:0;z-index:5;}
+.nav a{color:var(--muted);text-decoration:none;font-weight:600;font-size:14px;
+padding:8px 14px;border-radius:8px;}
+.nav a:hover{color:var(--text);background:rgba(255,255,255,.05);}
+.nav a.active{color:#fff;background:var(--orange);}
+.wrap{max-width:1000px;margin:0 auto;padding:28px 20px 64px;}
+h1{font-size:clamp(24px,5vw,38px);font-weight:800;letter-spacing:-.02em;margin:0 0 6px;}
+h1 .accent{color:var(--orange);}
+h2{font-size:18px;font-weight:700;margin:30px 0 12px;}
+.subtitle{color:var(--muted);font-size:15px;font-weight:500;margin:0;}
+.controls{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:24px 0 12px;}
+#search{flex:1 1 260px;background:var(--card);border:1px solid var(--border);border-radius:10px;
+color:var(--text);font-size:15px;font-family:inherit;padding:12px 14px;outline:none;}
+#search::placeholder{color:var(--muted);}
+#search:focus{border-color:var(--orange);box-shadow:0 0 0 3px var(--soft);}
+.count{color:var(--muted);font-size:14px;font-weight:500;white-space:nowrap;}
+.count b{color:var(--orange);font-weight:700;}
+.table-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+.table-scroll{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:14.5px;}
+thead th{position:sticky;top:53px;background:#22223e;color:var(--muted);text-align:left;
+font-weight:600;font-size:12.5px;letter-spacing:.04em;text-transform:uppercase;padding:13px 16px;
+cursor:pointer;user-select:none;white-space:nowrap;border-bottom:1px solid var(--border);}
+thead th:hover{color:var(--text);}
+thead th.active{color:var(--text);}
+thead th .arrow{color:var(--orange);font-size:11px;margin-left:5px;}
+th.col-streak,td.col-streak{text-align:right;}
+tbody td{padding:11px 16px;border-bottom:1px solid rgba(42,42,68,.6);white-space:nowrap;}
+tbody tr:nth-child(even){background:rgba(255,255,255,.02);}
+tbody tr:hover{background:var(--soft);}
+.col-rank{color:var(--muted);font-variant-numeric:tabular-nums;width:60px;}
+.col-streak{font-weight:700;color:var(--orange);font-variant-numeric:tabular-nums;}
+.col-date{color:var(--muted);font-variant-numeric:tabular-nums;}
+.plink{color:#fff;text-decoration:none;font-weight:600;border-bottom:1px dotted rgba(232,97,42,.5);}
+.plink:hover{color:var(--orange);}
+.empty{padding:40px 16px;text-align:center;color:var(--muted);}
+footer{margin-top:28px;color:var(--muted);font-size:13px;text-align:center;}
+/* player page */
+.badges{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 4px;}
+.badge{padding:8px 14px;border-radius:999px;font-weight:700;font-size:14px;border:1px solid var(--border);}
+.badge.on{background:var(--soft);border-color:var(--orange);color:#fff;}
+.badge.on b{color:var(--orange);}
+.badge.off{background:rgba(255,255,255,.03);color:var(--muted);}
+.legend{display:flex;gap:16px;flex-wrap:wrap;color:var(--muted);font-size:13px;margin-bottom:14px;}
+.legend span{display:inline-flex;align-items:center;gap:6px;}
+.sq{display:inline-block;width:11px;height:11px;margin:1.5px;border-radius:2px;vertical-align:middle;}
+.sq.g{background:var(--green);}.sq.r{background:var(--red);}.sq.d{background:var(--gray);}
+.trow{display:flex;gap:14px;align-items:flex-start;padding:10px 0;border-bottom:1px solid rgba(42,42,68,.5);}
+.tlabel{width:170px;flex:none;}
+.tseason{display:block;font-weight:700;font-size:14px;}
+.tteam{display:block;color:var(--muted);font-size:12.5px;}
+.tsquares{flex:1;min-width:0;line-height:1;}
+.absbtn{background:var(--card);color:#fff;border:1px solid var(--border);border-radius:10px;
+padding:10px 16px;font-family:inherit;font-size:15px;font-weight:600;cursor:pointer;}
+.absbtn:hover{border-color:var(--orange);}
+.abstable{width:100%;border-collapse:collapse;font-size:14px;margin-top:12px;}
+.abstable th{text-align:left;color:var(--muted);font-size:12px;text-transform:uppercase;
+letter-spacing:.04em;padding:9px 12px;border-bottom:1px solid var(--border);}
+.abstable td{padding:9px 12px;border-bottom:1px solid rgba(42,42,68,.5);}
+.abstable .num{font-variant-numeric:tabular-nums;}
+.backlink{margin-top:30px;}
+.backlink a{color:var(--orange);text-decoration:none;font-weight:600;}
+@media(max-width:560px){.wrap{padding:20px 12px 48px;}.trow{flex-direction:column;gap:4px;}
+.tlabel{width:auto;}thead th{top:0;position:static;}}
+</style>
+</head>
+<body>
+<nav class="nav"><a href="../index.html">Playoffs</a><a href="../regular.html">Regular Season</a><a href="../combined.html">Combined</a></nav>
+<div class="wrap">
+<header><h1>Ryan Nembhard</h1><div class="badges"><span class="badge off">Playoffs: <b>0</b> games</span><span class="badge on">Regular: <b>33</b> games</span><span class="badge on">Combined: <b>33</b> games</span></div></header>
+<section><h2>Season Timeline</h2><div class="legend"><span><i class="sq g"></i> Appeared</span><span><i class="sq r"></i> Missed</span><span><i class="sq d"></i> DNP (coach/inactive)</span></div><div class="trow"><div class="tlabel"><span class="tseason">2025-26</span><span class="tteam">Dallas Mavericks</span></div><div class="tsquares"><i class="sq g" title="2025-10-22 · vs San Antonio Spurs · 15 min · 8 pts · 0 reb · 5 ast"></i><i class="sq g" title="2025-10-24 · vs Washington Wizards · 9 min · 2 pts · 1 reb · 0 ast"></i><i class="sq g" title="2025-10-26 · vs Toronto Raptors · 2 min · 0 pts · 0 reb · 0 ast"></i><i class="sq d" title="2025-10-27 · vs Oklahoma City Thunder · DNP: DNP - Coach&#x27;s Decision"></i><i class="sq d" title="2025-10-29 · vs Indiana Pacers · DNP: DNP - Coach&#x27;s Decision"></i><i class="sq d" title="2025-11-01 · @ Detroit Pistons · DNP: DNP - Coach&#x27;s Decision"></i><i class="sq d" title="2025-11-03 · @ Houston Rockets · DNP: DNP - Coach&#x27;s Decision"></i><i class="sq r" title="2025-11-05 · vs New Orleans Pelicans · Missed (no record)"></i><i class="sq g" title="2025-11-07 · @ Memphis Grizzlies · 9 min · 6 pts · 0 reb · 2 ast"></i><i class="sq g" title="2025-11-08 · @ Washington Wizards · 8 min · 0 pts · 0 reb · 2 ast"></i><i class="sq d" title="2025-11-10 · vs Milwaukee Bucks · DNP: DNP - Coach&#x27;s Decision"></i><i class="sq r" title="2025-11-12 · vs Phoenix Suns · Missed (no record)"></i><i class="sq d" title="2025-11-14 · vs LA Clippers · DNP: DNP - Coach&#x27;s Decision"></i><i class="sq r" title="2025-11-16 · vs Portland Trail Blazers · Missed (no record)"></i><i class="sq r" title="2025-11-17 · @ Minnesota Timberwolves · Missed (no record)"></i><i class="sq r" title="2025-11-19 · vs New York Knicks · Missed (no record)"></i><i class="sq r" title="2025-11-21 · vs New Orleans Pelicans · Missed (no record)"></i><i class="sq r" title="2025-11-22 · vs Memphis Grizzlies · Missed (no record)"></i><i class="sq g" title="2025-11-24 · @ Miami Heat · 16 min · 2 pts · 3 reb · 7 ast"></i><i class="sq g" title="2025-11-28 · @ Los Angeles Lakers · 23 min · 17 pts · 2 reb · 4 ast"></i><i class="sq g" title="2025-11-29 · @ LA Clippers · 21 min · 8 pts · 1 reb · 3 ast"></i><i class="sq g" title="2025-12-01 · @ Denver Nuggets · 35 min · 28 pts · 3 reb · 10 ast"></i><i class="sq g" title="2025-12-03 · vs Miami Heat · 34 min · 15 pts · 5 reb · 13 ast"></i><i class="sq g" title="2025-12-05 · @ Oklahoma City Thunder · 24 min · 10 pts · 3 reb · 4 ast"></i><i class="sq g" title="2025-12-06 · vs Houston Rockets · 23 min · 11 pts · 1 reb · 7 ast"></i><i class="sq g" title="2025-12-12 · vs Brooklyn Nets · 20 min · 0 pts · 2 reb · 5 ast"></i><i class="sq g" title="2025-12-15 · @ Utah Jazz · 38 min · 14 pts · 3 reb · 11 ast"></i><i class="sq g" title="2025-12-18 · vs Detroit Pistons · 21 min · 6 pts · 2 reb · 7 ast"></i><i class="sq g" title="2025-12-20 · @ Philadelphia 76ers · 26 min · 7 pts · 0 reb · 5 ast"></i><i class="sq g" title="2025-12-22 · @ New Orleans Pelicans · 24 min · 4 pts · 4 reb · 8 ast"></i><i class="sq g" title="2025-12-23 · vs Denver Nuggets · 32 min · 11 pts · 3 reb · 7 ast"></i><i class="sq g" title="2025-12-25 · @ Golden State Warriors · 16 min · 4 pts · 1 reb · 2 ast"></i><i class="sq g" title="2025-12-27 · @ Sacramento Kings · 16 min · 9 pts · 2 reb · 3 ast"></i><i class="sq g" title="2025-12-29 · @ Portland Trail Blazers · 17 min · 0 pts · 2 reb · 6 ast"></i><i class="sq g" title="2026-01-01 · vs Philadelphia 76ers · 21 min · 9 pts · 2 reb · 3 ast"></i><i class="sq g" title="2026-01-03 · vs Houston Rockets · 13 min · 5 pts · 0 reb · 3 ast"></i><i class="sq g" title="2026-01-06 · @ Sacramento Kings · 11 min · 0 pts · 3 reb · 4 ast"></i><i class="sq g" title="2026-01-08 · @ Utah Jazz · 22 min · 7 pts · 2 reb · 4 ast"></i><i class="sq g" title="2026-01-10 · @ Chicago Bulls · 29 min · 16 pts · 3 reb · 6 ast"></i><i class="sq g" title="2026-01-12 · vs Brooklyn Nets · 22 min · 9 pts · 1 reb · 8 ast"></i><i class="sq g" title="2026-01-14 · vs Denver Nuggets · 15 min · 5 pts · 3 reb · 4 ast"></i><i class="sq g" title="2026-01-15 · vs Utah Jazz · 23 min · 8 pts · 4 reb · 10 ast"></i><i class="sq g" title="2026-01-17 · vs Utah Jazz · 20 min · 7 pts · 1 reb · 4 ast"></i><i class="sq g" title="2026-01-19 · @ New York Knicks · 21 min · 4 pts · 3 reb · 5 ast"></i><i class="sq g" title="2026-01-22 · vs Golden State Warriors · 11 min · 5 pts · 2 reb · 3 ast"></i><i class="sq g" title="2026-01-24 · vs Los Angeles Lakers · 4 min · 2 pts · 0 reb · 2 ast"></i><i class="sq g" title="2026-01-28 · vs Minnesota Timberwolves · 10 min · 6 pts · 1 reb · 2 ast"></i><i class="sq g" title="2026-01-29 · vs Charlotte Hornets · 9 min · 0 pts · 1 reb · 4 ast"></i><i class="sq g" title="2026-01-31 · @ Houston Rockets · 11 min · 0 pts · 1 reb · 3 ast"></i><i class="sq g" title="2026-02-03 · vs Boston Celtics · 11 min · 3 pts · 0 reb · 3 ast"></i><i class="sq g" title="2026-02-05 · vs San Antonio Spurs · 17 min · 5 pts · 3 reb · 7 ast"></i><i class="sq r" title="2026-02-07 · @ San Antonio Spurs · Missed (no record)"></i><i class="sq r" title="2026-02-10 · @ Phoenix Suns · Missed (no record)"></i><i class="sq r" title="2026-02-12 · @ Los Angeles Lakers · Missed (no record)"></i><i class="sq r" title="2026-02-20 · @ Minnesota Timberwolves · Missed (no record)"></i><i class="sq r" title="2026-02-22 · @ Indiana Pacers · Missed (no record)"></i><i class="sq r" title="2026-02-24 · @ Brooklyn Nets · Missed (no record)"></i><i class="sq r" title="2026-02-26 · vs Sacramento Kings · Missed (no record)"></i><i class="sq r" title="2026-02-27 · vs Memphis Grizzlies · Missed (no record)"></i><i class="sq g" title="2026-03-01 · vs Oklahoma City Thunder · 24 min · 7 pts · 2 reb · 5 ast"></i><i class="sq g" title="2026-03-03 · @ Charlotte Hornets · 21 min · 6 pts · 5 reb · 4 ast"></i><i class="sq g" title="2026-03-05 · @ Orlando Magic · 13 min · 6 pts · 2 reb · 4 ast"></i><i class="sq g" title="2026-03-06 · @ Boston Celtics · 4 min · 5 pts · 0 reb · 0 ast"></i><i class="sq g" title="2026-03-08 · @ Toronto Raptors · 5 min · 2 pts · 1 reb · 2 ast"></i><i class="sq g" title="2026-03-10 · @ Atlanta Hawks · 9 min · 0 pts · 0 reb · 3 ast"></i><i class="sq g" title="2026-03-12 · @ Memphis Grizzlies · 13 min · 0 pts · 2 reb · 5 ast"></i><i class="sq g" title="2026-03-13 · vs Cleveland Cavaliers · 26 min · 8 pts · 4 reb · 9 ast"></i><i class="sq g" title="2026-03-15 · @ Cleveland Cavaliers · 24 min · 11 pts · 3 reb · 3 ast"></i><i class="sq g" title="2026-03-16 · @ New Orleans Pelicans · 25 min · 2 pts · 4 reb · 5 ast"></i><i class="sq g" title="2026-03-18 · vs Atlanta Hawks · 26 min · 8 pts · 2 reb · 12 ast"></i><i class="sq g" title="2026-03-21 · vs LA Clippers · 31 min · 13 pts · 5 reb · 9 ast"></i><i class="sq g" title="2026-03-23 · vs Golden State Warriors · 16 min · 4 pts · 1 reb · 5 ast"></i><i class="sq g" title="2026-03-25 · @ Denver Nuggets · 13 min · 4 pts · 0 reb · 4 ast"></i><i class="sq g" title="2026-03-27 · @ Portland Trail Blazers · 12 min · 0 pts · 3 reb · 2 ast"></i><i class="sq g" title="2026-03-30 · vs Minnesota Timberwolves · 20 min · 8 pts · 3 reb · 5 ast"></i><i class="sq g" title="2026-03-31 · @ Milwaukee Bucks · 22 min · 9 pts · 0 reb · 4 ast"></i><i class="sq g" title="2026-04-03 · vs Orlando Magic · 22 min · 2 pts · 7 reb · 5 ast"></i><i class="sq d" title="2026-04-05 · vs Los Angeles Lakers · DNP: DNP - Coach&#x27;s Decision"></i><i class="sq g" title="2026-04-07 · @ LA Clippers · 24 min · 12 pts · 6 reb · 7 ast"></i><i class="sq g" title="2026-04-08 · @ Phoenix Suns · 31 min · 9 pts · 5 reb · 7 ast"></i><i class="sq g" title="2026-04-10 · @ San Antonio Spurs · 30 min · 13 pts · 1 reb · 7 ast"></i><i class="sq g" title="2026-04-12 · vs Chicago Bulls · 38 min · 15 pts · 9 reb · 23 ast"></i></div></div></section>
+<section><h2>Absences</h2><button id="abstoggle" class="absbtn" onclick="toggleAbs()">▸ Absences (8)</button><div id="absbody" style="display:none;margin-top:12px;"><table class="abstable"><thead><tr><th>Type</th><th>Games Missed</th><th>Days</th><th>From</th><th>To</th><th>Reason</th></tr></thead><tbody><tr><td>Regular Season</td><td class="num">8</td><td class="num">20</td><td class="num">2026-02-07</td><td class="num">2026-02-27</td><td>—</td></tr><tr><td>Combined</td><td class="num">8</td><td class="num">20</td><td class="num">2026-02-07</td><td class="num">2026-02-27</td><td>—</td></tr><tr><td>Regular Season</td><td class="num">8</td><td class="num">12</td><td class="num">2025-11-10</td><td class="num">2025-11-22</td><td>DNP - Coach&#x27;s Decision</td></tr><tr><td>Combined</td><td class="num">8</td><td class="num">12</td><td class="num">2025-11-10</td><td class="num">2025-11-22</td><td>DNP - Coach&#x27;s Decision</td></tr><tr><td>Regular Season</td><td class="num">5</td><td class="num">9</td><td class="num">2025-10-27</td><td class="num">2025-11-05</td><td>DNP - Coach&#x27;s Decision</td></tr><tr><td>Combined</td><td class="num">5</td><td class="num">9</td><td class="num">2025-10-27</td><td class="num">2025-11-05</td><td>DNP - Coach&#x27;s Decision</td></tr><tr><td>Regular Season</td><td class="num">1</td><td class="num">0</td><td class="num">2026-04-05</td><td class="num">2026-04-05</td><td>DNP - Coach&#x27;s Decision</td></tr><tr><td>Combined</td><td class="num">1</td><td class="num">0</td><td class="num">2026-04-05</td><td class="num">2026-04-05</td><td>DNP - Coach&#x27;s Decision</td></tr></tbody></table></div></section>
+<div class="backlink"><a href="../combined.html">← Back to Combined</a></div>
+<footer>Data: Kaggle / eoinamoore · Updated through 2025–26 season</footer>
+</div>
+<script>function toggleAbs(){var b=document.getElementById('absbody'),t=document.getElementById('abstoggle');var open=b.style.display!=='none';b.style.display=open?'none':'block';t.textContent=(open?'\u25b8':'\u25be')+' Absences (8)';}</script>
+</body>
+</html>

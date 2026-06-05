@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wayne Molis: 2 Consecutive Combined Games | NBA Iron Man Streaks</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0f0f1a;--card:#1a1a2e;--orange:#e8612a;--text:#ffffff;--muted:#8892a4;
+--green:#22c55e;--red:#ef4444;--gray:#374151;--border:#2a2a44;--soft:rgba(232,97,42,.14);}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);line-height:1.45;
+font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+-webkit-font-smoothing:antialiased;}
+a{color:inherit;}
+.nav{display:flex;gap:6px;flex-wrap:wrap;padding:14px 20px;background:var(--card);
+border-bottom:1px solid var(--border);position:sticky;top:0;z-index:5;}
+.nav a{color:var(--muted);text-decoration:none;font-weight:600;font-size:14px;
+padding:8px 14px;border-radius:8px;}
+.nav a:hover{color:var(--text);background:rgba(255,255,255,.05);}
+.nav a.active{color:#fff;background:var(--orange);}
+.wrap{max-width:1000px;margin:0 auto;padding:28px 20px 64px;}
+h1{font-size:clamp(24px,5vw,38px);font-weight:800;letter-spacing:-.02em;margin:0 0 6px;}
+h1 .accent{color:var(--orange);}
+h2{font-size:18px;font-weight:700;margin:30px 0 12px;}
+.subtitle{color:var(--muted);font-size:15px;font-weight:500;margin:0;}
+.controls{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:24px 0 12px;}
+#search{flex:1 1 260px;background:var(--card);border:1px solid var(--border);border-radius:10px;
+color:var(--text);font-size:15px;font-family:inherit;padding:12px 14px;outline:none;}
+#search::placeholder{color:var(--muted);}
+#search:focus{border-color:var(--orange);box-shadow:0 0 0 3px var(--soft);}
+.count{color:var(--muted);font-size:14px;font-weight:500;white-space:nowrap;}
+.count b{color:var(--orange);font-weight:700;}
+.table-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+.table-scroll{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:14.5px;}
+thead th{position:sticky;top:53px;background:#22223e;color:var(--muted);text-align:left;
+font-weight:600;font-size:12.5px;letter-spacing:.04em;text-transform:uppercase;padding:13px 16px;
+cursor:pointer;user-select:none;white-space:nowrap;border-bottom:1px solid var(--border);}
+thead th:hover{color:var(--text);}
+thead th.active{color:var(--text);}
+thead th .arrow{color:var(--orange);font-size:11px;margin-left:5px;}
+th.col-streak,td.col-streak{text-align:right;}
+tbody td{padding:11px 16px;border-bottom:1px solid rgba(42,42,68,.6);white-space:nowrap;}
+tbody tr:nth-child(even){background:rgba(255,255,255,.02);}
+tbody tr:hover{background:var(--soft);}
+.col-rank{color:var(--muted);font-variant-numeric:tabular-nums;width:60px;}
+.col-streak{font-weight:700;color:var(--orange);font-variant-numeric:tabular-nums;}
+.col-date{color:var(--muted);font-variant-numeric:tabular-nums;}
+.plink{color:#fff;text-decoration:none;font-weight:600;border-bottom:1px dotted rgba(232,97,42,.5);}
+.plink:hover{color:var(--orange);}
+.empty{padding:40px 16px;text-align:center;color:var(--muted);}
+footer{margin-top:28px;color:var(--muted);font-size:13px;text-align:center;}
+/* player page */
+.badges{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 4px;}
+.badge{padding:8px 14px;border-radius:999px;font-weight:700;font-size:14px;border:1px solid var(--border);}
+.badge.on{background:var(--soft);border-color:var(--orange);color:#fff;}
+.badge.on b{color:var(--orange);}
+.badge.off{background:rgba(255,255,255,.03);color:var(--muted);}
+.legend{display:flex;gap:16px;flex-wrap:wrap;color:var(--muted);font-size:13px;margin-bottom:14px;}
+.legend span{display:inline-flex;align-items:center;gap:6px;}
+.sq{display:inline-block;width:11px;height:11px;margin:1.5px;border-radius:2px;vertical-align:middle;}
+.sq.g{background:var(--green);}.sq.r{background:var(--red);}.sq.d{background:var(--gray);}
+.trow{display:flex;gap:14px;align-items:flex-start;padding:10px 0;border-bottom:1px solid rgba(42,42,68,.5);}
+.tlabel{width:170px;flex:none;}
+.tseason{display:block;font-weight:700;font-size:14px;}
+.tteam{display:block;color:var(--muted);font-size:12.5px;}
+.tsquares{flex:1;min-width:0;line-height:1;}
+.absbtn{background:var(--card);color:#fff;border:1px solid var(--border);border-radius:10px;
+padding:10px 16px;font-family:inherit;font-size:15px;font-weight:600;cursor:pointer;}
+.absbtn:hover{border-color:var(--orange);}
+.abstable{width:100%;border-collapse:collapse;font-size:14px;margin-top:12px;}
+.abstable th{text-align:left;color:var(--muted);font-size:12px;text-transform:uppercase;
+letter-spacing:.04em;padding:9px 12px;border-bottom:1px solid var(--border);}
+.abstable td{padding:9px 12px;border-bottom:1px solid rgba(42,42,68,.5);}
+.abstable .num{font-variant-numeric:tabular-nums;}
+.backlink{margin-top:30px;}
+.backlink a{color:var(--orange);text-decoration:none;font-weight:600;}
+@media(max-width:560px){.wrap{padding:20px 12px 48px;}.trow{flex-direction:column;gap:4px;}
+.tlabel{width:auto;}thead th{top:0;position:static;}}
+</style>
+</head>
+<body>
+<nav class="nav"><a href="../index.html">Playoffs</a><a href="../regular.html">Regular Season</a><a href="../combined.html">Combined</a></nav>
+<div class="wrap">
+<header><h1>Wayne Molis</h1><div class="badges"><span class="badge on">Playoffs: <b>1</b> games</span><span class="badge on">Regular: <b>1</b> games</span><span class="badge on">Combined: <b>2</b> games</span></div></header>
+<section><h2>Season Timeline</h2><div class="legend"><span><i class="sq g"></i> Appeared</span><span><i class="sq r"></i> Missed</span><span><i class="sq d"></i> DNP (coach/inactive)</span></div><div class="trow"><div class="tlabel"><span class="tseason">1966-67</span><span class="tteam">New York Knicks</span></div><div class="tsquares"><i class="sq r" title="1966-10-19 · @ Baltimore Bullets · Did not play (0 min)"></i><i class="sq r" title="1966-10-22 · vs Boston Celtics · Did not play (0 min)"></i><i class="sq r" title="1966-10-23 · @ Chicago Bulls · Did not play (0 min)"></i><i class="sq r" title="1966-10-26 · @ Los Angeles Lakers · Missed (no record)"></i><i class="sq r" title="1966-10-28 · @ Los Angeles Lakers · Missed (no record)"></i><i class="sq r" title="1966-11-02 · @ Cincinnati Royals · Missed (no record)"></i><i class="sq r" title="1966-11-03 · vs San Francisco Warriors · Missed (no record)"></i><i class="sq r" title="1966-11-05 · vs Detroit Pistons · Missed (no record)"></i><i class="sq r" title="1966-11-08 · vs St. Louis Hawks · Missed (no record)"></i><i class="sq r" title="1966-11-09 · @ Chicago Bulls · Missed (no record)"></i><i class="sq r" title="1966-11-11 · @ Boston Celtics · Missed (no record)"></i><i class="sq r" title="1966-11-12 · vs Baltimore Bullets · Missed (no record)"></i><i class="sq r" title="1966-11-15 · vs Philadelphia 76ers · Missed (no record)"></i><i class="sq r" title="1966-11-16 · @ Philadelphia 76ers · Missed (no record)"></i><i class="sq r" title="1966-11-17 · @ Detroit Pistons · Missed (no record)"></i><i class="sq r" title="1966-11-19 · vs Chicago Bulls · Missed (no record)"></i><i class="sq r" title="1966-11-22 · vs Cincinnati Royals · Missed (no record)"></i><i class="sq r" title="1966-11-23 · @ Detroit Pistons · Missed (no record)"></i><i class="sq r" title="1966-11-25 · @ Cincinnati Royals · Missed (no record)"></i><i class="sq r" title="1966-11-26 · vs Baltimore Bullets · Missed (no record)"></i><i class="sq r" title="1966-11-29 · vs Los Angeles Lakers · Missed (no record)"></i><i class="sq r" title="1966-11-30 · @ Cincinnati Royals · Missed (no record)"></i><i class="sq r" title="1966-12-02 · @ St. Louis Hawks · Missed (no record)"></i><i class="sq r" title="1966-12-03 · vs Boston Celtics · Missed (no record)"></i><i class="sq r" title="1966-12-06 · vs San Francisco Warriors · Missed (no record)"></i><i class="sq r" title="1966-12-07 · @ Detroit Pistons · Missed (no record)"></i><i class="sq r" title="1966-12-09 · @ Philadelphia 76ers · Missed (no record)"></i><i class="sq r" title="1966-12-10 · vs Baltimore Bullets · Did not play (0 min)"></i><i class="sq r" title="1966-12-13 · vs Philadelphia 76ers · Missed (no record)"></i><i class="sq r" title="1966-12-14 · @ Baltimore Bullets · Missed (no record)"></i><i class="sq r" title="1966-12-17 · vs St. Louis Hawks · Missed (no record)"></i><i class="sq r" title="1966-12-21 · @ Chicago Bulls · Missed (no record)"></i><i class="sq r" title="1966-12-25 · vs Chicago Bulls · Missed (no record)"></i><i class="sq r" title="1966-12-26 · @ Detroit Pistons · Missed (no record)"></i><i class="sq r" title="1966-12-28 · vs Los Angeles Lakers · Missed (no record)"></i><i class="sq r" title="1966-12-30 · @ Baltimore Bullets · Did not play (0 min)"></i><i class="sq r" title="1966-12-31 · vs Cincinnati Royals · Missed (no record)"></i><i class="sq g" title="1967-01-01 · @ St. Louis Hawks · 2 min · 0 pts · 0 reb · 0 ast"></i><i class="sq r" title="1967-01-03 · vs Philadelphia 76ers · Missed (no record)"></i><i class="sq r" title="1967-01-05 · @ Philadelphia 76ers · Missed (no record)"></i><i class="sq r" title="1967-01-07 · vs Baltimore Bullets · Missed (no record)"></i><i class="sq r" title="1967-01-08 · @ Los Angeles Lakers · Missed (no record)"></i><i class="sq r" title="1967-01-12 · @ San Francisco Warriors · Missed (no record)"></i><i class="sq r" title="1967-01-13 · @ San Francisco Warriors · Missed (no record)"></i><i class="sq r" title="1967-01-15 · @ Chicago Bulls · Missed (no record)"></i><i class="sq r" title="1967-01-17 · @ Philadelphia 76ers · Missed (no record)"></i><i class="sq g" title="1967-01-19 · @ San Francisco Warriors · 6 min · 5 pts · 0 reb · 0 ast"></i><i class="sq r" title="1967-01-21 · @ St. Louis Hawks · Missed (no record)"></i><i class="sq r" title="1967-01-22 · @ St. Louis Hawks · Missed (no record)"></i><i class="sq r" title="1967-01-24 · vs Cincinnati Royals · Missed (no record)"></i><i class="sq r" title="1967-01-25 · @ Cincinnati Royals · Missed (no record)"></i><i class="sq r" title="1967-01-28 · vs Boston Celtics · Missed (no record)"></i><i class="sq r" title="1967-01-29 · @ Boston Celtics · Missed (no record)"></i><i class="sq r" title="1967-01-31 · vs St. Louis Hawks · Missed (no record)"></i><i class="sq r" title="1967-02-01 · @ Detroit Pistons · Missed (no record)"></i><i class="sq r" title="1967-02-03 · vs Detroit Pistons · Missed (no record)"></i><i class="sq r" title="1967-02-04 · vs Detroit Pistons · Did not play (0 min)"></i><i class="sq r" title="1967-02-07 · vs Los Angeles Lakers · Missed (no record)"></i><i class="sq r" title="1967-02-08 · vs Chicago Bulls · Missed (no record)"></i><i class="sq r" title="1967-02-10 · vs Chicago Bulls · Missed (no record)"></i><i class="sq r" title="1967-02-11 · vs San Francisco Warriors · Missed (no record)"></i><i class="sq g" title="1967-02-13 · @ St. Louis Hawks · 10 min · 4 pts · 3 reb · 0 ast"></i><i class="sq r" title="1967-02-15 · @ Cincinnati Royals · Missed (no record)"></i><i class="sq r" title="1967-02-16 · vs St. Louis Hawks · Missed (no record)"></i><i class="sq r" title="1967-02-18 · vs Cincinnati Royals · Missed (no record)"></i><i class="sq r" title="1967-02-21 · vs Boston Celtics · Did not play (0 min)"></i><i class="sq r" title="1967-02-22 · @ Chicago Bulls · Missed (no record)"></i><i class="sq r" title="1967-02-23 · @ Boston Celtics · Missed (no record)"></i><i class="sq r" title="1967-02-25 · vs Baltimore Bullets · Missed (no record)"></i><i class="sq r" title="1967-02-28 · vs San Francisco Warriors · Missed (no record)"></i><i class="sq r" title="1967-03-01 · @ Detroit Pistons · Missed (no record)"></i><i class="sq r" title="1967-03-03 · @ Los Angeles Lakers · Missed (no record)"></i><i class="sq r" title="1967-03-04 · @ San Francisco Warriors · Missed (no record)"></i><i class="sq r" title="1967-03-05 · @ San Francisco Warriors · Missed (no record)"></i><i class="sq r" title="1967-03-07 · vs Los Angeles Lakers · Missed (no record)"></i><i class="sq r" title="1967-03-12 · vs Philadelphia 76ers · Did not play (0 min)"></i><i class="sq r" title="1967-03-15 · @ Baltimore Bullets · Missed (no record)"></i><i class="sq r" title="1967-03-18 · vs Boston Celtics · Did not play (0 min)"></i><i class="sq g" title="1967-03-19 · @ Boston Celtics · 16 min · 13 pts · 4 reb · 0 ast"></i></div></div><div class="trow"><div class="tlabel"><span class="tseason">1967 Playoffs</span><span class="tteam">New York Knicks</span></div><div class="tsquares"><i class="sq g" title="1967-03-21 · @ Boston Celtics · 10 min · 0 pts · 1 reb · 1 ast"></i></div></div></section>
+<section><h2>Absences</h2><button id="abstoggle" class="absbtn" onclick="toggleAbs()">▸ Absences (9)</button><div id="absbody" style="display:none;margin-top:12px;"><table class="abstable"><thead><tr><th>Type</th><th>Games Missed</th><th>Days</th><th>From</th><th>To</th><th>Reason</th></tr></thead><tbody><tr><td>Regular Season</td><td class="num">37</td><td class="num">73</td><td class="num">1966-10-19</td><td class="num">1966-12-31</td><td>—</td></tr><tr><td>Combined</td><td class="num">37</td><td class="num">73</td><td class="num">1966-10-19</td><td class="num">1966-12-31</td><td>—</td></tr><tr><td>Regular Season</td><td class="num">16</td><td class="num">31</td><td class="num">1967-02-15</td><td class="num">1967-03-18</td><td>—</td></tr><tr><td>Combined</td><td class="num">16</td><td class="num">31</td><td class="num">1967-02-15</td><td class="num">1967-03-18</td><td>—</td></tr><tr><td>Regular Season</td><td class="num">14</td><td class="num">21</td><td class="num">1967-01-21</td><td class="num">1967-02-11</td><td>—</td></tr><tr><td>Combined</td><td class="num">14</td><td class="num">21</td><td class="num">1967-01-21</td><td class="num">1967-02-11</td><td>—</td></tr><tr><td>Regular Season</td><td class="num">8</td><td class="num">14</td><td class="num">1967-01-03</td><td class="num">1967-01-17</td><td>—</td></tr><tr><td>Combined</td><td class="num">8</td><td class="num">14</td><td class="num">1967-01-03</td><td class="num">1967-01-17</td><td>—</td></tr><tr><td>Playoffs</td><td class="num">3</td><td class="num">3</td><td class="num">1967-03-25</td><td class="num">1967-03-28</td><td>—</td></tr></tbody></table></div></section>
+<div class="backlink"><a href="../combined.html">← Back to Combined</a></div>
+<footer>Data: Kaggle / eoinamoore · Updated through 2025–26 season</footer>
+</div>
+<script>function toggleAbs(){var b=document.getElementById('absbody'),t=document.getElementById('abstoggle');var open=b.style.display!=='none';b.style.display=open?'none':'block';t.textContent=(open?'\u25b8':'\u25be')+' Absences (9)';}</script>
+</body>
+</html>

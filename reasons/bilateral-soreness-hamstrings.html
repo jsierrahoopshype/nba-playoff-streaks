@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bilateral Soreness Hamstrings Absences | NBA Iron Man Streaks</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0f0f1a;--card:#1a1a2e;--orange:#e8612a;--text:#fff;--muted:#8892a4;
+--green:#22c55e;--red:#ef4444;--gray:#374151;--border:#2a2a44;--soft:rgba(232,97,42,.14);}
+*{box-sizing:border-box;}html,body{margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);line-height:1.45;
+font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;-webkit-font-smoothing:antialiased;}
+a{color:inherit;}
+.nav{display:flex;gap:6px;flex-wrap:wrap;padding:12px 20px;background:var(--card);border-bottom:1px solid var(--border);}
+.nav a{color:var(--muted);text-decoration:none;font-weight:600;font-size:14px;padding:8px 14px;border-radius:8px;}
+.nav a:hover{color:#fff;background:rgba(255,255,255,.05);}
+.nav a.active{color:#fff;background:var(--orange);}
+.wrap{max-width:1000px;margin:0 auto;padding:26px 20px 70px;}
+h1{font-size:clamp(24px,5vw,38px);font-weight:800;letter-spacing:-.02em;margin:0 0 6px;}
+h1 .accent{color:var(--orange);}
+h2{font-size:18px;font-weight:700;margin:30px 0 8px;display:flex;align-items:center;gap:8px;}
+h3{font-size:15px;font-weight:700;margin:18px 0 6px;}
+.subtitle{color:var(--muted);font-size:15px;font-weight:500;margin:0;}
+.backtop{display:inline-block;color:var(--orange);text-decoration:none;font-weight:600;margin:2px 0 14px;}
+.controls{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:18px 0 12px;}
+.search{flex:1 1 100%;background:var(--card);border:1px solid var(--border);border-radius:10px;color:#fff;
+font-size:15px;font-family:inherit;padding:12px 14px;outline:none;}
+.search::placeholder{color:var(--muted);}
+.search:focus{border-color:var(--orange);box-shadow:0 0 0 3px var(--soft);}
+.count{color:var(--muted);font-size:14px;font-weight:500;}
+.count b{color:var(--orange);font-weight:700;}
+.table-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:auto;}
+table.board{width:100%;border-collapse:collapse;font-size:14.5px;}
+table.board thead th{position:sticky;top:0;background:#22223e;color:var(--muted);text-align:left;
+font-weight:600;font-size:12.5px;letter-spacing:.04em;text-transform:uppercase;padding:13px 16px;
+cursor:pointer;user-select:none;white-space:nowrap;border-bottom:1px solid var(--border);z-index:2;}
+table.board thead th:hover,table.board thead th.active{color:#fff;}
+table.board thead th .arrow{color:var(--orange);font-size:11px;margin-left:5px;}
+th.col-streak,td.col-streak{text-align:right;}
+table.board tbody td{padding:11px 16px;border-bottom:1px solid rgba(42,42,68,.6);white-space:nowrap;}
+table.board tbody tr:nth-child(even){background:rgba(255,255,255,.02);}
+table.board tbody tr:hover{background:var(--soft);}
+.col-rank{color:var(--muted);font-variant-numeric:tabular-nums;width:60px;}
+.col-streak{font-weight:700;color:var(--orange);font-variant-numeric:tabular-nums;}
+.col-date{color:var(--muted);font-variant-numeric:tabular-nums;}
+.plink{color:#fff;text-decoration:none;font-weight:600;border-bottom:1px dotted rgba(232,97,42,.5);}
+.plink:hover{color:var(--orange);}
+.empty{padding:40px 16px;text-align:center;color:var(--muted);}
+.statgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin:6px 0 8px;}
+.statcard{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;text-decoration:none;color:#fff;display:block;}
+.statcard:hover{border-color:var(--orange);}
+.sctitle{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04em;font-weight:600;}
+.scnum{color:var(--orange);font-size:30px;font-weight:800;line-height:1.1;margin:6px 0 2px;}
+.scname{font-weight:600;font-size:14px;}
+.scdate{color:var(--muted);font-size:12.5px;margin-top:2px;}
+.badges{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 4px;}
+.badge{padding:8px 14px;border-radius:999px;font-weight:600;font-size:13.5px;border:1px solid var(--border);}
+.badge.on{background:var(--soft);border-color:var(--orange);}
+.badge.on b{color:var(--orange);}
+.badge.off{background:rgba(255,255,255,.03);color:var(--muted);}
+.legend{display:flex;gap:16px;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:6px 0 14px;}
+.legend span{display:inline-flex;align-items:center;gap:6px;}
+.sq{display:inline-block;width:11px;height:11px;margin:1.5px;border-radius:2px;vertical-align:middle;}
+.sq.g{background:var(--green);}.sq.r{background:var(--red);}.sq.d{background:var(--gray);}
+.trow{display:flex;gap:14px;align-items:flex-start;padding:10px 0;border-bottom:1px solid rgba(42,42,68,.5);}
+.tlabel{width:170px;flex:none;}
+.tseason{display:block;font-weight:700;font-size:14px;}
+.tteam{display:block;color:var(--muted);font-size:12.5px;}
+.tsquares{flex:1;min-width:0;line-height:1;}
+.dtable{width:100%;border-collapse:collapse;font-size:14px;margin-top:10px;}
+.dtable thead th{text-align:left;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04em;padding:8px 12px;border-bottom:1px solid var(--border);cursor:pointer;user-select:none;}
+.dtable thead th.active{color:#fff;}
+.dtable thead th .arrow{color:var(--orange);font-size:11px;margin-left:5px;}
+.dtable td{padding:8px 12px;border-bottom:1px solid rgba(42,42,68,.5);}
+.dtable .num{font-variant-numeric:tabular-nums;}
+.showall{margin-top:10px;background:var(--card);color:#fff;border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-family:inherit;font-weight:600;cursor:pointer;}
+.showall:hover{border-color:var(--orange);}
+.gbtn{background:none;border:1px solid var(--border);color:var(--muted);border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:13px;line-height:1;padding:0;}
+.gbtn:hover{color:#fff;border-color:var(--orange);}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:50;padding:20px;}
+.modal.open{display:flex;}
+.modal-card{background:var(--card);border:1px solid var(--border);border-radius:14px;max-width:560px;width:100%;max-height:80vh;overflow:auto;padding:22px;}
+.simgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:6px;}
+.simcard{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px;text-decoration:none;color:#fff;display:block;}
+.simcard:hover{border-color:var(--orange);}
+.simcard .nm{font-weight:600;font-size:14px;}
+.simcard .st{color:var(--orange);font-weight:700;font-size:13px;margin-top:4px;}
+.reasonblock{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 18px;margin-bottom:12px;}
+.reasonblock h2{margin:0 0 4px;font-size:17px;}
+.reasonblock h2 a{color:#fff;text-decoration:none;}
+.reasonblock h2 a:hover{color:var(--orange);}
+.rcount{color:var(--muted);font-size:13px;font-weight:600;}
+@media(max-width:560px){.wrap{padding:18px 12px 52px;}.trow{flex-direction:column;gap:4px;}.tlabel{width:auto;}}
+</style>
+</head>
+<body>
+<nav class="nav"><a href="../regular.html">Regular Season</a><a href="../index.html">Playoffs</a><a href="../combined.html">Combined</a><a href="../reasons.html" class="active">Absence Reasons</a></nav>
+<div class="wrap">
+<a class="backtop" href="../reasons.html">← Back to all Absence Reasons</a>
+<header><h1>Bilateral Soreness Hamstrings</h1><p class="subtitle">1 games missed across 1 players with this reason.</p></header>
+<div class="table-card" style="padding:0;"><table class="dtable" style="margin:0;"><thead><tr><th data-key="0">Player</th><th data-key="1">Games Missed</th><th data-key="2">Date Range</th><th data-key="3">Team</th></tr></thead><tbody id="tbody"></tbody></table></div>
+</div>
+
+<script>
+const D=[["Joe Dumars",1,"1997-04-18","Detroit Pistons","joe-dumars-247","🇺🇸","1997-04-18"]];
+const NUM=new Set([1]);
+let sk=1, sa=false;
+const tb=document.getElementById('tbody'),hs=Array.from(document.querySelectorAll('thead th'));
+function eh(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+function cmp(a,b,k){let av,bv;if(k===2){av=a[6];bv=b[6];}else{av=a[k];bv=b[k];}if(NUM.has(k)){av=+av;bv=+bv;}else{av=String(av).toLowerCase();bv=String(bv).toLowerCase();}return av<bv?-1:av>bv?1:0;}
+function rnd(){let rows=D.slice().sort((a,b)=>{const c=cmp(a,b,sk);return sa?c:-c;});
+ tb.innerHTML=rows.map(r=>'<tr><td><a class="plink" href="../players/'+r[4]+'.html">'+eh(r[0])+'</a>'+(r[5]?' '+r[5]:'')+'</td><td class="num">'+r[1]+'</td><td class="num">'+eh(r[2])+'</td><td>'+eh(r[3])+'</td></tr>').join('');
+ hs.forEach(h=>{const k=+h.dataset.key;h.classList.toggle('active',k===sk);const e=h.querySelector('.arrow');if(e)e.remove();if(k===sk){const s=document.createElement('span');s.className='arrow';s.textContent=sa?'▲':'▼';h.appendChild(s);}});}
+hs.forEach(h=>h.addEventListener('click',()=>{const k=+h.dataset.key;if(k===sk)sa=!sa;else{sk=k;sa=!(NUM.has(k)||k===2);}rnd();}));
+rnd();
+</script>
+
+</body>
+</html>

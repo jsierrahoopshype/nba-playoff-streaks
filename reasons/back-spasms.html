@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Back Spasms Absences | NBA Iron Man Streaks</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0f0f1a;--card:#1a1a2e;--orange:#e8612a;--text:#fff;--muted:#8892a4;
+--green:#22c55e;--red:#ef4444;--gray:#374151;--border:#2a2a44;--soft:rgba(232,97,42,.14);}
+*{box-sizing:border-box;}html,body{margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);line-height:1.45;
+font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;-webkit-font-smoothing:antialiased;}
+a{color:inherit;}
+.nav{display:flex;gap:6px;flex-wrap:wrap;padding:12px 20px;background:var(--card);border-bottom:1px solid var(--border);}
+.nav a{color:var(--muted);text-decoration:none;font-weight:600;font-size:14px;padding:8px 14px;border-radius:8px;}
+.nav a:hover{color:#fff;background:rgba(255,255,255,.05);}
+.nav a.active{color:#fff;background:var(--orange);}
+.wrap{max-width:1000px;margin:0 auto;padding:26px 20px 70px;}
+h1{font-size:clamp(24px,5vw,38px);font-weight:800;letter-spacing:-.02em;margin:0 0 6px;}
+h1 .accent{color:var(--orange);}
+h2{font-size:18px;font-weight:700;margin:30px 0 8px;display:flex;align-items:center;gap:8px;}
+h3{font-size:15px;font-weight:700;margin:18px 0 6px;}
+.subtitle{color:var(--muted);font-size:15px;font-weight:500;margin:0;}
+.backtop{display:inline-block;color:var(--orange);text-decoration:none;font-weight:600;margin:2px 0 14px;}
+.controls{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:18px 0 12px;}
+.search{flex:1 1 100%;background:var(--card);border:1px solid var(--border);border-radius:10px;color:#fff;
+font-size:15px;font-family:inherit;padding:12px 14px;outline:none;}
+.search::placeholder{color:var(--muted);}
+.search:focus{border-color:var(--orange);box-shadow:0 0 0 3px var(--soft);}
+.count{color:var(--muted);font-size:14px;font-weight:500;}
+.count b{color:var(--orange);font-weight:700;}
+.table-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:auto;}
+table.board{width:100%;border-collapse:collapse;font-size:14.5px;}
+table.board thead th{position:sticky;top:0;background:#22223e;color:var(--muted);text-align:left;
+font-weight:600;font-size:12.5px;letter-spacing:.04em;text-transform:uppercase;padding:13px 16px;
+cursor:pointer;user-select:none;white-space:nowrap;border-bottom:1px solid var(--border);z-index:2;}
+table.board thead th:hover,table.board thead th.active{color:#fff;}
+table.board thead th .arrow{color:var(--orange);font-size:11px;margin-left:5px;}
+th.col-streak,td.col-streak{text-align:right;}
+table.board tbody td{padding:11px 16px;border-bottom:1px solid rgba(42,42,68,.6);white-space:nowrap;}
+table.board tbody tr:nth-child(even){background:rgba(255,255,255,.02);}
+table.board tbody tr:hover{background:var(--soft);}
+.col-rank{color:var(--muted);font-variant-numeric:tabular-nums;width:60px;}
+.col-streak{font-weight:700;color:var(--orange);font-variant-numeric:tabular-nums;}
+.col-date{color:var(--muted);font-variant-numeric:tabular-nums;}
+.plink{color:#fff;text-decoration:none;font-weight:600;border-bottom:1px dotted rgba(232,97,42,.5);}
+.plink:hover{color:var(--orange);}
+.empty{padding:40px 16px;text-align:center;color:var(--muted);}
+.statgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin:6px 0 8px;}
+.statcard{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;text-decoration:none;color:#fff;display:block;}
+.statcard:hover{border-color:var(--orange);}
+.sctitle{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04em;font-weight:600;}
+.scnum{color:var(--orange);font-size:30px;font-weight:800;line-height:1.1;margin:6px 0 2px;}
+.scname{font-weight:600;font-size:14px;}
+.scdate{color:var(--muted);font-size:12.5px;margin-top:2px;}
+.badges{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 4px;}
+.badge{padding:8px 14px;border-radius:999px;font-weight:600;font-size:13.5px;border:1px solid var(--border);}
+.badge.on{background:var(--soft);border-color:var(--orange);}
+.badge.on b{color:var(--orange);}
+.badge.off{background:rgba(255,255,255,.03);color:var(--muted);}
+.legend{display:flex;gap:16px;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:6px 0 14px;}
+.legend span{display:inline-flex;align-items:center;gap:6px;}
+.sq{display:inline-block;width:11px;height:11px;margin:1.5px;border-radius:2px;vertical-align:middle;}
+.sq.g{background:var(--green);}.sq.r{background:var(--red);}.sq.d{background:var(--gray);}
+.trow{display:flex;gap:14px;align-items:flex-start;padding:10px 0;border-bottom:1px solid rgba(42,42,68,.5);}
+.tlabel{width:170px;flex:none;}
+.tseason{display:block;font-weight:700;font-size:14px;}
+.tteam{display:block;color:var(--muted);font-size:12.5px;}
+.tsquares{flex:1;min-width:0;line-height:1;}
+.dtable{width:100%;border-collapse:collapse;font-size:14px;margin-top:10px;}
+.dtable thead th{text-align:left;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04em;padding:8px 12px;border-bottom:1px solid var(--border);cursor:pointer;user-select:none;}
+.dtable thead th.active{color:#fff;}
+.dtable thead th .arrow{color:var(--orange);font-size:11px;margin-left:5px;}
+.dtable td{padding:8px 12px;border-bottom:1px solid rgba(42,42,68,.5);}
+.dtable .num{font-variant-numeric:tabular-nums;}
+.showall{margin-top:10px;background:var(--card);color:#fff;border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-family:inherit;font-weight:600;cursor:pointer;}
+.showall:hover{border-color:var(--orange);}
+.gbtn{background:none;border:1px solid var(--border);color:var(--muted);border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:13px;line-height:1;padding:0;}
+.gbtn:hover{color:#fff;border-color:var(--orange);}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:50;padding:20px;}
+.modal.open{display:flex;}
+.modal-card{background:var(--card);border:1px solid var(--border);border-radius:14px;max-width:560px;width:100%;max-height:80vh;overflow:auto;padding:22px;}
+.simgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:6px;}
+.simcard{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px;text-decoration:none;color:#fff;display:block;}
+.simcard:hover{border-color:var(--orange);}
+.simcard .nm{font-weight:600;font-size:14px;}
+.simcard .st{color:var(--orange);font-weight:700;font-size:13px;margin-top:4px;}
+.reasonblock{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 18px;margin-bottom:12px;}
+.reasonblock h2{margin:0 0 4px;font-size:17px;}
+.reasonblock h2 a{color:#fff;text-decoration:none;}
+.reasonblock h2 a:hover{color:var(--orange);}
+.rcount{color:var(--muted);font-size:13px;font-weight:600;}
+@media(max-width:560px){.wrap{padding:18px 12px 52px;}.trow{flex-direction:column;gap:4px;}.tlabel{width:auto;}}
+</style>
+</head>
+<body>
+<nav class="nav"><a href="../regular.html">Regular Season</a><a href="../index.html">Playoffs</a><a href="../combined.html">Combined</a><a href="../reasons.html" class="active">Absence Reasons</a></nav>
+<div class="wrap">
+<a class="backtop" href="../reasons.html">← Back to all Absence Reasons</a>
+<header><h1>Back Spasms</h1><p class="subtitle">405 games missed across 150 players with this reason.</p></header>
+<div class="table-card" style="padding:0;"><table class="dtable" style="margin:0;"><thead><tr><th data-key="0">Player</th><th data-key="1">Games Missed</th><th data-key="2">Date Range</th><th data-key="3">Team</th></tr></thead><tbody id="tbody"></tbody></table></div>
+</div>
+
+<script>
+const D=[["Derrick Favors",13,"2015-03-28 → 2016-01-13","Utah Jazz","derrick-favors-202324","🇺🇸","2015-03-28"],["Baron Davis",12,"2002-12-01 → 2011-04-13","New Orleans Hornets","baron-davis-1884","🇺🇸","2002-12-01"],["Toni Kukoc",10,"1999-11-12 → 2003-12-02","Chicago Bulls","toni-kukoc-389","🇭🇷","1999-11-12"],["Tracy McGrady",10,"2001-12-22 → 2012-01-14","Houston Rockets","tracy-mcgrady-1503","🇺🇸","2001-12-22"],["Adrian Griffin",9,"2001-10-30 → 2002-05-04","Dallas Mavericks","adrian-griffin-1559","🇺🇸","2001-10-30"],["Shawn Marion",9,"2008-03-21 → 2009-01-03","Miami Heat","shawn-marion-1890","🇺🇸","2008-03-21"],["Kyle Korver",9,"2012-12-07 → 2014-03-29","Atlanta Hawks","kyle-korver-2594","🇺🇸","2012-12-07"],["Sonny Weems",8,"2010-12-22 → 2011-01-09","Toronto Raptors","sonny-weems-201603","🇺🇸","2010-12-22"],["Peja Stojakovic",7,"2001-12-14 → 2005-02-04","Sacramento Kings","peja-stojakovic-978","🇷🇸","2001-12-14"],["Mike Miller",7,"2003-02-24 → 2004-01-31","Memphis Grizzlies","mike-miller-2034","🇺🇸","2003-02-24"],["Jamaal Magloire",7,"2005-04-08 → 2005-04-20","New Orleans Hornets","jamaal-magloire-2048","🇨🇦","2005-04-08"],["Mark Madsen",7,"2003-11-26 → 2003-12-15","Minnesota Timberwolves","mark-madsen-2058","🇺🇸","2003-11-26"],["JJ Redick",7,"2009-04-13 → 2015-11-19","Los Angeles Clippers","jj-redick-200755","🇺🇸","2009-04-13"],["Popeye Jones",6,"1997-03-28 → 2002-11-16","Dallas Mavericks","popeye-jones-461","🇺🇸","1997-03-28"],["Shawn Bradley",6,"2003-12-15 → 2003-12-27","Dallas Mavericks","shawn-bradley-762","🇩🇪","2003-12-15"],["Jeff Foster",6,"2005-02-25 → 2007-12-11","Indiana Pacers","jeff-foster-1902","🇺🇸","2005-02-25"],["Andrei Kirilenko",6,"2006-04-17 → 2012-12-05","Minnesota Timberwolves","andrei-kirilenko-1905","🇷🇺","2006-04-17"],["Quentin Richardson",6,"2004-03-19 → 2011-03-25","Los Angeles Clippers","quentin-richardson-2047","🇺🇸","2004-03-19"],["Mo Williams",6,"2014-12-05 → 2014-12-14","Minnesota Timberwolves","mo-williams-2590","🇺🇸","2014-12-05"],["Quinton Ross",6,"2005-03-30 → 2009-01-19","Memphis Grizzlies","quinton-ross-2624","🇺🇸","2005-03-30"],["Kenny Anderson",5,"2002-01-16 → 2002-11-17","Seattle SuperSonics","kenny-anderson-72","🇺🇸","2002-01-16"],["Dell Curry",5,"1999-04-18 → 1999-04-28","Milwaukee Bucks","dell-curry-209","🇺🇸","1999-04-18"],["Horace Grant",5,"1997-04-04 → 2002-12-10","Orlando Magic","horace-grant-270","🇺🇸","1997-04-04"],["Steve Nash",5,"1999-04-20 → 2009-02-11","Phoenix Suns","steve-nash-959","🇨🇦","1999-04-20"],["Zeljko Rebraca",5,"2004-12-04 → 2004-12-17","Los Angeles Clippers","zeljko-rebraca-1442","🇷🇸","2004-12-04"],["Derek Anderson",5,"2003-11-01 → 2005-04-02","Portland Trail Blazers","derek-anderson-1507","🇺🇸","2003-11-01"],["Mehmet Okur",5,"2004-02-03 → 2012-01-09","Detroit Pistons","mehmet-okur-2246","🇹🇷","2004-02-03"],["Chris Taft",5,"2006-01-16 → 2006-01-28","Golden State Warriors","chris-taft-101147","🇺🇸","2006-01-16"],["Anthony Davis",5,"2014-04-09 → 2014-04-16","New Orleans Pelicans","anthony-davis-203076","🇺🇸","2014-04-09"],["Mahmoud Abdul-Rauf",4,"1997-02-13 → 2001-04-06","Vancouver Grizzlies","mahmoud-abdul-rauf-51","🇺🇸","1997-02-13"],["Sam Cassell",4,"1997-01-17 → 2004-05-31","Minnesota Timberwolves","sam-cassell-208","🇺🇸","1997-01-17"],["Christian Laettner",4,"2002-04-06 → 2004-03-19","Washington Wizards","christian-laettner-363","🇺🇸","2002-04-06"],["Matt Bullard",4,"2001-02-16 → 2001-02-23","Houston Rockets","matt-bullard-672","🇺🇸","2001-02-16"],["Kevin Love",4,"2012-03-09 → 2015-01-16","Cleveland Cavaliers","kevin-love-201567","🇺🇸","2012-03-09"],["Ricky Rubio",4,"2012-12-29 → 2013-01-05","Minnesota Timberwolves","ricky-rubio-201937","🇪🇸","2012-12-29"],["Kevin Garnett",3,"2014-03-01 → 2014-03-05","Brooklyn Nets","kevin-garnett-708","🇺🇸","2014-03-01"],["Arvydas Sabonis",3,"1998-01-24 → 2001-01-25","Portland Trail Blazers","arvydas-sabonis-717","🇱🇹","1998-01-24"],["Corliss Williamson",3,"2000-01-31 → 2006-02-14","Sacramento Kings","corliss-williamson-722","🇺🇸","2000-01-31"],["Larry Johnson",3,"1999-11-08 → 2001-05-02","New York Knicks","larry-johnson-913","🇺🇸","1999-11-08"],["Corie Blount",3,"1996-12-21 → 2002-01-25","Los Angeles Lakers","corie-blount-916","🇺🇸","1996-12-21"],["Marcus Camby",3,"2001-03-02 → 2007-03-23","New York Knicks","marcus-camby-948","🇺🇸","2001-03-02"],["Randy Livingston",3,"1997-03-25 → 1997-03-29","Houston Rockets","randy-livingston-988","🇺🇸","1997-03-25"],["Ben Wallace",3,"2008-03-12 → 2008-03-26","Cleveland Cavaliers","ben-wallace-1112","🇺🇸","2008-03-12"],["Jason Williams",3,"2003-12-01 → 2003-12-05","Memphis Grizzlies","jason-williams-1715","🇺🇸","2003-12-01"],["Malik Allen",3,"2004-02-21 → 2004-11-21","Miami Heat","malik-allen-2124","🇺🇸","2004-02-21"],["Tyson Chandler",3,"2016-03-23 → 2016-03-26","Phoenix Suns","tyson-chandler-2199","🇺🇸","2016-03-23"],["Chris Kaman",3,"2013-12-06 → 2013-12-10","Los Angeles Lakers","chris-kaman-2549","🇩🇪","2013-12-06"],["Luke Ridnour",3,"2009-03-25 → 2013-11-02","Milwaukee Bucks","luke-ridnour-2557","🇺🇸","2009-03-25"],["Josh Howard",3,"2005-01-24 → 2005-01-29","Dallas Mavericks","josh-howard-2572","🇺🇸","2005-01-24"],["Sasha Vujacic",3,"2008-01-11 → 2009-01-14","Los Angeles Lakers","sasha-vujacic-2756","🇸🇮","2008-01-11"],["J.J. Barea",3,"2013-01-09 → 2014-04-09","Minnesota Timberwolves","j-j-barea-200826","🇵🇷","2013-01-09"],["Jared Dudley",3,"2015-03-17 → 2015-03-20","Milwaukee Bucks","jared-dudley-201162","🇺🇸","2015-03-17"],["Brent Price",2,"1997-12-02 → 1997-12-09","Houston Rockets","brent-price-85","🇺🇸","1997-12-02"],["Lamond Murray",2,"2002-03-26 → 2003-12-28","Toronto Raptors","lamond-murray-441","🇺🇸","2002-03-26"],["Jon Barry",2,"1999-12-04 → 2005-04-05","Houston Rockets","jon-barry-468","🇺🇸","1999-12-04"],["Alan Henderson",2,"1999-02-25 → 1999-03-02","Atlanta Hawks","alan-henderson-673","🇺🇸","1999-02-25"],["Fred Hoiberg",2,"2004-11-09 → 2005-04-09","Minnesota Timberwolves","fred-hoiberg-697","🇺🇸","2004-11-09"],["Michael Finley",2,"2004-04-10 → 2004-04-11","Dallas Mavericks","michael-finley-714","🇺🇸","2004-04-10"],["Jim Jackson",2,"2004-12-07 → 2004-12-09","Houston Rockets","jim-jackson-754","🇺🇸","2004-12-07"],["Matt Geiger",2,"1996-12-03 → 1996-12-06","Charlotte Hornets","matt-geiger-761","🇺🇸","1996-12-03"],["Lorenzen Wright",2,"2002-04-02 → 2002-04-03","Memphis Grizzlies","lorenzen-wright-953","🇺🇸","2002-04-02"],["Walt Williams",2,"2000-03-11 → 2001-12-15","Houston Rockets","walt-williams-1005","🇺🇸","2000-03-11"],["Ron Mercer",2,"2002-04-02 → 2002-04-04","Indiana Pacers","ron-mercer-1500","🇺🇸","2002-04-02"],["Tyronn Lue",2,"1999-02-16 → 1999-02-17","Los Angeles Lakers","tyronn-lue-1731","🇺🇸","1999-02-16"],["Nazr Mohammed",2,"2010-02-22 → 2010-02-26","Charlotte Bobcats","nazr-mohammed-1737","🇺🇸","2010-02-22"],["Cuttino Mobley",2,"2005-02-02 → 2005-02-04","Sacramento Kings","cuttino-mobley-1749","🇺🇸","2005-02-02"],["Rodney Buford",2,"2002-03-12 → 2002-03-15","Memphis Grizzlies","rodney-buford-1934","🇺🇸","2002-03-12"],["Morris Peterson",2,"2008-02-09 → 2010-01-15","New Orleans Hornets","morris-peterson-2050","🇺🇸","2008-02-09"],["Carmelo Anthony",2,"2014-11-26 → 2014-11-28","New York Knicks","carmelo-anthony-2546","🇺🇸","2014-11-26"],["Marcus Banks",2,"2009-02-22 → 2009-02-24","Toronto Raptors","marcus-banks-2556","🇺🇸","2009-02-22"],["Udonis Haslem",2,"2013-11-15 → 2013-11-16","Miami Heat","udonis-haslem-2617","🇺🇸","2013-11-15"],["Keith McLeod",2,"2005-11-15 → 2005-11-18","Utah Jazz","keith-mcleod-2693","🇺🇸","2005-11-15"],["Jameer Nelson",2,"2014-11-28 → 2014-11-29","Dallas Mavericks","jameer-nelson-2749","🇺🇸","2014-11-28"],["Ersan Ilyasova",2,"2012-02-08 → 2012-03-27","Milwaukee Bucks","ersan-ilyasova-101141","🇹🇷","2012-02-08"],["Ronny Turiaf",2,"2007-03-07 → 2007-03-09","Los Angeles Lakers","ronny-turiaf-101142","🇫🇷","2007-03-07"],["Marco Belinelli",2,"2014-02-08 → 2016-03-09","Sacramento Kings","marco-belinelli-201158","🇮🇹","2014-02-08"],["Jordan Hill",2,"2012-12-14 → 2012-12-16","Los Angeles Lakers","jordan-hill-201941","🇺🇸","2012-12-14"],["Wayne Ellington",2,"2012-04-11 → 2012-04-12","Minnesota Timberwolves","wayne-ellington-201961","🇺🇸","2012-04-11"],["Jeremy Lin",2,"2013-12-18 → 2013-12-21","Houston Rockets","jeremy-lin-202391","🇺🇸","2013-12-18"],["Derrick Williams",2,"2013-11-08 → 2016-12-01","Miami Heat","derrick-williams-202682","🇺🇸","2013-11-08"],["Nikola Vucevic",2,"2014-12-02 → 2014-12-05","Orlando Magic","nikola-vucevic-202696","🇲🇪","2014-12-02"],["Nikola Mirotic",2,"2017-02-12 → 2017-02-14","Chicago Bulls","nikola-mirotic-202703","🇪🇸","2017-02-12"],["Luc Longley",1,"1999-12-17","Phoenix Suns","luc-longley-26","🇦🇺","1999-12-17"],["Doug West",1,"2000-02-26","Vancouver Grizzlies","doug-west-28","🇺🇸","2000-02-26"],["Hot Rod Williams",1,"1999-04-20","Dallas Mavericks","hot-rod-williams-73","🇺🇸","1999-04-20"],["Nick Anderson",1,"2001-02-06","Sacramento Kings","nick-anderson-98","🇺🇸","2001-02-06"],["Tracy Murray",1,"2002-02-20","Toronto Raptors","tracy-murray-145","🇺🇸","2002-02-20"],["Chris Childs",1,"1997-01-05","New York Knicks","chris-childs-164","🇺🇸","1997-01-05"],["Muggsy Bogues",1,"1997-01-06","Charlotte Hornets","muggsy-bogues-177","🇺🇸","1997-01-06"],["Billy Owens",1,"1998-03-04","Sacramento Kings","billy-owens-182","🇺🇸","1998-03-04"],["Gary Grant",1,"1997-01-02","Miami Heat","gary-grant-202","🇺🇸","1997-01-02"],["Joe Dumars",1,"1997-01-22","Detroit Pistons","joe-dumars-247","🇺🇸","1997-01-22"],["Vincent Askew",1,"1998-02-22","Portland Trail Blazers","vincent-askew-355","🇺🇸","1998-02-22"],["Shaquille O'Neal",1,"2009-01-07","Phoenix Suns","shaquille-oneal-406","🇺🇸","2009-01-07"],["Wesley Person",1,"2002-03-26","Cleveland Cavaliers","wesley-person-445","🇺🇸","2002-03-26"],["Vin Baker",1,"1997-01-26","Milwaukee Bucks","vin-baker-452","🇺🇸","1997-01-26"],["Cherokee Parks",1,"2001-02-19","Los Angeles Clippers","cherokee-parks-685","🇺🇸","2001-02-19"],["Andrew DeClercq",1,"1999-02-06","Boston Celtics","andrew-declercq-692","🇺🇸","1999-02-06"],["Eldridge Recasner",1,"2001-03-02","Charlotte Hornets","eldridge-recasner-695","🇺🇸","2001-03-02"],["Gerald Wilkins",1,"1997-12-26","Orlando Magic","gerald-wilkins-786","🇺🇸","1997-12-26"],["Kevin Willis",1,"2002-02-23","Houston Rockets","kevin-willis-788","🇺🇸","2002-02-23"],["Dale Davis",1,"2003-12-29","Portland Trail Blazers","dale-davis-905","🇺🇸","2003-12-29"],["Ervin Johnson",1,"1997-11-06","Milwaukee Bucks","ervin-johnson-911","🇺🇸","1997-11-06"],["Oliver Miller",1,"1996-12-28","Dallas Mavericks","oliver-miller-932","🇺🇸","1996-12-28"],["Walter McCarty",1,"2005-03-20","Phoenix Suns","walter-mccarty-962","🇺🇸","2005-03-20"],["Jermaine O'Neal",1,"2013-01-14","Phoenix Suns","jermaine-oneal-979","🇺🇸","2013-01-14"],["Zydrunas Ilgauskas",1,"2002-03-26","Cleveland Cavaliers","zydrunas-ilgauskas-980","🇱🇹","2002-03-26"],["Chris Robinson",1,"1997-02-06","Vancouver Grizzlies","chris-robinson-997","🇺🇸","1997-02-06"],["Lawrence Funderburke",1,"2002-03-28","Sacramento Kings","lawrence-funderburke-1444","🇺🇸","2002-03-28"],["Chauncey Billups",1,"1998-04-07","Toronto Raptors","chauncey-billups-1497","🇺🇸","1998-04-07"],["Anthony Parker",1,"2011-04-11","Cleveland Cavaliers","anthony-parker-1515","🇺🇸","2011-04-11"],["Keith Closs",1,"2000-03-06","Los Angeles Clippers","keith-closs-1569","🇺🇸","2000-03-06"],["Brian Skinner",1,"2004-03-04","Milwaukee Bucks","brian-skinner-1730","🇺🇸","2004-03-04"],["Vladimir Stepania",1,"2002-11-30","Miami Heat","vladimir-stepania-1735","","2002-11-30"],["Jeff Sheppard",1,"1999-04-28","Atlanta Hawks","jeff-sheppard-1852","🇺🇸","1999-04-28"],["Cal Bowdler",1,"2001-12-11","Atlanta Hawks","cal-bowdler-1898","🇮🇪","2001-12-11"],["Manu Ginobili",1,"2010-03-29","San Antonio Spurs","manu-ginobili-1938","🇦🇷","2010-03-29"],["Raja Bell",1,"2007-12-22","Phoenix Suns","raja-bell-1952","🇻🇮","2007-12-22"],["Stromile Swift",1,"2007-01-20","Memphis Grizzlies","stromile-swift-2031","🇺🇸","2007-01-20"],["Speedy Claxton",1,"2001-11-10","Philadelphia 76ers","speedy-claxton-2049","🇺🇸","2001-11-10"],["Jake Voskuhl",1,"2002-01-13","Phoenix Suns","jake-voskuhl-2063","🇺🇸","2002-01-13"],["Jason Hart",1,"2004-12-10","Charlotte Bobcats","jason-hart-2078","🇺🇸","2004-12-10"],["Brian Scalabrine",1,"2009-11-06","Boston Celtics","brian-scalabrine-2243","🇺🇸","2009-11-06"],["Drew Gooden",1,"2009-12-26","Dallas Mavericks","drew-gooden-2400","🇺🇸","2009-12-26"],["Kareem Rush",1,"2005-02-09","Charlotte Bobcats","kareem-rush-2416","🇺🇸","2005-02-09"],["Dan Gadzuric",1,"2005-01-05","Milwaukee Bucks","dan-gadzuric-2429","🇳🇱","2005-01-05"],["Flip Murray",1,"2005-11-15","Seattle SuperSonics","flip-murray-2436","🇺🇸","2005-11-15"],["Jamal Sampson",1,"2005-02-04","Charlotte Bobcats","jamal-sampson-2441","🇺🇸","2005-02-04"],["Boris Diaw",1,"2007-02-11","Phoenix Suns","boris-diaw-2564","🇫🇷","2007-02-11"],["Zaza Pachulia",1,"2005-12-14","Atlanta Hawks","zaza-pachulia-2585","","2005-12-14"],["Keith Bogans",1,"2005-03-24","Charlotte Bobcats","keith-bogans-2586","🇺🇸","2005-03-24"],["Dwight Howard",1,"2012-04-03","Orlando Magic","dwight-howard-2730","🇺🇸","2012-04-03"],["Shaun Livingston",1,"2013-04-14","Cleveland Cavaliers","shaun-livingston-2733","🇺🇸","2013-04-14"],["Al Jefferson",1,"2012-12-07","Utah Jazz","al-jefferson-2744","🇺🇸","2012-12-07"],["Chris Duhon",1,"2013-01-01","Los Angeles Lakers","chris-duhon-2768","🇺🇸","2013-01-01"],["Charlie Villanueva",1,"2010-01-31","Detroit Pistons","charlie-villanueva-101111","🇩🇴","2010-01-31"],["David Lee",1,"2008-04-08","New York Knicks","david-lee-101135","🇺🇸","2008-04-08"],["Rudy Gay",1,"2013-03-02","Toronto Raptors","rudy-gay-200752","🇺🇸","2013-03-02"],["Kyle Lowry",1,"2013-01-28","Toronto Raptors","kyle-lowry-200768","🇺🇸","2013-01-28"],["Greg Oden",1,"2014-04-14","Miami Heat","greg-oden-201141","🇺🇸","2014-04-14"],["Rodney Stuckey",1,"2012-12-17","Detroit Pistons","rodney-stuckey-201155","🇺🇸","2012-12-17"],["Javaris Crittenton",1,"2009-04-02","Washington Wizards","javaris-crittenton-201159","🇺🇸","2009-04-02"],["Kyrylo Fesenko",1,"2011-03-07","Utah Jazz","kyrylo-fesenko-201178","🇺🇦","2011-03-07"],["Aaron Gray",1,"2008-03-29","Chicago Bulls","aaron-gray-201189","🇺🇸","2008-03-29"],["Demetris Nichols",1,"2007-11-09","Cleveland Cavaliers","demetris-nichols-201193","🇺🇸","2007-11-09"],["Tyreke Evans",1,"2012-03-30","Sacramento Kings","tyreke-evans-201936","🇺🇸","2012-03-30"],["Sam Young",1,"2012-01-31","Memphis Grizzlies","sam-young-201970","🇺🇸","2012-01-31"],["Larry Sanders",1,"2011-02-11","Milwaukee Bucks","larry-sanders-202336","🇺🇸","2011-02-11"],["Brandon Knight",1,"2017-03-15","Phoenix Suns","brandon-knight-202688","🇺🇸","2017-03-15"],["Victor Oladipo",1,"2017-02-28","Oklahoma City Thunder","victor-oladipo-203506","🇺🇸","2017-02-28"]];
+const NUM=new Set([1]);
+let sk=1, sa=false;
+const tb=document.getElementById('tbody'),hs=Array.from(document.querySelectorAll('thead th'));
+function eh(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+function cmp(a,b,k){let av,bv;if(k===2){av=a[6];bv=b[6];}else{av=a[k];bv=b[k];}if(NUM.has(k)){av=+av;bv=+bv;}else{av=String(av).toLowerCase();bv=String(bv).toLowerCase();}return av<bv?-1:av>bv?1:0;}
+function rnd(){let rows=D.slice().sort((a,b)=>{const c=cmp(a,b,sk);return sa?c:-c;});
+ tb.innerHTML=rows.map(r=>'<tr><td><a class="plink" href="../players/'+r[4]+'.html">'+eh(r[0])+'</a>'+(r[5]?' '+r[5]:'')+'</td><td class="num">'+r[1]+'</td><td class="num">'+eh(r[2])+'</td><td>'+eh(r[3])+'</td></tr>').join('');
+ hs.forEach(h=>{const k=+h.dataset.key;h.classList.toggle('active',k===sk);const e=h.querySelector('.arrow');if(e)e.remove();if(k===sk){const s=document.createElement('span');s.className='arrow';s.textContent=sa?'▲':'▼';h.appendChild(s);}});}
+hs.forEach(h=>h.addEventListener('click',()=>{const k=+h.dataset.key;if(k===sk)sa=!sa;else{sk=k;sa=!(NUM.has(k)||k===2);}rnd();}));
+rnd();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python streak_analysis.py)",
+      "Bash(python build_html.py)",
+      "Bash(grep -o \"'\\\\\\\\\\\\\\\\u25B2'\" index.html)",
+      "Bash(grep -o \"'\\\\\\\\\\\\\\\\u25BC'\" index.html)",
+      "Bash(git init *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git branch *)",
+      "Bash(git remote *)",
+      "Bash(git push *)",
+      "Bash(python -c ' *)",
+      "Bash(python build_all.py)",
+      "Bash(grep '\\\\.py$')",
+      "Bash(python build_all.py --force)",
+      "Read(//mnt/user-data/**)",
+      "Read(//mnt/user-data/uploads/**)"
+    ]
+  }
+}

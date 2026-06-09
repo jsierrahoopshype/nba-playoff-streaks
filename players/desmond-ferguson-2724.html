@@ -6,105 +6,134 @@
 <title>Desmond Ferguson: 4 Consecutive Combined Games | NBA Iron Man Streaks</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0f0f1a;--card:#1a1a2e;--orange:#e8612a;--text:#fff;--muted:#8892a4;
---green:#22c55e;--red:#ef4444;--gray:#374151;--border:#2a2a44;--soft:rgba(232,97,42,.14);}
+:root{
+--bg:#f5f5f7;--surface:#fff;--surface-hover:#f0f0f2;--border:#d1d1d6;
+--text:#1d1d1f;--muted:#6e6e73;--accent:#3b82f6;--accent-dim:rgba(59,130,246,.15);
+--green:#34c759;--red:#ef4444;--gray:#c7c7cc;
+--green-txt:#1d8a40;--red-txt:#d12c2c;--orange:#b26b00;}
 *{box-sizing:border-box;}html,body{margin:0;padding:0;}
-body{background:var(--bg);color:var(--text);line-height:1.45;
-font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;-webkit-font-smoothing:antialiased;}
-a{color:inherit;}
-.nav{display:flex;gap:6px;flex-wrap:wrap;padding:12px 20px;background:var(--card);border-bottom:1px solid var(--border);}
-.nav a{color:var(--muted);text-decoration:none;font-weight:600;font-size:14px;padding:8px 14px;border-radius:8px;}
-.nav a:hover{color:#fff;background:rgba(255,255,255,.05);}
-.nav a.active{color:#fff;background:var(--orange);}
-.wrap{max-width:1000px;margin:0 auto;padding:26px 20px 70px;}
-h1{font-size:clamp(24px,5vw,38px);font-weight:800;letter-spacing:-.02em;margin:0 0 6px;}
-h1 .accent{color:var(--orange);}
-h2{font-size:18px;font-weight:700;margin:30px 0 8px;display:flex;align-items:center;gap:8px;}
-h3{font-size:15px;font-weight:700;margin:18px 0 6px;}
-.subtitle{color:var(--muted);font-size:15px;font-weight:500;margin:0;}
-.backtop{display:inline-block;color:var(--orange);text-decoration:none;font-weight:600;margin:2px 0 14px;}
-.controls{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:18px 0 12px;}
-.search{flex:1 1 100%;background:var(--card);border:1px solid var(--border);border-radius:10px;color:#fff;
-font-size:15px;font-family:inherit;padding:12px 14px;outline:none;}
+body{background:var(--bg);color:var(--text);line-height:1.5;-webkit-font-smoothing:antialiased;
+font-family:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;}
+a{color:var(--accent);text-decoration:none;}
+.mono,.num{font-family:'JetBrains Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums;}
+/* flagcdn PNG flag images (render on every OS, unlike flag emoji on Windows) */
+.flag{vertical-align:middle;border-radius:2px;box-shadow:0 0 0 .5px rgba(0,0,0,.18);margin-left:.05rem;}
+
+/* nav tabs */
+.nav{display:flex;gap:.3rem;flex-wrap:wrap;max-width:1100px;margin:0 auto;padding:1.5rem 1.5rem .3rem;}
+.nav a{font-family:'JetBrains Mono',monospace;font-size:.72rem;font-weight:600;padding:.4rem .8rem;
+border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--muted);text-decoration:none;}
+.nav a:hover{border-color:var(--accent);color:var(--accent);}
+.nav a.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+
+.wrap{max-width:1100px;margin:0 auto;padding:.5rem 1.5rem 4rem;}
+header{margin-bottom:1rem;}
+.brand{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--muted);
+text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:.3rem;}
+h1{font-size:clamp(1.4rem,4vw,1.8rem);font-weight:700;letter-spacing:-.03em;margin:0 0 .3rem;
+display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;}
+h1 .accent{color:var(--accent);}
+h2{font-size:1.15rem;font-weight:700;letter-spacing:-.025em;margin:2rem 0 .7rem;padding-bottom:.4rem;
+border-bottom:2px solid var(--text);color:var(--text);display:flex;align-items:baseline;gap:.5rem;flex-wrap:wrap;}
+h3{font-size:.95rem;font-weight:700;margin:1.2rem 0 .5rem;}
+.subtitle{color:var(--muted);font-size:.9rem;font-weight:400;margin:0;max-width:60rem;}
+.backtop{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:.78rem;
+color:var(--muted);margin:0 0 1rem;text-decoration:none;}
+.backtop:hover{color:var(--accent);}
+
+.controls{display:flex;flex-wrap:wrap;align-items:center;gap:.6rem;margin:.6rem 0;}
+.search{flex:1 1 100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);
+font-size:.9rem;font-family:inherit;padding:.6rem .8rem;outline:none;transition:.15s;}
 .search::placeholder{color:var(--muted);}
-.search:focus{border-color:var(--orange);box-shadow:0 0 0 3px var(--soft);}
-.count{color:var(--muted);font-size:14px;font-weight:500;}
-.count b{color:var(--orange);font-weight:700;}
-.table-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:auto;}
-table.board{width:100%;border-collapse:collapse;font-size:14.5px;}
-table.board thead th{position:sticky;top:0;background:#22223e;color:var(--muted);text-align:left;
-font-weight:600;font-size:12.5px;letter-spacing:.04em;text-transform:uppercase;padding:13px 16px;
+.search:hover{border-color:var(--accent);}
+.search:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-dim);}
+.count{color:var(--muted);font-size:.74rem;}
+.count b{color:var(--text);font-weight:600;}
+
+.table-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.table-card.scroll{max-height:560px;overflow:auto;}
+table.board{width:100%;border-collapse:collapse;font-size:.86rem;}
+table.board thead th{position:sticky;top:0;background:var(--surface-hover);color:var(--muted);text-align:left;
+font-weight:600;font-size:.66rem;letter-spacing:.04em;text-transform:uppercase;padding:.7rem .8rem;
 cursor:pointer;user-select:none;white-space:nowrap;border-bottom:1px solid var(--border);z-index:2;}
-table.board thead th:hover,table.board thead th.active{color:#fff;}
-table.board thead th .arrow{color:var(--orange);font-size:11px;margin-left:5px;}
+table.board thead th:hover,table.board thead th.active{color:var(--accent);}
+table.board thead th .arrow{color:var(--accent);font-size:.6rem;margin-left:.2rem;}
 th.col-streak,td.col-streak{text-align:right;}
-table.board tbody td{padding:11px 16px;border-bottom:1px solid rgba(42,42,68,.6);white-space:nowrap;}
-table.board tbody tr:nth-child(even){background:rgba(255,255,255,.02);}
-table.board tbody tr:hover{background:var(--soft);}
-.col-rank{color:var(--muted);font-variant-numeric:tabular-nums;width:60px;}
-.col-streak{font-weight:700;color:var(--orange);font-variant-numeric:tabular-nums;}
+table.board tbody td{padding:.55rem .8rem;border-bottom:1px solid var(--border);white-space:nowrap;
+font-family:'JetBrains Mono',monospace;font-weight:500;font-variant-numeric:tabular-nums;}
+table.board tbody td.col-player{font-family:'DM Sans',sans-serif;}
+table.board tbody tr:last-child td{border-bottom:none;}
+table.board tbody tr:hover{background:var(--surface-hover);}
+.col-rank{color:var(--muted);font-variant-numeric:tabular-nums;width:3.2rem;font-size:.78rem;}
+.col-streak{font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums;}
 .col-date{color:var(--muted);font-variant-numeric:tabular-nums;}
-.plink{color:#fff;text-decoration:none;font-weight:600;border-bottom:1px dotted rgba(232,97,42,.5);}
-.plink:hover{color:var(--orange);}
-.empty{padding:40px 16px;text-align:center;color:var(--muted);}
-.statgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin:6px 0 8px;}
-.statcard{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;text-decoration:none;color:#fff;display:block;}
-.statcard:hover{border-color:var(--orange);}
-.sctitle{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04em;font-weight:600;}
-.scnum{color:var(--orange);font-size:30px;font-weight:800;line-height:1.1;margin:6px 0 2px;}
-.scname{font-weight:600;font-size:14px;}
-.scdate{color:var(--muted);font-size:12.5px;margin-top:2px;}
-.badges{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 4px;}
-.badge{padding:8px 14px;border-radius:999px;font-weight:600;font-size:13.5px;border:1px solid var(--border);}
-.badge.on{background:var(--soft);border-color:var(--orange);}
-.badge.on b{color:var(--orange);}
-.badge.off{background:rgba(255,255,255,.03);color:var(--muted);}
-.legend{display:flex;gap:16px;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:6px 0 14px;}
-.legend span{display:inline-flex;align-items:center;gap:6px;}
+.plink{color:var(--text);text-decoration:none;font-weight:600;}
+.plink:hover{color:var(--accent);}
+.empty{padding:2.5rem 1rem;text-align:center;color:var(--muted);}
+
+.badges{display:flex;flex-wrap:wrap;gap:.5rem;margin:.7rem 0 .2rem;}
+.badge{font-family:'JetBrains Mono',monospace;padding:.4rem .7rem;border-radius:8px;font-weight:500;
+font-size:.72rem;border:1px solid var(--border);background:var(--surface);color:var(--muted);}
+.badge.on{background:var(--accent-dim);border-color:var(--accent);color:var(--text);}
+.badge.on b{color:var(--accent);}
+.badge.off{opacity:.65;}
+
+.legend{display:flex;gap:1rem;flex-wrap:wrap;color:var(--muted);font-size:.78rem;margin:.4rem 0 .9rem;}
+.legend span{display:inline-flex;align-items:center;gap:.4rem;}
 .sq{display:inline-block;width:11px;height:11px;margin:1.5px;border-radius:2px;vertical-align:middle;}
 .sq.g{background:var(--green);}.sq.r{background:var(--red);}.sq.d{background:var(--gray);}
-.trow{display:flex;gap:14px;align-items:flex-start;padding:10px 0;border-bottom:1px solid rgba(42,42,68,.5);}
+.tlcard{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:.4rem 1rem;}
+.trow{display:flex;gap:14px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border);}
+.trow:last-child{border-bottom:none;}
 .tlabel{width:170px;flex:none;}
-.tseason{display:block;font-weight:700;font-size:14px;}
-.tteam{display:block;color:var(--muted);font-size:12.5px;}
+.tseason{display:block;font-weight:700;font-size:.86rem;}
+.tteam{display:block;color:var(--muted);font-size:.74rem;font-family:'JetBrains Mono',monospace;}
 .tsquares{flex:1;min-width:0;line-height:1;}
-.dtable{width:100%;border-collapse:collapse;font-size:14px;margin-top:10px;}
-.dtable thead th{text-align:left;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04em;padding:8px 12px;border-bottom:1px solid var(--border);cursor:pointer;user-select:none;}
-.dtable thead th.active{color:#fff;}
-.dtable thead th .arrow{color:var(--orange);font-size:11px;margin-left:5px;}
-.dtable td{padding:8px 12px;border-bottom:1px solid rgba(42,42,68,.5);}
-.dtable .num{font-variant-numeric:tabular-nums;}
-.showall{margin-top:10px;background:var(--card);color:#fff;border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-family:inherit;font-weight:600;cursor:pointer;}
-.showall:hover{border-color:var(--orange);}
-.gbtn{background:none;border:1px solid var(--border);color:var(--muted);border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:13px;line-height:1;padding:0;}
-.gbtn:hover{color:#fff;border-color:var(--orange);}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:50;padding:20px;}
+
+.dtable{width:100%;border-collapse:collapse;font-size:.84rem;}
+.dtable thead th{text-align:left;color:var(--muted);font-size:.66rem;text-transform:uppercase;letter-spacing:.04em;
+font-weight:600;padding:.6rem .8rem;border-bottom:1px solid var(--border);cursor:pointer;user-select:none;
+background:var(--surface-hover);position:sticky;top:0;}
+.dtable thead th.active{color:var(--accent);}
+.dtable thead th .arrow{color:var(--accent);font-size:.6rem;margin-left:.2rem;}
+.dtable td{padding:.5rem .8rem;border-bottom:1px solid var(--border);}
+.dtable tbody tr:last-child td{border-bottom:none;}
+.dtable tbody tr:hover{background:var(--surface-hover);}
+.dtable .num{font-variant-numeric:tabular-nums;font-family:'JetBrains Mono',monospace;}
+.showall{margin-top:.7rem;background:none;color:var(--accent);border:none;font-family:'JetBrains Mono',monospace;
+font-size:.74rem;cursor:pointer;}
+.showall:hover{text-decoration:underline;}
+.gbtn{background:none;border:1px solid var(--border);color:var(--muted);border-radius:50%;width:20px;height:20px;
+cursor:pointer;font-size:.7rem;line-height:1;padding:0;}
+.gbtn:hover{color:var(--accent);border-color:var(--accent);}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;z-index:50;padding:20px;}
 .modal.open{display:flex;}
-.modal-card{background:var(--card);border:1px solid var(--border);border-radius:14px;max-width:560px;width:100%;max-height:80vh;overflow:auto;padding:22px;}
-.simgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:6px;}
-.simcard{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px;text-decoration:none;color:#fff;display:block;}
-.simcard:hover{border-color:var(--orange);}
-.simcard .nm{font-weight:600;font-size:14px;}
-.simcard .st{color:var(--orange);font-weight:700;font-size:13px;margin-top:4px;}
-.reasonblock{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 18px;margin-bottom:12px;}
-.reasonblock h2{margin:0 0 4px;font-size:17px;}
-.reasonblock h2 a{color:#fff;text-decoration:none;}
-.reasonblock h2 a:hover{color:var(--orange);}
-.rcount{color:var(--muted);font-size:13px;font-weight:600;}
-@media(max-width:560px){.wrap{padding:18px 12px 52px;}.trow{flex-direction:column;gap:4px;}.tlabel{width:auto;}}
+.modal-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;max-width:560px;width:100%;max-height:80vh;overflow:auto;padding:1.4rem;}
+.simgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.6rem;margin-top:.4rem;}
+.simcard{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.7rem .8rem;text-decoration:none;color:var(--text);display:block;}
+.simcard:hover{border-color:var(--accent);}
+.simcard .nm{font-weight:600;font-size:.84rem;}
+.simcard .st{color:var(--accent);font-weight:700;font-size:.76rem;margin-top:.25rem;font-family:'JetBrains Mono',monospace;}
+.reasonblock{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:.9rem 1.1rem;margin-bottom:.9rem;}
+.reasonblock h2{margin:0 0 .3rem;font-size:1rem;text-transform:none;letter-spacing:-.01em;border-bottom:none;padding-bottom:0;color:var(--text);}
+.reasonblock h2 a{color:var(--text);text-decoration:none;}
+.reasonblock h2 a:hover{color:var(--accent);}
+.rcount{color:var(--muted);font-size:.72rem;font-weight:500;font-family:'JetBrains Mono',monospace;}
+.foot{text-align:center;font-size:.72rem;color:var(--muted);margin-top:1.4rem;font-family:'JetBrains Mono',monospace;line-height:1.7;}
+@media(max-width:560px){.wrap{padding:.5rem 1rem 3rem;}.nav{padding:1rem 1rem .3rem;}.trow{flex-direction:column;gap:4px;}.tlabel{width:auto;}}
 </style>
 </head>
 <body>
 <nav class="nav"><a href="../regular.html">Regular Season</a><a href="../index.html">Playoffs</a><a href="../combined.html">Combined</a><a href="../reasons.html">Absence Reasons</a></nav>
 <div class="wrap">
 <a class="backtop" href="../combined.html">← Back to Combined Leaderboard</a>
-<header><h1>Desmond Ferguson 🇺🇸</h1><div class="badges"><span class="badge off">Playoffs Iron Man: <b>0</b> consecutive games</span><span class="badge on">Regular Season Iron Man: <b>4</b> consecutive games</span><span class="badge on">Combined Iron Man: <b>4</b> consecutive games</span></div></header>
-<section><h2>Season Timeline</h2><div class="legend"><span><i class="sq g"></i> Appeared</span><span><i class="sq r"></i> Missed</span><span><i class="sq d"></i> DNP (coach/inactive)</span></div><div class="trow"><div class="tlabel"><span class="tseason">2003-04</span><span class="tteam">Portland Trail Blazers</span></div><div class="tsquares"><i class="sq r" title="2003-10-29 · @ Utah Jazz · Missed (team played, no record for player)"></i><i class="sq r" title="2003-11-01 · vs Cleveland Cavaliers · Missed (team played, no record for player)"></i><i class="sq r" title="2003-11-03 · vs Philadelphia 76ers · Missed (team played, no record for player)"></i><i class="sq r" title="2003-11-05 · vs Memphis Grizzlies · Missed (team played, no record for player)"></i><i class="sq r" title="2003-11-07 · @ Seattle SuperSonics · Missed (team played, no record for player)"></i><i class="sq r" title="2003-11-08 · vs Atlanta Hawks · Missed (team played, no record for player)"></i><i class="sq r" title="2003-11-11 · vs Toronto Raptors · Missed (team played, no record for player)"></i><i class="sq r" title="2003-11-13 · vs Sacramento Kings · Missed (team played, no record for player)"></i><i class="sq r" title="2003-11-15 · @ New Orleans Hornets · Missed (team played, no record for player)"></i><i class="sq r" title="2003-11-17 · @ Dallas Mavericks · Missed (team played, no record for player)"></i><i class="sq r" title="2003-11-19 · vs Miami Heat · Missed (team played, no record for player)"></i><i class="sq r" title="2003-11-21 · vs Houston Rockets · Missed (team played, no record for player)"></i><i class="sq r" title="2003-11-23 · @ Golden State Warriors · Missed (team played, no record for player)"></i><i class="sq r" title="2003-11-25 · vs Washington Wizards · Missed (team played, no record for player)"></i><i class="sq r" title="2003-11-28 · vs New Jersey Nets · Missed (team played, no record for player)"></i><i class="sq r" title="2003-12-03 · vs Indiana Pacers · Missed (team played, no record for player)"></i><i class="sq r" title="2003-12-05 · vs New York Knicks · Missed (team played, no record for player)"></i><i class="sq r" title="2003-12-07 · @ Memphis Grizzlies · Missed (team played, no record for player)"></i><i class="sq r" title="2003-12-09 · @ Houston Rockets · Missed (team played, no record for player)"></i><i class="sq r" title="2003-12-10 · @ San Antonio Spurs · Missed (team played, no record for player)"></i><i class="sq r" title="2003-12-13 · vs Los Angeles Lakers · Missed (team played, no record for player)"></i><i class="sq r" title="2003-12-16 · vs Milwaukee Bucks · Missed (team played, no record for player)"></i><i class="sq r" title="2003-12-18 · vs Phoenix Suns · Missed (team played, no record for player)"></i><i class="sq r" title="2003-12-20 · vs San Antonio Spurs · Missed (team played, no record for player)"></i><i class="sq r" title="2003-12-21 · @ Sacramento Kings · Missed (team played, no record for player)"></i><i class="sq r" title="2003-12-23 · vs Dallas Mavericks · Missed (team played, no record for player)"></i><i class="sq r" title="2003-12-26 · vs Minnesota Timberwolves · Missed (team played, no record for player)"></i><i class="sq r" title="2003-12-28 · @ Cleveland Cavaliers · Missed (team played, no record for player)"></i><i class="sq r" title="2003-12-29 · @ New Jersey Nets · Missed (team played, no record for player)"></i><i class="sq r" title="2003-12-31 · @ Detroit Pistons · Missed (team played, no record for player)"></i><i class="sq r" title="2004-01-02 · vs Denver Nuggets · Missed (team played, no record for player)"></i><i class="sq r" title="2004-01-05 · @ Seattle SuperSonics · Missed (team played, no record for player)"></i><i class="sq r" title="2004-01-08 · @ Minnesota Timberwolves · Missed (team played, no record for player)"></i><i class="sq r" title="2004-01-09 · @ Chicago Bulls · Missed (team played, no record for player)"></i><i class="sq r" title="2004-01-11 · @ Toronto Raptors · Missed (team played, no record for player)"></i><i class="sq r" title="2004-01-13 · @ Los Angeles Clippers · Missed (team played, no record for player)"></i><i class="sq r" title="2004-01-15 · vs Phoenix Suns · Missed (team played, no record for player)"></i><i class="sq r" title="2004-01-17 · vs Dallas Mavericks · Missed (team played, no record for player)"></i><i class="sq r" title="2004-01-18 · @ Phoenix Suns · Missed (team played, no record for player)"></i><i class="sq r" title="2004-01-20 · @ Sacramento Kings · Missed (team played, no record for player)"></i><i class="sq r" title="2004-01-24 · vs Golden State Warriors · Missed (team played, no record for player)"></i><i class="sq r" title="2004-01-26 · @ Washington Wizards · Missed (team played, no record for player)"></i><i class="sq r" title="2004-01-28 · @ Memphis Grizzlies · Missed (team played, no record for player)"></i><i class="sq r" title="2004-01-29 · @ Atlanta Hawks · Missed (team played, no record for player)"></i><i class="sq r" title="2004-01-31 · vs Chicago Bulls · Missed (team played, no record for player)"></i><i class="sq r" title="2004-02-02 · @ Denver Nuggets · Missed (team played, no record for player)"></i><i class="sq r" title="2004-02-04 · @ Phoenix Suns · Missed (team played, no record for player)"></i><i class="sq r" title="2004-02-06 · @ Utah Jazz · Missed (team played, no record for player)"></i><i class="sq r" title="2004-02-08 · vs Seattle SuperSonics · Missed (team played, no record for player)"></i><i class="sq r" title="2004-02-10 · vs Utah Jazz · Missed (team played, no record for player)"></i><i class="sq r" title="2004-02-12 · vs Denver Nuggets · Missed (team played, no record for player)"></i><i class="sq r" title="2004-02-17 · @ Los Angeles Lakers · Missed (team played, no record for player)"></i><i class="sq r" title="2004-02-18 · vs Los Angeles Clippers · Missed (team played, no record for player)"></i><i class="sq r" title="2004-02-20 · @ Golden State Warriors · Missed (team played, no record for player)"></i><i class="sq r" title="2004-02-21 · vs Boston Celtics · Missed (team played, no record for player)"></i><i class="sq r" title="2004-02-23 · @ Miami Heat · Missed (team played, no record for player)"></i><i class="sq r" title="2004-02-24 · @ Orlando Magic · Missed (team played, no record for player)"></i><i class="sq r" title="2004-02-27 · @ Houston Rockets · Missed (team played, no record for player)"></i><i class="sq r" title="2004-02-28 · @ Dallas Mavericks · Missed (team played, no record for player)"></i><i class="sq r" title="2004-03-03 · vs Memphis Grizzlies · Missed (team played, no record for player)"></i><i class="sq r" title="2004-03-04 · vs Detroit Pistons · Missed (team played, no record for player)"></i><i class="sq r" title="2004-03-06 · vs Utah Jazz · Missed (team played, no record for player)"></i><i class="sq r" title="2004-03-07 · @ Los Angeles Clippers · Missed (team played, no record for player)"></i><i class="sq r" title="2004-03-10 · vs Minnesota Timberwolves · Missed (team played, no record for player)"></i><i class="sq r" title="2004-03-12 · vs Sacramento Kings · Missed (team played, no record for player)"></i><i class="sq r" title="2004-03-14 · @ Minnesota Timberwolves · Missed (team played, no record for player)"></i><i class="sq r" title="2004-03-16 · @ Milwaukee Bucks · Missed (team played, no record for player)"></i><i class="sq r" title="2004-03-17 · @ Indiana Pacers · Missed (team played, no record for player)"></i><i class="sq r" title="2004-03-20 · vs Orlando Magic · Missed (team played, no record for player)"></i><i class="sq r" title="2004-03-22 · vs Houston Rockets · Missed (team played, no record for player)"></i><i class="sq r" title="2004-03-24 · vs Los Angeles Clippers · Missed (team played, no record for player)"></i><i class="sq d" title="2004-03-27 · vs Seattle SuperSonics · DNP: Coach&#x27;s Decision"></i><i class="sq d" title="2004-03-29 · @ New York Knicks · DNP: Coach&#x27;s Decision"></i><i class="sq r" title="2004-03-31 · @ Boston Celtics · Did not play (0 min)"></i><i class="sq d" title="2004-04-01 · @ Philadelphia 76ers · DNP: Coach&#x27;s Decision"></i><i class="sq g" title="2004-04-03 · vs New Orleans Hornets · 9 min · 5 pts · 1 reb · 1 ast"></i><i class="sq r" title="2004-04-06 · @ Los Angeles Lakers · Did not play (0 min)"></i><i class="sq d" title="2004-04-07 · vs Golden State Warriors · DNP: Coach&#x27;s Decision"></i><i class="sq g" title="2004-04-09 · @ San Antonio Spurs · 7 min · 3 pts · 1 reb · 0 ast"></i><i class="sq g" title="2004-04-10 · @ Denver Nuggets · 2 min · 0 pts · 1 reb · 0 ast"></i><i class="sq g" title="2004-04-12 · vs San Antonio Spurs · 5 min · 2 pts · 1 reb · 0 ast"></i><i class="sq g" title="2004-04-14 · vs Los Angeles Lakers · 3 min · 3 pts · 0 reb · 0 ast"></i></div></div></section>
+<header><h1>Desmond Ferguson <img src="https://flagcdn.com/24x18/us.png" width="24" height="18" alt="United States" class="flag"></h1><div class="badges"><span class="badge off">Playoffs Iron Man: <b>0</b> consecutive games</span><span class="badge on">Regular Season Iron Man: <b>4</b> consecutive games</span><span class="badge on">Combined Iron Man: <b>4</b> consecutive games</span></div></header>
+<section><h2>Season Timeline</h2><div class="legend"><span><i class="sq g"></i> Appeared</span><span><i class="sq r"></i> Missed</span><span><i class="sq d"></i> DNP (coach/inactive)</span></div><div class="tlcard"><div class="trow"><div class="tlabel"><span class="tseason">2003-04</span><span class="tteam">Portland Trail Blazers</span></div><div class="tsquares"><i class="sq r" title="2003-10-29 · @ Utah Jazz · Missed (team played, no record for player)"></i><i class="sq r" title="2003-11-01 · vs Cleveland Cavaliers · Missed (team played, no record for player)"></i><i class="sq r" title="2003-11-03 · vs Philadelphia 76ers · Missed (team played, no record for player)"></i><i class="sq r" title="2003-11-05 · vs Memphis Grizzlies · Missed (team played, no record for player)"></i><i class="sq r" title="2003-11-07 · @ Seattle SuperSonics · Missed (team played, no record for player)"></i><i class="sq r" title="2003-11-08 · vs Atlanta Hawks · Missed (team played, no record for player)"></i><i class="sq r" title="2003-11-11 · vs Toronto Raptors · Missed (team played, no record for player)"></i><i class="sq r" title="2003-11-13 · vs Sacramento Kings · Missed (team played, no record for player)"></i><i class="sq r" title="2003-11-15 · @ New Orleans Hornets · Missed (team played, no record for player)"></i><i class="sq r" title="2003-11-17 · @ Dallas Mavericks · Missed (team played, no record for player)"></i><i class="sq r" title="2003-11-19 · vs Miami Heat · Missed (team played, no record for player)"></i><i class="sq r" title="2003-11-21 · vs Houston Rockets · Missed (team played, no record for player)"></i><i class="sq r" title="2003-11-23 · @ Golden State Warriors · Missed (team played, no record for player)"></i><i class="sq r" title="2003-11-25 · vs Washington Wizards · Missed (team played, no record for player)"></i><i class="sq r" title="2003-11-28 · vs New Jersey Nets · Missed (team played, no record for player)"></i><i class="sq r" title="2003-12-03 · vs Indiana Pacers · Missed (team played, no record for player)"></i><i class="sq r" title="2003-12-05 · vs New York Knicks · Missed (team played, no record for player)"></i><i class="sq r" title="2003-12-07 · @ Memphis Grizzlies · Missed (team played, no record for player)"></i><i class="sq r" title="2003-12-09 · @ Houston Rockets · Missed (team played, no record for player)"></i><i class="sq r" title="2003-12-10 · @ San Antonio Spurs · Missed (team played, no record for player)"></i><i class="sq r" title="2003-12-13 · vs Los Angeles Lakers · Missed (team played, no record for player)"></i><i class="sq r" title="2003-12-16 · vs Milwaukee Bucks · Missed (team played, no record for player)"></i><i class="sq r" title="2003-12-18 · vs Phoenix Suns · Missed (team played, no record for player)"></i><i class="sq r" title="2003-12-20 · vs San Antonio Spurs · Missed (team played, no record for player)"></i><i class="sq r" title="2003-12-21 · @ Sacramento Kings · Missed (team played, no record for player)"></i><i class="sq r" title="2003-12-23 · vs Dallas Mavericks · Missed (team played, no record for player)"></i><i class="sq r" title="2003-12-26 · vs Minnesota Timberwolves · Missed (team played, no record for player)"></i><i class="sq r" title="2003-12-28 · @ Cleveland Cavaliers · Missed (team played, no record for player)"></i><i class="sq r" title="2003-12-29 · @ New Jersey Nets · Missed (team played, no record for player)"></i><i class="sq r" title="2003-12-31 · @ Detroit Pistons · Missed (team played, no record for player)"></i><i class="sq r" title="2004-01-02 · vs Denver Nuggets · Missed (team played, no record for player)"></i><i class="sq r" title="2004-01-05 · @ Seattle SuperSonics · Missed (team played, no record for player)"></i><i class="sq r" title="2004-01-08 · @ Minnesota Timberwolves · Missed (team played, no record for player)"></i><i class="sq r" title="2004-01-09 · @ Chicago Bulls · Missed (team played, no record for player)"></i><i class="sq r" title="2004-01-11 · @ Toronto Raptors · Missed (team played, no record for player)"></i><i class="sq r" title="2004-01-13 · @ Los Angeles Clippers · Missed (team played, no record for player)"></i><i class="sq r" title="2004-01-15 · vs Phoenix Suns · Missed (team played, no record for player)"></i><i class="sq r" title="2004-01-17 · vs Dallas Mavericks · Missed (team played, no record for player)"></i><i class="sq r" title="2004-01-18 · @ Phoenix Suns · Missed (team played, no record for player)"></i><i class="sq r" title="2004-01-20 · @ Sacramento Kings · Missed (team played, no record for player)"></i><i class="sq r" title="2004-01-24 · vs Golden State Warriors · Missed (team played, no record for player)"></i><i class="sq r" title="2004-01-26 · @ Washington Wizards · Missed (team played, no record for player)"></i><i class="sq r" title="2004-01-28 · @ Memphis Grizzlies · Missed (team played, no record for player)"></i><i class="sq r" title="2004-01-29 · @ Atlanta Hawks · Missed (team played, no record for player)"></i><i class="sq r" title="2004-01-31 · vs Chicago Bulls · Missed (team played, no record for player)"></i><i class="sq r" title="2004-02-02 · @ Denver Nuggets · Missed (team played, no record for player)"></i><i class="sq r" title="2004-02-04 · @ Phoenix Suns · Missed (team played, no record for player)"></i><i class="sq r" title="2004-02-06 · @ Utah Jazz · Missed (team played, no record for player)"></i><i class="sq r" title="2004-02-08 · vs Seattle SuperSonics · Missed (team played, no record for player)"></i><i class="sq r" title="2004-02-10 · vs Utah Jazz · Missed (team played, no record for player)"></i><i class="sq r" title="2004-02-12 · vs Denver Nuggets · Missed (team played, no record for player)"></i><i class="sq r" title="2004-02-17 · @ Los Angeles Lakers · Missed (team played, no record for player)"></i><i class="sq r" title="2004-02-18 · vs Los Angeles Clippers · Missed (team played, no record for player)"></i><i class="sq r" title="2004-02-20 · @ Golden State Warriors · Missed (team played, no record for player)"></i><i class="sq r" title="2004-02-21 · vs Boston Celtics · Missed (team played, no record for player)"></i><i class="sq r" title="2004-02-23 · @ Miami Heat · Missed (team played, no record for player)"></i><i class="sq r" title="2004-02-24 · @ Orlando Magic · Missed (team played, no record for player)"></i><i class="sq r" title="2004-02-27 · @ Houston Rockets · Missed (team played, no record for player)"></i><i class="sq r" title="2004-02-28 · @ Dallas Mavericks · Missed (team played, no record for player)"></i><i class="sq r" title="2004-03-03 · vs Memphis Grizzlies · Missed (team played, no record for player)"></i><i class="sq r" title="2004-03-04 · vs Detroit Pistons · Missed (team played, no record for player)"></i><i class="sq r" title="2004-03-06 · vs Utah Jazz · Missed (team played, no record for player)"></i><i class="sq r" title="2004-03-07 · @ Los Angeles Clippers · Missed (team played, no record for player)"></i><i class="sq r" title="2004-03-10 · vs Minnesota Timberwolves · Missed (team played, no record for player)"></i><i class="sq r" title="2004-03-12 · vs Sacramento Kings · Missed (team played, no record for player)"></i><i class="sq r" title="2004-03-14 · @ Minnesota Timberwolves · Missed (team played, no record for player)"></i><i class="sq r" title="2004-03-16 · @ Milwaukee Bucks · Missed (team played, no record for player)"></i><i class="sq r" title="2004-03-17 · @ Indiana Pacers · Missed (team played, no record for player)"></i><i class="sq r" title="2004-03-20 · vs Orlando Magic · Missed (team played, no record for player)"></i><i class="sq r" title="2004-03-22 · vs Houston Rockets · Missed (team played, no record for player)"></i><i class="sq r" title="2004-03-24 · vs Los Angeles Clippers · Missed (team played, no record for player)"></i><i class="sq d" title="2004-03-27 · vs Seattle SuperSonics · DNP: Coach&#x27;s Decision"></i><i class="sq d" title="2004-03-29 · @ New York Knicks · DNP: Coach&#x27;s Decision"></i><i class="sq r" title="2004-03-31 · @ Boston Celtics · Did not play (0 min)"></i><i class="sq d" title="2004-04-01 · @ Philadelphia 76ers · DNP: Coach&#x27;s Decision"></i><i class="sq g" title="2004-04-03 · vs New Orleans Hornets · 9 min · 5 pts · 1 reb · 1 ast"></i><i class="sq r" title="2004-04-06 · @ Los Angeles Lakers · Did not play (0 min)"></i><i class="sq d" title="2004-04-07 · vs Golden State Warriors · DNP: Coach&#x27;s Decision"></i><i class="sq g" title="2004-04-09 · @ San Antonio Spurs · 7 min · 3 pts · 1 reb · 0 ast"></i><i class="sq g" title="2004-04-10 · @ Denver Nuggets · 2 min · 0 pts · 1 reb · 0 ast"></i><i class="sq g" title="2004-04-12 · vs San Antonio Spurs · 5 min · 2 pts · 1 reb · 0 ast"></i><i class="sq g" title="2004-04-14 · vs Los Angeles Lakers · 3 min · 3 pts · 0 reb · 0 ast"></i></div></div></div></section>
 <section><h2>Iron Man Streaks</h2><p class="subtitle">No streaks of 5+ games.</p></section>
-<section><h2>Absences <button class="gbtn" title="What do these codes mean?" onclick="og()">ⓘ</button></h2><table class="dtable"><thead><tr><th>Games Missed</th><th>Days</th><th>From</th><th>To</th><th>Reason</th></tr></thead><tbody><tr><td class="num">4</td><td class="num">5</td><td class="num">2004-03-27</td><td class="num">2004-04-01</td><td><a class="plink" href="../reasons/coach-s-decision.html">Coach&#x27;s Decision</a></td></tr><tr><td class="num">2</td><td class="num">1</td><td class="num">2004-04-06</td><td class="num">2004-04-07</td><td><a class="plink" href="../reasons/coach-s-decision.html">Coach&#x27;s Decision</a></td></tr></tbody></table></section>
-<section><h2>Similar Players</h2><div class="simgrid"><a class="simcard" href="richie-frahm-2499.html"><div class="nm">Richie Frahm 🇺🇸</div><div class="st">18 game streak</div></a><a class="simcard" href="mike-batiste-2471.html"><div class="nm">Mike Batiste 🇺🇸</div><div class="st">43 game streak</div></a><a class="simcard" href="guy-rucker-2462.html"><div class="nm">Guy Rucker 🇺🇸</div><div class="st">1 game streak</div></a><a class="simcard" href="norman-richardson-2369.html"><div class="nm">Norman Richardson 🇺🇸</div><div class="st">5 game streak</div></a><a class="simcard" href="paul-shirley-2321.html"><div class="nm">Paul Shirley 🇺🇸</div><div class="st">3 game streak</div></a><a class="simcard" href="pepe-sanchez-2143.html"><div class="nm">Pepe Sanchez 🇦🇷</div><div class="st">3 game streak</div></a></div></section>
+<section><h2>Absences <button class="gbtn" title="What do these codes mean?" onclick="og()">ⓘ</button></h2><div class="table-card"><table class="dtable"><thead><tr><th>Games Missed</th><th>Days</th><th>From</th><th>To</th><th>Reason</th></tr></thead><tbody><tr><td class="num">4</td><td class="num">5</td><td class="num">2004-03-27</td><td class="num">2004-04-01</td><td><a class="plink" href="../reasons/coach-s-decision.html">Coach&#x27;s Decision</a></td></tr><tr><td class="num">2</td><td class="num">1</td><td class="num">2004-04-06</td><td class="num">2004-04-07</td><td><a class="plink" href="../reasons/coach-s-decision.html">Coach&#x27;s Decision</a></td></tr></tbody></table></div></section>
+<section><h2>Similar Players</h2><div class="simgrid"><a class="simcard" href="richie-frahm-2499.html"><div class="nm">Richie Frahm <img src="https://flagcdn.com/24x18/us.png" width="24" height="18" alt="United States" class="flag"></div><div class="st">18 game streak</div></a><a class="simcard" href="mike-batiste-2471.html"><div class="nm">Mike Batiste <img src="https://flagcdn.com/24x18/us.png" width="24" height="18" alt="United States" class="flag"></div><div class="st">43 game streak</div></a><a class="simcard" href="guy-rucker-2462.html"><div class="nm">Guy Rucker <img src="https://flagcdn.com/24x18/us.png" width="24" height="18" alt="United States" class="flag"></div><div class="st">1 game streak</div></a><a class="simcard" href="norman-richardson-2369.html"><div class="nm">Norman Richardson <img src="https://flagcdn.com/24x18/us.png" width="24" height="18" alt="USA" class="flag"></div><div class="st">5 game streak</div></a><a class="simcard" href="paul-shirley-2321.html"><div class="nm">Paul Shirley <img src="https://flagcdn.com/24x18/us.png" width="24" height="18" alt="United States" class="flag"></div><div class="st">3 game streak</div></a><a class="simcard" href="pepe-sanchez-2143.html"><div class="nm">Pepe Sanchez <img src="https://flagcdn.com/24x18/ar.png" width="24" height="18" alt="Argentina" class="flag"></div><div class="st">3 game streak</div></a></div></section>
 <a class="backtop" href="../combined.html">← Back to Combined Leaderboard</a>
 </div>
 <div class="modal" id="gmodal" onclick="cg(event)"><div class="modal-card"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;"><h3 style="margin:0;">Absence reason glossary</h3><button class="gbtn gclose" onclick="cg()">✕</button></div><table class="dtable"><thead><tr><th>Code</th><th>Meaning</th></tr></thead><tbody><tr><td><b>DNP</b></td><td>Did Not Play</td></tr><tr><td><b>DND</b></td><td>Did Not Dress — on the active roster but did not suit up (often injury)</td></tr><tr><td><b>NWT</b></td><td>Not With Team — not traveling/dressed with the club (injury, personal, suspension, G League)</td></tr><tr><td><b>Coach&#x27;s Decision</b></td><td>Healthy scratch — the coach chose not to play them</td></tr><tr><td><b>Injury / Illness</b></td><td>Out with an injury or illness</td></tr><tr><td><b>Rt</b></td><td>Right (side of the body)</td></tr><tr><td><b>Lt</b></td><td>Left (side of the body)</td></tr><tr><td><b>Sore</b></td><td>Soreness</td></tr><tr><td><b>Sprained</b></td><td>A stretched or torn ligament</td></tr><tr><td><b>Strain</b></td><td>A stretched or torn muscle or tendon</td></tr><tr><td><b>Suspension</b></td><td>Suspended by the league or team</td></tr><tr><td><b>Rest</b></td><td>Rested (load management)</td></tr></tbody></table></div></div>

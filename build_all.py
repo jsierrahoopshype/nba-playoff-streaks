@@ -62,9 +62,14 @@ TYPE_META = {
 BADGE_TEXT = {"playoff": "Playoffs Iron Man", "regular": "Regular Season Iron Man",
               "combined": "Combined Iron Man"}
 
-INJURY_KW = ["injur", "illness", "surgery", "knee", "ankle", "back", "shoulder",
-             "hip", "hamstring", "achilles", "acl", "mcl", "wrist", "hand", "foot",
-             "fracture", "torn", "sprain", "strain", "concussion"]
+# #6: a missed season only renders if its reason looks like injury/illness.
+INJURY_KW = ["injur", "illness", "surgery", "sprain", "strain", "torn", "fracture",
+             "broken", "knee", "ankle", "back", "shoulder", "hip", "hamstring",
+             "achilles", "acl", "mcl", "wrist", "hand", "foot", "calf", "groin",
+             "concussion", "bruise", "contusion", "tendinitis", "tendonitis", "plantar"]
+# Reasons that are NOT injury/illness even if a body-part word sneaks in.
+INJURY_EXCLUDE = ["coach", "g league", "g-league", "gleague", "d league", "d-league",
+                  "personal", "suspen", "trade", "not with team", "rest"]
 
 
 # --------------------------------------------------------------------------- #
@@ -141,6 +146,8 @@ def reason_slug(reason):
 
 def is_injury(reason):
     rl = reason.lower()
+    if any(kw in rl for kw in INJURY_EXCLUDE):
+        return False
     return any(kw in rl for kw in INJURY_KW)
 
 
@@ -201,8 +208,13 @@ COUNTRY_ISO = {
 }
 
 
-def flag_emoji(iso2):
-    return "".join(chr(0x1F1E6 + ord(ch) - 65) for ch in iso2.upper())
+# Hardcoded nationality fixes that outrank both nationalities.csv and Players.csv.
+# Keyed by normname(full name). Ndudi Ebi is listed as Great Britain / USA in the
+# source data but represented Nigeria.
+NATIONALITY_OVERRIDE = {
+    "tim duncan": "USA",      # listed as US Virgin Islands; show the US flag
+    "ndudi ebi": "Nigeria",   # listed as Great Britain / USA; represented Nigeria
+}
 
 
 def normname(s):
@@ -211,11 +223,12 @@ def normname(s):
 
 
 def country_to_flag(country):
+    """Return (iso2_lower, country_name) for the flagcdn image, or None."""
     if not country:
-        return ""
+        return None
     c = str(country).strip()
     iso = COUNTRY_ISO.get(c) or COUNTRY_ISO.get(c.title())
-    return flag_emoji(iso) if iso else ""
+    return (iso.lower(), c) if iso else None
 
 
 def load_players_meta():
@@ -260,7 +273,8 @@ def build_flags(names, country_by_pid, nationalities):
     flags = {}
     overridden = 0
     for pid, (first, last) in names.items():
-        nat = nationalities.get(normname(f"{first} {last}"))
+        key = normname(f"{first} {last}")
+        nat = NATIONALITY_OVERRIDE.get(key) or nationalities.get(key)
         if nat:
             overridden += 1
             country = nat
@@ -562,92 +576,121 @@ def _trow(season, kind, tid, games, prows, app, game_info):
 # HTML scaffolding
 # --------------------------------------------------------------------------- #
 CSS = """
-:root{--bg:#0f0f1a;--card:#1a1a2e;--orange:#e8612a;--text:#fff;--muted:#8892a4;
---green:#22c55e;--red:#ef4444;--gray:#374151;--border:#2a2a44;--soft:rgba(232,97,42,.14);}
+:root{
+--bg:#f5f5f7;--surface:#fff;--surface-hover:#f0f0f2;--border:#d1d1d6;
+--text:#1d1d1f;--muted:#6e6e73;--accent:#3b82f6;--accent-dim:rgba(59,130,246,.15);
+--green:#34c759;--red:#ef4444;--gray:#c7c7cc;
+--green-txt:#1d8a40;--red-txt:#d12c2c;--orange:#b26b00;}
 *{box-sizing:border-box;}html,body{margin:0;padding:0;}
-body{background:var(--bg);color:var(--text);line-height:1.45;
-font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;-webkit-font-smoothing:antialiased;}
-a{color:inherit;}
-.nav{display:flex;gap:6px;flex-wrap:wrap;padding:12px 20px;background:var(--card);border-bottom:1px solid var(--border);}
-.nav a{color:var(--muted);text-decoration:none;font-weight:600;font-size:14px;padding:8px 14px;border-radius:8px;}
-.nav a:hover{color:#fff;background:rgba(255,255,255,.05);}
-.nav a.active{color:#fff;background:var(--orange);}
-.wrap{max-width:1000px;margin:0 auto;padding:26px 20px 70px;}
-h1{font-size:clamp(24px,5vw,38px);font-weight:800;letter-spacing:-.02em;margin:0 0 6px;}
-h1 .accent{color:var(--orange);}
-h2{font-size:18px;font-weight:700;margin:30px 0 8px;display:flex;align-items:center;gap:8px;}
-h3{font-size:15px;font-weight:700;margin:18px 0 6px;}
-.subtitle{color:var(--muted);font-size:15px;font-weight:500;margin:0;}
-.backtop{display:inline-block;color:var(--orange);text-decoration:none;font-weight:600;margin:2px 0 14px;}
-.controls{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:18px 0 12px;}
-.search{flex:1 1 100%;background:var(--card);border:1px solid var(--border);border-radius:10px;color:#fff;
-font-size:15px;font-family:inherit;padding:12px 14px;outline:none;}
+body{background:var(--bg);color:var(--text);line-height:1.5;-webkit-font-smoothing:antialiased;
+font-family:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;}
+a{color:var(--accent);text-decoration:none;}
+.mono,.num{font-family:'JetBrains Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums;}
+/* flagcdn PNG flag images (render on every OS, unlike flag emoji on Windows) */
+.flag{vertical-align:middle;border-radius:2px;box-shadow:0 0 0 .5px rgba(0,0,0,.18);margin-left:.05rem;}
+
+/* nav tabs */
+.nav{display:flex;gap:.3rem;flex-wrap:wrap;max-width:1100px;margin:0 auto;padding:1.5rem 1.5rem .3rem;}
+.nav a{font-family:'JetBrains Mono',monospace;font-size:.72rem;font-weight:600;padding:.4rem .8rem;
+border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--muted);text-decoration:none;}
+.nav a:hover{border-color:var(--accent);color:var(--accent);}
+.nav a.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+
+.wrap{max-width:1100px;margin:0 auto;padding:.5rem 1.5rem 4rem;}
+header{margin-bottom:1rem;}
+.brand{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--muted);
+text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:.3rem;}
+h1{font-size:clamp(1.4rem,4vw,1.8rem);font-weight:700;letter-spacing:-.03em;margin:0 0 .3rem;
+display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;}
+h1 .accent{color:var(--accent);}
+h2{font-size:1.15rem;font-weight:700;letter-spacing:-.025em;margin:2rem 0 .7rem;padding-bottom:.4rem;
+border-bottom:2px solid var(--text);color:var(--text);display:flex;align-items:baseline;gap:.5rem;flex-wrap:wrap;}
+h3{font-size:.95rem;font-weight:700;margin:1.2rem 0 .5rem;}
+.subtitle{color:var(--muted);font-size:.9rem;font-weight:400;margin:0;max-width:60rem;}
+.backtop{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:.78rem;
+color:var(--muted);margin:0 0 1rem;text-decoration:none;}
+.backtop:hover{color:var(--accent);}
+
+.controls{display:flex;flex-wrap:wrap;align-items:center;gap:.6rem;margin:.6rem 0;}
+.search{flex:1 1 100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);
+font-size:.9rem;font-family:inherit;padding:.6rem .8rem;outline:none;transition:.15s;}
 .search::placeholder{color:var(--muted);}
-.search:focus{border-color:var(--orange);box-shadow:0 0 0 3px var(--soft);}
-.count{color:var(--muted);font-size:14px;font-weight:500;}
-.count b{color:var(--orange);font-weight:700;}
-.table-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:auto;}
-table.board{width:100%;border-collapse:collapse;font-size:14.5px;}
-table.board thead th{position:sticky;top:0;background:#22223e;color:var(--muted);text-align:left;
-font-weight:600;font-size:12.5px;letter-spacing:.04em;text-transform:uppercase;padding:13px 16px;
+.search:hover{border-color:var(--accent);}
+.search:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-dim);}
+.count{color:var(--muted);font-size:.74rem;}
+.count b{color:var(--text);font-weight:600;}
+
+.table-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.table-card.scroll{max-height:560px;overflow:auto;}
+table.board{width:100%;border-collapse:collapse;font-size:.86rem;}
+table.board thead th{position:sticky;top:0;background:var(--surface-hover);color:var(--muted);text-align:left;
+font-weight:600;font-size:.66rem;letter-spacing:.04em;text-transform:uppercase;padding:.7rem .8rem;
 cursor:pointer;user-select:none;white-space:nowrap;border-bottom:1px solid var(--border);z-index:2;}
-table.board thead th:hover,table.board thead th.active{color:#fff;}
-table.board thead th .arrow{color:var(--orange);font-size:11px;margin-left:5px;}
+table.board thead th:hover,table.board thead th.active{color:var(--accent);}
+table.board thead th .arrow{color:var(--accent);font-size:.6rem;margin-left:.2rem;}
 th.col-streak,td.col-streak{text-align:right;}
-table.board tbody td{padding:11px 16px;border-bottom:1px solid rgba(42,42,68,.6);white-space:nowrap;}
-table.board tbody tr:nth-child(even){background:rgba(255,255,255,.02);}
-table.board tbody tr:hover{background:var(--soft);}
-.col-rank{color:var(--muted);font-variant-numeric:tabular-nums;width:60px;}
-.col-streak{font-weight:700;color:var(--orange);font-variant-numeric:tabular-nums;}
+table.board tbody td{padding:.55rem .8rem;border-bottom:1px solid var(--border);white-space:nowrap;
+font-family:'JetBrains Mono',monospace;font-weight:500;font-variant-numeric:tabular-nums;}
+table.board tbody td.col-player{font-family:'DM Sans',sans-serif;}
+table.board tbody tr:last-child td{border-bottom:none;}
+table.board tbody tr:hover{background:var(--surface-hover);}
+.col-rank{color:var(--muted);font-variant-numeric:tabular-nums;width:3.2rem;font-size:.78rem;}
+.col-streak{font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums;}
 .col-date{color:var(--muted);font-variant-numeric:tabular-nums;}
-.plink{color:#fff;text-decoration:none;font-weight:600;border-bottom:1px dotted rgba(232,97,42,.5);}
-.plink:hover{color:var(--orange);}
-.empty{padding:40px 16px;text-align:center;color:var(--muted);}
-.statgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin:6px 0 8px;}
-.statcard{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;text-decoration:none;color:#fff;display:block;}
-.statcard:hover{border-color:var(--orange);}
-.sctitle{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04em;font-weight:600;}
-.scnum{color:var(--orange);font-size:30px;font-weight:800;line-height:1.1;margin:6px 0 2px;}
-.scname{font-weight:600;font-size:14px;}
-.scdate{color:var(--muted);font-size:12.5px;margin-top:2px;}
-.badges{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 4px;}
-.badge{padding:8px 14px;border-radius:999px;font-weight:600;font-size:13.5px;border:1px solid var(--border);}
-.badge.on{background:var(--soft);border-color:var(--orange);}
-.badge.on b{color:var(--orange);}
-.badge.off{background:rgba(255,255,255,.03);color:var(--muted);}
-.legend{display:flex;gap:16px;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:6px 0 14px;}
-.legend span{display:inline-flex;align-items:center;gap:6px;}
+.plink{color:var(--text);text-decoration:none;font-weight:600;}
+.plink:hover{color:var(--accent);}
+.empty{padding:2.5rem 1rem;text-align:center;color:var(--muted);}
+
+.badges{display:flex;flex-wrap:wrap;gap:.5rem;margin:.7rem 0 .2rem;}
+.badge{font-family:'JetBrains Mono',monospace;padding:.4rem .7rem;border-radius:8px;font-weight:500;
+font-size:.72rem;border:1px solid var(--border);background:var(--surface);color:var(--muted);}
+.badge.on{background:var(--accent-dim);border-color:var(--accent);color:var(--text);}
+.badge.on b{color:var(--accent);}
+.badge.off{opacity:.65;}
+
+.legend{display:flex;gap:1rem;flex-wrap:wrap;color:var(--muted);font-size:.78rem;margin:.4rem 0 .9rem;}
+.legend span{display:inline-flex;align-items:center;gap:.4rem;}
 .sq{display:inline-block;width:11px;height:11px;margin:1.5px;border-radius:2px;vertical-align:middle;}
 .sq.g{background:var(--green);}.sq.r{background:var(--red);}.sq.d{background:var(--gray);}
-.trow{display:flex;gap:14px;align-items:flex-start;padding:10px 0;border-bottom:1px solid rgba(42,42,68,.5);}
+.tlcard{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:.4rem 1rem;}
+.trow{display:flex;gap:14px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border);}
+.trow:last-child{border-bottom:none;}
 .tlabel{width:170px;flex:none;}
-.tseason{display:block;font-weight:700;font-size:14px;}
-.tteam{display:block;color:var(--muted);font-size:12.5px;}
+.tseason{display:block;font-weight:700;font-size:.86rem;}
+.tteam{display:block;color:var(--muted);font-size:.74rem;font-family:'JetBrains Mono',monospace;}
 .tsquares{flex:1;min-width:0;line-height:1;}
-.dtable{width:100%;border-collapse:collapse;font-size:14px;margin-top:10px;}
-.dtable thead th{text-align:left;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04em;padding:8px 12px;border-bottom:1px solid var(--border);cursor:pointer;user-select:none;}
-.dtable thead th.active{color:#fff;}
-.dtable thead th .arrow{color:var(--orange);font-size:11px;margin-left:5px;}
-.dtable td{padding:8px 12px;border-bottom:1px solid rgba(42,42,68,.5);}
-.dtable .num{font-variant-numeric:tabular-nums;}
-.showall{margin-top:10px;background:var(--card);color:#fff;border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-family:inherit;font-weight:600;cursor:pointer;}
-.showall:hover{border-color:var(--orange);}
-.gbtn{background:none;border:1px solid var(--border);color:var(--muted);border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:13px;line-height:1;padding:0;}
-.gbtn:hover{color:#fff;border-color:var(--orange);}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:50;padding:20px;}
+
+.dtable{width:100%;border-collapse:collapse;font-size:.84rem;}
+.dtable thead th{text-align:left;color:var(--muted);font-size:.66rem;text-transform:uppercase;letter-spacing:.04em;
+font-weight:600;padding:.6rem .8rem;border-bottom:1px solid var(--border);cursor:pointer;user-select:none;
+background:var(--surface-hover);position:sticky;top:0;}
+.dtable thead th.active{color:var(--accent);}
+.dtable thead th .arrow{color:var(--accent);font-size:.6rem;margin-left:.2rem;}
+.dtable td{padding:.5rem .8rem;border-bottom:1px solid var(--border);}
+.dtable tbody tr:last-child td{border-bottom:none;}
+.dtable tbody tr:hover{background:var(--surface-hover);}
+.dtable .num{font-variant-numeric:tabular-nums;font-family:'JetBrains Mono',monospace;}
+.showall{margin-top:.7rem;background:none;color:var(--accent);border:none;font-family:'JetBrains Mono',monospace;
+font-size:.74rem;cursor:pointer;}
+.showall:hover{text-decoration:underline;}
+.gbtn{background:none;border:1px solid var(--border);color:var(--muted);border-radius:50%;width:20px;height:20px;
+cursor:pointer;font-size:.7rem;line-height:1;padding:0;}
+.gbtn:hover{color:var(--accent);border-color:var(--accent);}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;z-index:50;padding:20px;}
 .modal.open{display:flex;}
-.modal-card{background:var(--card);border:1px solid var(--border);border-radius:14px;max-width:560px;width:100%;max-height:80vh;overflow:auto;padding:22px;}
-.simgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:6px;}
-.simcard{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px;text-decoration:none;color:#fff;display:block;}
-.simcard:hover{border-color:var(--orange);}
-.simcard .nm{font-weight:600;font-size:14px;}
-.simcard .st{color:var(--orange);font-weight:700;font-size:13px;margin-top:4px;}
-.reasonblock{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 18px;margin-bottom:12px;}
-.reasonblock h2{margin:0 0 4px;font-size:17px;}
-.reasonblock h2 a{color:#fff;text-decoration:none;}
-.reasonblock h2 a:hover{color:var(--orange);}
-.rcount{color:var(--muted);font-size:13px;font-weight:600;}
-@media(max-width:560px){.wrap{padding:18px 12px 52px;}.trow{flex-direction:column;gap:4px;}.tlabel{width:auto;}}
+.modal-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;max-width:560px;width:100%;max-height:80vh;overflow:auto;padding:1.4rem;}
+.simgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.6rem;margin-top:.4rem;}
+.simcard{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.7rem .8rem;text-decoration:none;color:var(--text);display:block;}
+.simcard:hover{border-color:var(--accent);}
+.simcard .nm{font-weight:600;font-size:.84rem;}
+.simcard .st{color:var(--accent);font-weight:700;font-size:.76rem;margin-top:.25rem;font-family:'JetBrains Mono',monospace;}
+.reasonblock{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:.9rem 1.1rem;margin-bottom:.9rem;}
+.reasonblock h2{margin:0 0 .3rem;font-size:1rem;text-transform:none;letter-spacing:-.01em;border-bottom:none;padding-bottom:0;color:var(--text);}
+.reasonblock h2 a{color:var(--text);text-decoration:none;}
+.reasonblock h2 a:hover{color:var(--accent);}
+.rcount{color:var(--muted);font-size:.72rem;font-weight:500;font-family:'JetBrains Mono',monospace;}
+.foot{text-align:center;font-size:.72rem;color:var(--muted);margin-top:1.4rem;font-family:'JetBrains Mono',monospace;line-height:1.7;}
+@media(max-width:560px){.wrap{padding:.5rem 1rem 3rem;}.nav{padding:1rem 1rem .3rem;}.trow{flex-direction:column;gap:4px;}.tlabel{width:auto;}}
 """
 
 
@@ -670,13 +713,23 @@ def page(title, body, scripts=""):
         f"<title>{title}</title>\n"
         "<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n"
         "<link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n"
-        "<link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap\" rel=\"stylesheet\">\n"
+        "<link href=\"https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap\" rel=\"stylesheet\">\n"
         f"<style>{CSS}</style>\n</head>\n<body>\n{body}\n{scripts}\n</body>\n</html>\n"
     )
 
 
+def flag_html(flag):
+    # flag is (iso2_lower, country_name) or "" — render a flagcdn PNG image so
+    # flags display on every OS (Windows can't render flag emoji).
+    if not flag:
+        return ""
+    iso2, country = flag
+    return (f' <img src="https://flagcdn.com/24x18/{iso2}.png" width="24" height="18" '
+            f'alt="{esc(country)}" class="flag">')
+
+
 def name_with_flag(name, flag):
-    return esc(name) + (" " + esc(flag) if flag else "")
+    return esc(name) + flag_html(flag)
 
 
 # --------------------------------------------------------------------------- #
@@ -697,7 +750,7 @@ function render(){
   let rows=q?DATA.filter(r=>r[1].toLowerCase().includes(q)):DATA.slice();
   rows.sort((a,b)=>{const c=compare(a,b,sortKey);return sortAsc?c:-c;});
   if(!rows.length){tbody.innerHTML='<tr><td class="empty" colspan="5">No players match “'+escapeHtml(boxes[0].value)+'”</td></tr>';}
-  else{const f=[];for(const r of rows){f.push('<tr><td class="col-rank">'+r[0]+'</td><td class="col-player"><a class="plink" href="players/'+r[5]+'.html">'+escapeHtml(r[1])+'</a>'+(r[6]?' '+r[6]:'')+'</td><td class="col-streak">'+r[2]+'</td><td class="col-date">'+r[3]+'</td><td class="col-date">'+r[4]+'</td></tr>');}tbody.innerHTML=f.join('');}
+  else{const f=[];for(const r of rows){f.push('<tr><td class="col-rank">'+r[0]+'</td><td class="col-player"><a class="plink" href="players/'+r[5]+'.html">'+escapeHtml(r[1])+'</a>'+(r[6]?' <img src="https://flagcdn.com/24x18/'+r[6][0]+'.png" width="24" height="18" alt="'+escapeHtml(r[6][1])+'" class="flag">':'')+'</td><td class="col-streak">'+r[2]+'</td><td class="col-date">'+r[3]+'</td><td class="col-date">'+r[4]+'</td></tr>');}tbody.innerHTML=f.join('');}
   countEl.innerHTML='<b>'+rows.length+'</b> of '+DATA.length+' players';
   headers.forEach(h=>{const k=+h.dataset.key;h.classList.toggle('active',k===sortKey);const e=h.querySelector('.arrow');if(e)e.remove();if(k===sortKey){const s=document.createElement('span');s.className='arrow';s.textContent=sortAsc?'▲':'▼';h.appendChild(s);}});
 }
@@ -708,103 +761,84 @@ render();
 """
 
 
-def search_box():
+def search_box(with_count=True):
+    cnt = '<div class="count" id="count"></div>' if with_count else ''
     return ('<div class="controls"><input class="search" type="search" '
-            'placeholder="Search by player name…" autocomplete="off" spellcheck="false">'
-            '<div class="count" id="count"></div></div>')
+            'placeholder="Search the all-time leaderboard by player name…" '
+            f'autocomplete="off" spellcheck="false">{cnt}</div>')
 
 
-def leaderboard_page(title_html, data_rows, active, featured_html):
-    body = (
-        f"{nav('', active)}\n<div class=\"wrap\">\n"
-        f"<header><h1>{title_html}</h1><p class=\"subtitle\">{SUBTITLE}</p></header>\n"
-        f"{featured_html}\n"
-        f"<h2>Full Leaderboard</h2>\n{search_box()}\n"
-        "<div class=\"table-card\"><table class=\"board\" id=\"board\"><thead><tr>"
+def streak_section(title, rows):
+    """#5 static streak table: rank, player, streak, start, end."""
+    if not rows:
+        return f'<h2>{title}</h2><p class="subtitle">No active streaks reaching into 2025-26.</p>'
+    body = "".join(
+        f'<tr><td class="col-rank num">{i}</td>'
+        f'<td class="col-player"><a class="plink" href="players/{r["slug"]}.html">{esc(r["name"])}</a>'
+        f'{flag_html(r["flag"])}</td>'
+        f'<td class="num col-streak">{r["len"]}</td>'
+        f'<td class="num col-date">{r["start"]}</td>'
+        f'<td class="num col-date">{r["end"]}</td></tr>'
+        for i, r in enumerate(rows, start=1)
+    )
+    return (f'<h2>{title}</h2><div class="table-card scroll">'
+            '<table class="board"><thead><tr><th class="col-rank">#</th><th>Player</th>'
+            '<th class="col-streak">Streak</th><th>Start</th><th>End</th></tr></thead>'
+            f'<tbody>{body}</tbody></table></div>')
+
+
+def absence_section(title, rows, summaries, empty_msg):
+    """#5 static absence table: rank, player, games missed, date range, reason."""
+    if not rows:
+        return f'<h2>{title}</h2><p class="subtitle">{empty_msg}</p>'
+    body = "".join(
+        f'<tr><td class="col-rank num">{i}</td>'
+        f'<td class="col-player"><a class="plink" href="players/{summaries[a["pid"]]["slug"]}.html">'
+        f'{esc(summaries[a["pid"]]["name"])}</a>{flag_html(summaries[a["pid"]]["flag"])}</td>'
+        f'<td class="num">{a["count"]}</td>'
+        f'<td class="num">{a["frm"].isoformat()} → {a["to"].isoformat()}</td>'
+        f'<td><a class="plink" href="reasons/{a["rslug"]}.html">{esc(a["reason"])}</a></td></tr>'
+        for i, a in enumerate(rows, start=1)
+    )
+    return (f'<h2>{title}</h2><div class="table-card scroll">'
+            '<table class="board"><thead><tr><th class="col-rank">#</th><th>Player</th>'
+            '<th class="col-streak">Games Missed</th><th>Date Range</th><th>Reason</th></tr></thead>'
+            f'<tbody>{body}</tbody></table></div>')
+
+
+def leaderboard_page(title_html, board_sorted, abs_sorted, summaries, active):
+    """#5 four sections: (1) Top 25 Active Streaks, (2) All-Time Leaderboard
+    (top 250, searchable), (3) Top 25 Active Absences, (4) Longest Absences
+    All-Time (top 250). Search boxes top & bottom filter section 2 only."""
+    active_streaks = [r for r in board_sorted if r["end"] and r["end"] > ACTIVE_STR][:25]
+    active_abs = [a for a in abs_sorted if a["to"] >= ACTIVE_DATE][:25]
+    alltime_abs = abs_sorted[:250]
+    top250 = board_sorted[:250]
+    data_rows = [[idx + 1, r["name"], r["len"], r["start"], r["end"], r["slug"], r["flag"]]
+                 for idx, r in enumerate(top250)]
+
+    board_tbl = (
+        "<div class=\"table-card scroll\"><table class=\"board\" id=\"board\"><thead><tr>"
         "<th data-key=\"0\" class=\"col-rank\">Rank</th>"
         "<th data-key=\"1\">Player</th>"
         "<th data-key=\"2\" class=\"col-streak\">Streak (games)</th>"
         "<th data-key=\"3\">Start Date</th>"
         "<th data-key=\"4\">End Date</th>"
-        "</tr></thead><tbody id=\"tbody\"></tbody></table></div>\n"
-        f"{search_box()}\n</div>"
+        "</tr></thead><tbody id=\"tbody\"></tbody></table></div>"
+    )
+
+    body = (
+        f"{nav('', active)}\n<div class=\"wrap\">\n"
+        f"<header><span class=\"brand\">HoopsHype · NBA Iron Man</span>"
+        f"<h1>{title_html}</h1><p class=\"subtitle\">{SUBTITLE}</p></header>\n"
+        f"{streak_section('Top 25 Active Streaks', active_streaks)}\n"
+        f"<h2>All-Time Leaderboard</h2>\n{search_box(True)}\n{board_tbl}\n{search_box(False)}\n"
+        f"{absence_section('Top 25 Active Absences', active_abs, summaries, 'No absences reaching into 2025-26.')}\n"
+        f"{absence_section('Longest Absences All-Time', alltime_abs, summaries, 'No absences on record.')}\n"
+        "</div>"
     )
     scripts = LEADERBOARD_JS.replace("__DATA__", json.dumps(data_rows, separators=(",", ":"), ensure_ascii=False))
     return page(re.sub("<[^>]+>", "", title_html), body, scripts)
-
-
-def stat_card(title, number, name_html, daterange, href):
-    return (f'<a class="statcard" href="{href}"><div class="sctitle">{esc(title)}</div>'
-            f'<div class="scnum">{number}</div><div class="scname">{name_html}</div>'
-            f'<div class="scdate">{esc(daterange)}</div></a>')
-
-
-def featured_block(board_sorted, abs_sorted, summaries):
-    """board_sorted: list of board dicts (desc by len). abs_sorted: global absence
-    dicts (desc by count). Returns featured HTML for a leaderboard page."""
-    active_streaks = [r for r in board_sorted if r["end"] and r["end"] > ACTIVE_STR]
-    active_abs = [a for a in abs_sorted if a["to"] >= ACTIVE_DATE]
-
-    cards = []
-    if active_streaks:
-        a = active_streaks[0]
-        cards.append(stat_card("Longest Active Streak", a["len"],
-                               name_with_flag(a["name"], a["flag"]),
-                               f'{a["start"]} → {a["end"]}', f'players/{a["slug"]}.html'))
-    if board_sorted:
-        a = board_sorted[0]
-        cards.append(stat_card("Longest All-Time Streak", a["len"],
-                               name_with_flag(a["name"], a["flag"]),
-                               f'{a["start"]} → {a["end"]}', f'players/{a["slug"]}.html'))
-    if active_abs:
-        a = active_abs[0]
-        sm = summaries[a["pid"]]
-        cards.append(stat_card("Longest Active Absence", a["count"],
-                               name_with_flag(sm["name"], sm["flag"]),
-                               f'{a["frm"].isoformat()} → {a["to"].isoformat()}',
-                               f'players/{sm["slug"]}.html'))
-    if abs_sorted:
-        a = abs_sorted[0]
-        sm = summaries[a["pid"]]
-        cards.append(stat_card("Longest All-Time Absence", a["count"],
-                               name_with_flag(sm["name"], sm["flag"]),
-                               f'{a["frm"].isoformat()} → {a["to"].isoformat()}',
-                               f'players/{sm["slug"]}.html'))
-    cards_html = f'<div class="statgrid">{"".join(cards)}</div>'
-
-    # Top 25 active streaks
-    arows = []
-    for i, r in enumerate(active_streaks[:25], start=1):
-        arows.append(
-            f'<tr><td class="col-rank">{i}</td><td><a class="plink" href="players/{r["slug"]}.html">'
-            f'{esc(r["name"])}</a>{(" " + esc(r["flag"])) if r["flag"] else ""}</td>'
-            f'<td class="num">{r["len"]}</td><td class="num">{r["start"]}</td>'
-            f'<td class="num">{r["end"]}</td></tr>'
-        )
-    active_tbl = (
-        '<h2>Top 25 Active Streaks</h2>'
-        + ('<table class="dtable"><thead><tr><th>#</th><th>Player</th><th>Streak</th>'
-           '<th>Start</th><th>End</th></tr></thead><tbody>' + "".join(arows) + "</tbody></table>"
-           if arows else '<p class="subtitle">No active streaks this season.</p>')
-    )
-
-    # Top 25 longest absences all time
-    brows = []
-    for a in abs_sorted[:25]:
-        sm = summaries[a["pid"]]
-        rng = f'{a["frm"].isoformat()} → {a["to"].isoformat()}'
-        brows.append(
-            f'<tr><td><a class="plink" href="players/{sm["slug"]}.html">{esc(sm["name"])}</a>'
-            f'{(" " + esc(sm["flag"])) if sm["flag"] else ""}</td>'
-            f'<td class="num">{a["count"]}</td><td class="num">{esc(rng)}</td>'
-            f'<td><a class="plink" href="reasons/{a["rslug"]}.html">{esc(a["reason"])}</a></td></tr>'
-        )
-    abs_tbl = (
-        '<h2>Top 25 Longest Absences All Time</h2><table class="dtable"><thead><tr>'
-        '<th>Player</th><th>Games Missed</th><th>Date Range</th><th>Reason</th></tr></thead>'
-        f'<tbody>{"".join(brows)}</tbody></table>'
-    )
-    return ('<h2>Featured Stats</h2>' + cards_html + active_tbl + abs_tbl)
 
 
 # --------------------------------------------------------------------------- #
@@ -818,7 +852,8 @@ def table_showall(sec_id, headers, row_cells, top=10):
             body.append(f'<tr class="{sec_id}-x" style="display:none">{cells}</tr>')
         else:
             body.append(f"<tr>{cells}</tr>")
-    tbl = f'<table class="dtable"><thead>{head}</thead><tbody>{"".join(body)}</tbody></table>'
+    tbl = (f'<div class="table-card"><table class="dtable"><thead>{head}</thead>'
+           f'<tbody>{"".join(body)}</tbody></table></div>')
     if len(row_cells) > top:
         tbl += (f'<button class="showall" data-sec="{sec_id}" onclick="showAll(this)">'
                 f'Show all {len(row_cells)}</button>')
@@ -860,7 +895,8 @@ def player_page(pid, name, flag, data, similar, glossary_html):
             f'<span class="tteam">{esc(row["team"])}</span></div>'
             f'<div class="tsquares">{sq}</div></div>'
         )
-    timeline_html = legend + "".join(trows) if trows else '<p class="subtitle">No games on record.</p>'
+    timeline_html = (legend + '<div class="tlcard">' + "".join(trows) + '</div>'
+                     if trows else '<p class="subtitle">No games on record.</p>')
 
     # #3 iron man streaks (no Type column)
     if data["iron"]:
@@ -882,9 +918,10 @@ def player_page(pid, name, flag, data, similar, glossary_html):
             for m in data["missed"]
         )
         missed_html = (
-            '<h3>Missed Seasons (injury/illness)</h3><table class="dtable"><thead><tr><th>Season</th>'
+            '<h3>Missed Seasons (injury/illness)</h3><div class="table-card">'
+            '<table class="dtable"><thead><tr><th>Season</th>'
             '<th>Team</th><th>Games Missed</th><th>Reason</th></tr></thead>'
-            f'<tbody>{mrows}</tbody></table>'
+            f'<tbody>{mrows}</tbody></table></div>'
         )
     else:
         missed_html = ""
@@ -903,7 +940,7 @@ def player_page(pid, name, flag, data, similar, glossary_html):
 
     sim_cards = "".join(
         f'<a class="simcard" href="{esc(s["slug"])}.html">'
-        f'<div class="nm">{esc(s["name"])}{(" " + esc(s["flag"])) if s["flag"] else ""}</div>'
+        f'<div class="nm">{esc(s["name"])}{flag_html(s["flag"])}</div>'
         f'<div class="st">{s["top"]} game streak</div></a>'
         for s in similar
     )
@@ -963,7 +1000,7 @@ const tb=document.getElementById('tbody'),hs=Array.from(document.querySelectorAl
 function eh(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
 function cmp(a,b,k){let av,bv;if(k===2){av=a[6];bv=b[6];}else{av=a[k];bv=b[k];}if(NUM.has(k)){av=+av;bv=+bv;}else{av=String(av).toLowerCase();bv=String(bv).toLowerCase();}return av<bv?-1:av>bv?1:0;}
 function rnd(){let rows=D.slice().sort((a,b)=>{const c=cmp(a,b,sk);return sa?c:-c;});
- tb.innerHTML=rows.map(r=>'<tr><td><a class="plink" href="../players/'+r[4]+'.html">'+eh(r[0])+'</a>'+(r[5]?' '+r[5]:'')+'</td><td class="num">'+r[1]+'</td><td class="num">'+eh(r[2])+'</td><td>'+eh(r[3])+'</td></tr>').join('');
+ tb.innerHTML=rows.map(r=>'<tr><td><a class="plink" href="../players/'+r[4]+'.html">'+eh(r[0])+'</a>'+(r[5]?' <img src="https://flagcdn.com/24x18/'+r[5][0]+'.png" width="24" height="18" alt="'+eh(r[5][1])+'" class="flag">':'')+'</td><td class="num">'+r[1]+'</td><td class="num">'+eh(r[2])+'</td><td>'+eh(r[3])+'</td></tr>').join('');
  hs.forEach(h=>{const k=+h.dataset.key;h.classList.toggle('active',k===sk);const e=h.querySelector('.arrow');if(e)e.remove();if(k===sk){const s=document.createElement('span');s.className='arrow';s.textContent=sa?'▲':'▼';h.appendChild(s);}});}
 hs.forEach(h=>h.addEventListener('click',()=>{const k=+h.dataset.key;if(k===sk)sa=!sa;else{sk=k;sa=!(NUM.has(k)||k===2);}rnd();}));
 rnd();
@@ -1115,11 +1152,7 @@ def main():
         if i % 500 == 0:
             print(f"Generating player pages... {i}/{total}")
 
-    # ---- leaderboards ------------------------------------------------------ #
-    def board_data(rows):
-        return [[idx + 1, r["name"], r["len"], r["start"], r["end"], r["slug"], r["flag"]]
-                for idx, r in enumerate(rows)]
-
+    # ---- leaderboards (#5: four sections each) ----------------------------- #
     titles = {
         "regular": ('NBA Regular Season <span class="accent">Iron Man</span> Streaks',
                     os.path.join(BASE_DIR, "regular.html")),
@@ -1129,9 +1162,8 @@ def main():
                      os.path.join(BASE_DIR, "combined.html")),
     }
     for t, (title_html, path) in titles.items():
-        featured = featured_block(boards_sorted[t], global_absences, summaries)
         with open(path, "w", encoding="utf-8") as f:
-            f.write(leaderboard_page(title_html, board_data(boards_sorted[t]), t, featured))
+            f.write(leaderboard_page(title_html, boards_sorted[t], global_absences, summaries, t))
         print(f"Wrote {os.path.basename(path)} ({len(boards_sorted[t])} players).")
 
     # ---- reasons index + per-reason pages ---------------------------------- #

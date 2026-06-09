@@ -16,7 +16,10 @@
       "Bash(grep '\\\\.py$')",
       "Bash(python build_all.py --force)",
       "Read(//mnt/user-data/**)",
-      "Read(//mnt/user-data/uploads/**)"
+      "Read(//mnt/user-data/uploads/**)",
+      "PowerShell(python -c \"import pandas as pd; g=pd.read_csv\\('data/Games.csv',usecols=['gameId','gameDate','gameType','hometeamId','awayteamId'],low_memory=False\\); g=g[g['gameType']=='Regular Season'].copy\\(\\); g['gameDate']=pd.to_datetime\\(g['gameDate']\\); g['season']=g['gameDate'].dt.year.where\\(g['gameDate'].dt.month>=7,g['gameDate'].dt.year-1\\); sub=g[\\(g['season']==2007\\)&\\(\\(g['hometeamId']==1610612739\\)|\\(g['awayteamId']==1610612739\\)\\)]; print\\('Cle 2007-08 RS games:',len\\(sub\\)\\)\")",
+      "PowerShell(python build_all.py --force)",
+      "PowerShell(Remove-Item *)"
     ]
   }
 }

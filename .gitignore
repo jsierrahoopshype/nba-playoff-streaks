@@ -5,4 +5,6 @@ data/
 
 # Python
 __pycache__/
-"archive (1).zip"  
+
+# Archive zips (Kaggle dumps, scratch data — never commit)
+*.zip

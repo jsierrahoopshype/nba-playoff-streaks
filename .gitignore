@@ -6,5 +6,8 @@ data/
 # Python
 __pycache__/
 
+# Temp audit/verify scripts (underscore-prefixed scratch tools — never commit)
+_*.py
+
 # Archive zips (Kaggle dumps, scratch data — never commit)
 *.zip

@@ -19,7 +19,22 @@
       "Read(//mnt/user-data/uploads/**)",
       "PowerShell(python -c \"import pandas as pd; g=pd.read_csv\\('data/Games.csv',usecols=['gameId','gameDate','gameType','hometeamId','awayteamId'],low_memory=False\\); g=g[g['gameType']=='Regular Season'].copy\\(\\); g['gameDate']=pd.to_datetime\\(g['gameDate']\\); g['season']=g['gameDate'].dt.year.where\\(g['gameDate'].dt.month>=7,g['gameDate'].dt.year-1\\); sub=g[\\(g['season']==2007\\)&\\(\\(g['hometeamId']==1610612739\\)|\\(g['awayteamId']==1610612739\\)\\)]; print\\('Cle 2007-08 RS games:',len\\(sub\\)\\)\")",
       "PowerShell(python build_all.py --force)",
-      "PowerShell(Remove-Item *)"
+      "PowerShell(Remove-Item *)",
+      "PowerShell(python _verify.py)",
+      "PowerShell(python _verify2.py)",
+      "PowerShell(python _verify3.py)",
+      "PowerShell(python _verify4.py)",
+      "PowerShell(python _verify5.py)",
+      "PowerShell(python _probe.py)",
+      "PowerShell(python _probe2.py)",
+      "PowerShell(python _final.py)",
+      "PowerShell(Start-Process \"C:\\\\nba-streaks\\\\index.html\")",
+      "PowerShell(python -c \"import pandas as pd; ps=pd.read_csv\\('data/PlayerStatistics.csv',usecols=['firstName','lastName','personId','gameId','gameType','numMinutes','comment','gameDate'],low_memory=False\\); ps['gameDate']=pd.to_datetime\\(ps['gameDate']\\); kyrie=ps[\\(ps['firstName']=='Kyrie'\\)&\\(ps['lastName']=='Irving'\\)]; k25=kyrie[\\(kyrie['gameDate']>='2025-07-01'\\)]; print\\('Kyrie 2025-26 rows:',len\\(k25\\)\\); print\\(k25['comment'].value_counts\\(\\).head\\(\\)\\); print\\('---'\\); klay=ps[\\(ps['firstName']=='Klay'\\)&\\(ps['lastName']=='Thompson'\\)]; k1920=klay[\\(klay['gameDate']>='2019-07-01'\\)&\\(klay['gameDate']<'2021-07-01'\\)]; print\\('Klay 2019-21 rows:',len\\(k1920\\)\\); print\\(k1920['comment'].value_counts\\(\\).head\\(\\)\\)\")",
+      "PowerShell(python _graycheck.py)",
+      "PowerShell(python _align.py)",
+      "PowerShell(python _audit.py)",
+      "PowerShell(python _charB.py)",
+      "PowerShell(python _verifyB2.py)"
     ]
   }
 }

@@ -323,6 +323,13 @@ def build_flags(names, country_by_pid, nationalities):
 # Load games / players
 # --------------------------------------------------------------------------- #
 def nba_season(d):
+    # The 2019-20 season finished in the Orlando "bubble": the seeding games and
+    # the entire playoffs were played July–October 2020, and 2020-21 did not tip
+    # off until December 22, 2020. The usual July cutoff would misfile those bubble
+    # months as 2020-21, so force any July–November 2020 game back to 2019-20.
+    # (December 2020 falls through to the normal rule and stays 2020-21.)
+    if d.year == 2020 and 7 <= d.month <= 11:
+        return 2019
     return d.year if d.month >= 7 else d.year - 1
 
 
@@ -401,7 +408,11 @@ def load_players(game_info):
 
     # roster membership from ANY row (incl Preseason / recovered) ---------------
     gd = pd.to_datetime(df["gameDate"], errors="coerce")
-    df["season"] = gd.dt.year.where(gd.dt.month >= 7, gd.dt.year - 1)
+    season = gd.dt.year.where(gd.dt.month >= 7, gd.dt.year - 1)
+    # Same Orlando-bubble correction as nba_season(): July–November 2020 games
+    # belong to the 2019-20 season, not 2020-21.
+    season = season.mask((gd.dt.year == 2020) & gd.dt.month.between(7, 11), 2019)
+    df["season"] = season
     membership = defaultdict(set)
     mdf = df[["personId", "season", "tid"]].dropna().drop_duplicates()
     for pid, s, t in mdf.itertuples(index=False):
@@ -545,7 +556,7 @@ def analyze(pid, full, games, appeared, game_info, ts_pf, ts_reg, ts_comb, track
 
     pf_app, _ = walk_runs(build_sequence(pf_parts, pf_win, ts_pf, False), app)
     reg_app, _ = walk_runs(build_sequence(reg_parts, reg_win, ts_reg, True), app)
-    comb_app, comb_abs = walk_runs(build_sequence(comb_parts, comb_win, ts_comb, True), app)
+    comb_app, _ = walk_runs(build_sequence(comb_parts, comb_win, ts_comb, True), app)
 
     def best(runs):
         if not runs:
@@ -577,12 +588,11 @@ def analyze(pid, full, games, appeared, game_info, ts_pf, ts_reg, ts_comb, track
                          "team": ", ".join(cities)})
     iron.sort(key=lambda x: x["games"], reverse=True)
 
-    # #4 unified absences from the COMBINED sequence (no Type column)
-    absences = [absence_record(run, prows, game_info) for run in comb_abs]
-    absences.sort(key=lambda a: (a["count"], a["days"]), reverse=True)
-
-    res = {"streaks": streaks, "iron": iron, "absences": absences}
+    res = {"streaks": streaks, "iron": iron, "absences": []}
     if full:
+        # #4 absences on the SAME full basis as the timeline: maximal runs of
+        # consecutive missed (red) games across every rostered team-season.
+        res["absences"] = career_missed_runs(prows, app, game_info, ts_comb, member_seasons)
         res["missed"] = missed_seasons(prows, app, game_info, ts_comb, tracked)
         res["timeline"] = build_timeline(prows, app, game_info, ts_comb, member_seasons)
     return res
@@ -623,21 +633,33 @@ def missed_seasons(prows, app, game_info, ts_comb, tracked_seasons=None):
     return out
 
 
-def build_timeline(prows, app, game_info, ts_comb, member_seasons=()):
-    """#2: show the FULL team schedule (game 1 -> last) for every season the
-    player was rostered. Games before the player's first appearance/row show as
-    red (team played, player wasn't there)."""
-    roster = set()
-    for gid, row in prows.items():
-        roster.add((nba_season(game_info[gid][0]), row[0]))
+def classify_square(gid, prows, app):
+    """The ONE per-game classifier shared by the timeline, the absences table and
+    the games-played bar so they can never disagree:
+      g  = played (numMinutes > 0)
+      d  = explicitly non-injury DNP (coach / rest / personal / ... )  [gray]
+      r  = MISSED: injury/illness DNP, an unspecified DNP, or no row at all while
+           the team played and the player was rostered that season         [red]
+    Classifies on the NORMALIZED reason so 'NWT - Sprained Ankle' reads as the
+    injury (red), not as the administrative NWT prefix (gray)."""
+    if gid in app:
+        return "g"
+    row = prows.get(gid)
+    if row is not None and row[2] and is_noninjury_dnp(normalize_reason(row[2])):
+        return "d"
+    return "r"
 
-    # #3 (Option B2): also show a fully-missed season when a REAL PlayerStatistics
+
+def rostered_seasons(prows, app, game_info, ts_comb, member_seasons):
+    """The B2 set of (season, teamId) the player was rostered on — the single
+    source of truth for which team-seasons the timeline, absences and games-played
+    bar all draw from."""
+    roster = set((nba_season(game_info[g][0]), prows[g][0]) for g in prows)
+    # #3 (Option B2): also include a fully-missed season when a REAL PlayerStatistics
     # row (any gameType, incl Preseason / recovered) ties the player to that team
-    # that season — e.g. Klay 2019-20 & 2020-21 (Preseason Warriors rows), Embiid
-    # 2014-16. No before/after inference, so overseas/out-of-league gaps aren't
-    # invented. B2: drop a filled season if the player actually APPEARED for a
-    # DIFFERENT team that same season (a preseason-cameo-then-traded case, e.g.
-    # Harden's 2012-13 Oklahoma City preseason row before being dealt to Houston).
+    # that season (Klay 2019-21, Embiid 2014-16). No before/after inference; and drop
+    # it if the player actually APPEARED for a DIFFERENT team that season (preseason
+    # cameo then traded, e.g. Harden's 2012-13 Oklahoma City row).
     app_teams = defaultdict(set)
     for gid in app:
         app_teams[nba_season(game_info[gid][0])].add(prows[gid][0])
@@ -645,9 +667,39 @@ def build_timeline(prows, app, game_info, ts_comb, member_seasons=()):
         if (s, tid) in roster or not ts_comb.get((tid, s)):
             continue
         if any(t != tid for t in app_teams.get(s, ())):
-            continue  # played for another team that season -> not a full-season absence here
+            continue
         roster.add((s, tid))
+    return roster
 
+
+def career_missed_runs(prows, app, game_info, ts_comb, member_seasons):
+    """Every game across the player's rostered team-seasons, classified, then split
+    into maximal runs of consecutive MISSED (red) games -> absence records. Same
+    basis as the timeline, so a red square anywhere is a missed game here too."""
+    roster = rostered_seasons(prows, app, game_info, ts_comb, member_seasons)
+    seq = []
+    for (s, tid) in roster:
+        for (d, gid) in ts_comb.get((tid, s), ()):
+            seq.append((d, gid, classify_square(gid, prows, app)))
+    seq.sort(key=lambda x: (x[0], x[1]))
+    runs, cur = [], []
+    for (d, gid, cls) in seq:
+        if cls == "r":
+            cur.append((d, gid))
+        elif cur:
+            runs.append(cur)
+            cur = []
+    if cur:
+        runs.append(cur)
+    out = [absence_record(run, prows, game_info) for run in runs]
+    out.sort(key=lambda a: (a["count"], a["days"]), reverse=True)
+    return out
+
+
+def build_timeline(prows, app, game_info, ts_comb, member_seasons=()):
+    """#2: show the FULL team schedule (game 1 -> last) for every season the player
+    was rostered (rostered_seasons). Games the player missed render red."""
+    roster = rostered_seasons(prows, app, game_info, ts_comb, member_seasons)
     rows = []
     for (s, tid) in roster:
         allg = list(ts_comb.get((tid, s), ()))
@@ -668,26 +720,18 @@ def _trow(season, kind, tid, games, prows, app, game_info):
     for (d, gid) in games:
         opp_city_name, _opp_name, home = opponent_and_home(game_info, gid, tid)
         vs = "vs" if home else "@"
+        cls = classify_square(gid, prows, app)
         row = prows.get(gid)
-        if gid in app:
-            cls = "g"
+        if cls == "g":
             _, mins, _, pts, ast, reb, _ = row
             detail = f"{int(round(mins))} min · {int(pts)} pts · {int(reb)} reb · {int(ast)} ast"
+        elif cls == "d":
+            detail = f"DNP: {normalize_reason(row[2])}"
         elif row is not None and row[2]:
-            # Classify on the NORMALIZED reason (administrative DNP/DND/NWT prefixes
-            # stripped), so "NWT - Sprained Ankle" reads as the injury, not as NWT.
-            reason = normalize_reason(row[2])
-            if is_noninjury_dnp(reason):
-                cls = "d"  # explicitly non-injury healthy scratch -> gray DNP
-                detail = f"DNP: {reason}"
-            else:
-                cls = "r"  # injury/illness DNP, or unspecified -> red (missed)
-                detail = f"Missed: {reason}"
+            detail = f"Missed: {normalize_reason(row[2])}"
         elif row is not None:
-            cls = "r"  # 0-min row, no reason given -> missed
             detail = "Missed (did not play)"
         else:
-            cls = "r"
             detail = "Missed (team played, no record for player)"
         squares.append((cls, f"{d.isoformat()} · {vs} {opp_city_name} · {detail}"))
     return {"sort": games[0][0], "label": label, "team": city, "squares": squares}
@@ -825,6 +869,7 @@ font-family:'JetBrains Mono',monospace;}
 .gplegend span{display:inline-flex;align-items:center;gap:.4rem;}
 .gplegend .sw{width:11px;height:11px;border-radius:2px;display:inline-block;}
 .gplegend .sw.g{background:var(--green);}.gplegend .sw.r{background:var(--red);}.gplegend .sw.d{background:var(--gray);}
+.gpsub{margin-top:.55rem;padding-top:.55rem;border-top:1px solid var(--border);font-size:.78rem;color:var(--muted);font-family:'JetBrains Mono',monospace;}
 .showall{margin-top:.7rem;background:none;color:var(--accent);border:none;font-family:'JetBrains Mono',monospace;
 font-size:.74rem;cursor:pointer;}
 .showall:hover{text-decoration:underline;}
@@ -864,39 +909,42 @@ def nav(prefix, active):
 
 
 def global_search(prefix):
-    """#11: a name search on every page that jumps to a player's page."""
-    return ('<div class="psearch-wrap"><input id="psearch" class="psearch" type="search" '
+    """#11: a name search that jumps to a player's page. Class-based (no ids) so a
+    page can have more than one (e.g. player pages: top and bottom)."""
+    return ('<div class="psearch-wrap"><input class="psearch" type="search" '
             'placeholder="Search any player by name…" autocomplete="off" spellcheck="false">'
-            '<div class="ac" id="psearch-ac" role="listbox"></div></div>')
+            '<div class="ac" role="listbox"></div></div>')
 
 
 GLOBAL_SEARCH_JS = r"""
 <script>
 (function(){
   var idx=window.PLAYER_INDEX||[];
-  var inp=document.getElementById('psearch'),ac=document.getElementById('psearch-ac');
-  if(!inp||!ac)return;
-  var sel=-1,items=[];
   function esc(s){return String(s).replace(/[&<>"]/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]);});}
   function build(q){q=q.toLowerCase();var st=[],co=[];
     for(var i=0;i<idx.length;i++){var n=idx[i][0].toLowerCase(),p=n.indexOf(q);
       if(p===0)st.push(idx[i]);else if(p>0)co.push(idx[i]);
       if(st.length>=15)break;}
     return st.concat(co).slice(0,12);}
-  function render(){var q=inp.value.trim();
-    if(q.length<2){ac.classList.remove('open');items=[];sel=-1;return;}
-    items=build(q);
-    if(!items.length){ac.innerHTML='<div class="ac-empty">No players found</div>';ac.classList.add('open');return;}
-    ac.innerHTML=items.map(function(m,i){return '<a class="ac-item'+(i===sel?' sel':'')+'" href="'+PLAYER_PREFIX+m[1]+'.html">'+esc(m[0])+'</a>';}).join('');
-    ac.classList.add('open');}
-  inp.addEventListener('input',function(){sel=-1;render();});
-  inp.addEventListener('keydown',function(e){
-    if(!items.length)return;
-    if(e.key==='ArrowDown'){e.preventDefault();sel=(sel+1)%items.length;render();}
-    else if(e.key==='ArrowUp'){e.preventDefault();sel=(sel-1+items.length)%items.length;render();}
-    else if(e.key==='Enter'&&sel>=0){e.preventDefault();window.location.href=PLAYER_PREFIX+items[sel][1]+'.html';}
-    else if(e.key==='Escape'){ac.classList.remove('open');}});
-  inp.addEventListener('blur',function(){setTimeout(function(){ac.classList.remove('open');},150);});
+  function wire(inp){
+    var ac=inp.parentNode.querySelector('.ac'); if(!ac)return;
+    var sel=-1,items=[];
+    function render(){var q=inp.value.trim();
+      if(q.length<2){ac.classList.remove('open');items=[];sel=-1;return;}
+      items=build(q);
+      if(!items.length){ac.innerHTML='<div class="ac-empty">No players found</div>';ac.classList.add('open');return;}
+      ac.innerHTML=items.map(function(m,i){return '<a class="ac-item'+(i===sel?' sel':'')+'" href="'+PLAYER_PREFIX+m[1]+'.html">'+esc(m[0])+'</a>';}).join('');
+      ac.classList.add('open');}
+    inp.addEventListener('input',function(){sel=-1;render();});
+    inp.addEventListener('keydown',function(e){
+      if(!items.length)return;
+      if(e.key==='ArrowDown'){e.preventDefault();sel=(sel+1)%items.length;render();}
+      else if(e.key==='ArrowUp'){e.preventDefault();sel=(sel-1+items.length)%items.length;render();}
+      else if(e.key==='Enter'&&sel>=0){e.preventDefault();window.location.href=PLAYER_PREFIX+items[sel][1]+'.html';}
+      else if(e.key==='Escape'){ac.classList.remove('open');}});
+    inp.addEventListener('blur',function(){setTimeout(function(){ac.classList.remove('open');},150);});
+  }
+  document.querySelectorAll('.psearch').forEach(wire);
 })();
 </script>
 """
@@ -954,7 +1002,7 @@ function render(){
   let rows=q?DATA.filter(r=>r[1].toLowerCase().includes(q)):DATA.slice();
   rows.sort((a,b)=>{const c=compare(a,b,sortKey);return sortAsc?c:-c;});
   if(!rows.length){tbody.innerHTML='<tr><td class="empty" colspan="6">No players match “'+escapeHtml(boxes[0].value)+'”</td></tr>';}
-  else{const f=[];for(const r of rows){f.push('<tr><td class="col-rank">'+r[0]+'</td><td class="col-player"><a class="plink" href="players/'+r[5]+'.html">'+escapeHtml(r[1])+'</a>'+(r[6]?' <img class="flag-img" src="https://flagcdn.com/h20/'+r[6][0]+'.png" srcset="https://flagcdn.com/h40/'+r[6][0]+'.png 2x" height="14" alt="'+escapeHtml(r[6][1])+'" title="'+escapeHtml(r[6][1])+'" loading="lazy">':'')+'</td><td class="col-team">'+escapeHtml(r[7]||'')+'</td><td class="col-streak">'+r[2]+'</td><td class="col-date">'+fmtDate(r[3])+'</td><td class="col-date">'+fmtDate(r[4])+'</td></tr>');}tbody.innerHTML=f.join('');}
+  else{const f=[];for(const r of rows){f.push('<tr><td class="col-rank">'+r[0]+'</td><td class="col-player"><a class="plink" href="players/'+r[5]+'.html">'+escapeHtml(r[1])+'</a>'+(r[6]?' <img class="flag-img" src="https://flagcdn.com/h20/'+r[6][0]+'.png" srcset="https://flagcdn.com/h40/'+r[6][0]+'.png 2x" height="14" alt="'+escapeHtml(r[6][1])+'" title="'+escapeHtml(r[6][1])+'" loading="lazy">':'')+'</td><td class="col-streak">'+r[2]+'</td><td class="col-date">'+fmtDate(r[3])+'</td><td class="col-date">'+fmtDate(r[4])+'</td><td class="col-team">'+escapeHtml(r[7]||'')+'</td></tr>');}tbody.innerHTML=f.join('');}
   countEl.innerHTML='<b>'+rows.length+'</b> of '+DATA.length+' players';
   headers.forEach(h=>{const k=+h.dataset.key;h.classList.toggle('active',k===sortKey);const e=h.querySelector('.arrow');if(e)e.remove();if(k===sortKey){const s=document.createElement('span');s.className='arrow';s.textContent=sortAsc?'▲':'▼';h.appendChild(s);}});
 }
@@ -980,15 +1028,15 @@ def streak_section(title, rows):
         f'<tr><td class="col-rank">{i}</td>'
         f'<td class="col-player"><a class="plink" href="players/{r["slug"]}.html">{esc(r["name"])}</a>'
         f'{flag_html(r["flag"])}</td>'
-        f'<td class="col-team">{esc(r["team"])}</td>'
         f'<td class="col-streak">{r["len"]}</td>'
-        f'<td class="col-date">{fmt_iso(r["start"])}</td></tr>'
+        f'<td class="col-date">{fmt_iso(r["start"])}</td>'
+        f'<td class="col-team">{esc(r["team"])}</td></tr>'   # #3: Team column last
         for i, r in enumerate(rows, start=1)
     )
     return (f'<h2>{title}</h2><div class="table-card">'
             '<table class="board"><thead><tr><th class="col-rank">#</th><th>Player</th>'
-            '<th class="col-team">Team</th><th class="col-streak">Streak</th>'
-            '<th class="col-date">Started</th></tr></thead>'
+            '<th class="col-streak">Streak</th><th class="col-date">Started</th>'
+            '<th class="col-team">Team</th></tr></thead>'
             f'<tbody>{body}</tbody></table></div>')
 
 
@@ -1004,10 +1052,10 @@ def leaderboard_page(title_html, board_sorted, active):
         "<div class=\"table-card\"><table class=\"board\" id=\"board\"><thead><tr>"
         "<th data-key=\"0\" class=\"col-rank\">Rank</th>"
         "<th data-key=\"1\">Player</th>"
-        "<th data-key=\"7\" class=\"col-team\">Team</th>"
         "<th data-key=\"2\" class=\"col-streak\">Streak (games)</th>"
         "<th data-key=\"3\" class=\"col-date\">Start Date</th>"
         "<th data-key=\"4\" class=\"col-date\">End Date</th>"
+        "<th data-key=\"7\" class=\"col-team\">Team</th>"
         "</tr></thead><tbody id=\"tbody\"></tbody></table></div>"
     )
 
@@ -1095,20 +1143,37 @@ def player_page(pid, name, flag, data, similar, glossary_html, pct_lens):
 
     # #5 career games-played bar: counts across every game the player's teams played
     # while he was rostered (same green/red/gray buckets as the timeline squares).
+    # The stacked bar is COMBINED (regular season + playoffs); a secondary line below
+    # gives the regular-season-only split (playoff timeline rows are labelled
+    # "… Playoffs", so anything without that is a regular-season row).
     gc = rc = dc = 0
+    rgc = rrc = rdc = 0
     for row in data["timeline"]:
+        is_reg = "Playoffs" not in row["label"]
         for cls, _ in row["squares"]:
             if cls == "g":
                 gc += 1
+                rgc += is_reg
             elif cls == "r":
                 rc += 1
+                rrc += is_reg
             else:
                 dc += 1
+                rdc += is_reg
     gp_total = gc + rc + dc
+    rg_total = rgc + rrc + rdc
     if gp_total:
-        def _pct(x):
-            return round(100 * x / gp_total, 1)
+        def _pct(x, tot=gp_total):
+            return round(100 * x / tot, 1)
         pg, pr, pd = _pct(gc), _pct(rc), _pct(dc)
+        reg_line = ""
+        if rg_total:
+            rpg, rpr, rpd = _pct(rgc, rg_total), _pct(rrc, rg_total), _pct(rdc, rg_total)
+            reg_line = (
+                '<div class="gpsub">Regular season only: '
+                f'Played {rpg}% ({rgc:,}) · Missed {rpr}% ({rrc:,}) · '
+                f'DNP {rpd}% ({rdc:,}) — {rg_total:,} games</div>'
+            )
         gp_html = (
             '<div class="gpwrap"><div class="gpbar">'
             f'<div class="gpseg g" style="width:{pg}%"></div>'
@@ -1118,7 +1183,8 @@ def player_page(pid, name, flag, data, similar, glossary_html, pct_lens):
             f'<span><i class="sw g"></i> Played {pg}% ({gc:,})</span>'
             f'<span><i class="sw r"></i> Missed {pr}% ({rc:,})</span>'
             f'<span><i class="sw d"></i> DNP {pd}% ({dc:,})</span>'
-            f'<span>{gp_total:,} team games while rostered</span></div></div>'
+            f'<span>{gp_total:,} team games while rostered</span></div>'
+            f'{reg_line}</div>'
         )
     else:
         gp_html = '<p class="subtitle">No games on record.</p>'
@@ -1182,6 +1248,7 @@ def player_page(pid, name, flag, data, similar, glossary_html, pct_lens):
         f'<section><h2>Absences <button class="gbtn" title="What do these codes mean?" onclick="og()">ⓘ</button></h2>'
         f"{missed_html}{abs_html}</section>\n"
         f'<section><h2>Similar Players</h2><div class="simgrid">{sim_cards}</div></section>\n'
+        f'{global_search("../")}\n'   # #4: search box at the bottom too
         f'<a class="backtop" href="{back_href}">← Back to {back_name} Leaderboard</a>\n</div>\n'
         f'<div class="modal" id="gmodal" onclick="cg(event)"><div class="modal-card">'
         f'<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">'

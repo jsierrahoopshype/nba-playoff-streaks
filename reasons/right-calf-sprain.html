@@ -136,6 +136,7 @@ font-family:'JetBrains Mono',monospace;}
 .gplegend span{display:inline-flex;align-items:center;gap:.4rem;}
 .gplegend .sw{width:11px;height:11px;border-radius:2px;display:inline-block;}
 .gplegend .sw.g{background:var(--green);}.gplegend .sw.r{background:var(--red);}.gplegend .sw.d{background:var(--gray);}
+.gpsub{margin-top:.55rem;padding-top:.55rem;border-top:1px solid var(--border);font-size:.78rem;color:var(--muted);font-family:'JetBrains Mono',monospace;}
 .showall{margin-top:.7rem;background:none;color:var(--accent);border:none;font-family:'JetBrains Mono',monospace;
 font-size:.74rem;cursor:pointer;}
 .showall:hover{text-decoration:underline;}
@@ -162,7 +163,7 @@ cursor:pointer;font-size:.7rem;line-height:1;padding:0;}
 <body>
 <nav class="nav"><a href="../regular.html">Regular Season</a><a href="../playoffs.html">Playoffs</a><a href="../index.html">Combined</a><a href="../reasons.html" class="active">Absence Reasons</a></nav>
 <div class="wrap">
-<div class="psearch-wrap"><input id="psearch" class="psearch" type="search" placeholder="Search any player by name…" autocomplete="off" spellcheck="false"><div class="ac" id="psearch-ac" role="listbox"></div></div>
+<div class="psearch-wrap"><input class="psearch" type="search" placeholder="Search any player by name…" autocomplete="off" spellcheck="false"><div class="ac" role="listbox"></div></div>
 <a class="backtop" href="../reasons.html">← Back to all Absence Reasons</a>
 <header><h1>Right Calf Sprain</h1><p class="subtitle">1 games missed across 1 players with this reason.</p></header>
 <div class="table-card"><table class="dtable" style="margin:0;"><thead><tr><th data-key="0">Player</th><th data-key="1" class="num">Games Missed</th><th data-key="2" class="num">Date Range</th><th data-key="3">Team</th></tr></thead><tbody id="tbody"></tbody></table></div>
@@ -188,29 +189,31 @@ rnd();
 <script>
 (function(){
   var idx=window.PLAYER_INDEX||[];
-  var inp=document.getElementById('psearch'),ac=document.getElementById('psearch-ac');
-  if(!inp||!ac)return;
-  var sel=-1,items=[];
   function esc(s){return String(s).replace(/[&<>"]/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]);});}
   function build(q){q=q.toLowerCase();var st=[],co=[];
     for(var i=0;i<idx.length;i++){var n=idx[i][0].toLowerCase(),p=n.indexOf(q);
       if(p===0)st.push(idx[i]);else if(p>0)co.push(idx[i]);
       if(st.length>=15)break;}
     return st.concat(co).slice(0,12);}
-  function render(){var q=inp.value.trim();
-    if(q.length<2){ac.classList.remove('open');items=[];sel=-1;return;}
-    items=build(q);
-    if(!items.length){ac.innerHTML='<div class="ac-empty">No players found</div>';ac.classList.add('open');return;}
-    ac.innerHTML=items.map(function(m,i){return '<a class="ac-item'+(i===sel?' sel':'')+'" href="'+PLAYER_PREFIX+m[1]+'.html">'+esc(m[0])+'</a>';}).join('');
-    ac.classList.add('open');}
-  inp.addEventListener('input',function(){sel=-1;render();});
-  inp.addEventListener('keydown',function(e){
-    if(!items.length)return;
-    if(e.key==='ArrowDown'){e.preventDefault();sel=(sel+1)%items.length;render();}
-    else if(e.key==='ArrowUp'){e.preventDefault();sel=(sel-1+items.length)%items.length;render();}
-    else if(e.key==='Enter'&&sel>=0){e.preventDefault();window.location.href=PLAYER_PREFIX+items[sel][1]+'.html';}
-    else if(e.key==='Escape'){ac.classList.remove('open');}});
-  inp.addEventListener('blur',function(){setTimeout(function(){ac.classList.remove('open');},150);});
+  function wire(inp){
+    var ac=inp.parentNode.querySelector('.ac'); if(!ac)return;
+    var sel=-1,items=[];
+    function render(){var q=inp.value.trim();
+      if(q.length<2){ac.classList.remove('open');items=[];sel=-1;return;}
+      items=build(q);
+      if(!items.length){ac.innerHTML='<div class="ac-empty">No players found</div>';ac.classList.add('open');return;}
+      ac.innerHTML=items.map(function(m,i){return '<a class="ac-item'+(i===sel?' sel':'')+'" href="'+PLAYER_PREFIX+m[1]+'.html">'+esc(m[0])+'</a>';}).join('');
+      ac.classList.add('open');}
+    inp.addEventListener('input',function(){sel=-1;render();});
+    inp.addEventListener('keydown',function(e){
+      if(!items.length)return;
+      if(e.key==='ArrowDown'){e.preventDefault();sel=(sel+1)%items.length;render();}
+      else if(e.key==='ArrowUp'){e.preventDefault();sel=(sel-1+items.length)%items.length;render();}
+      else if(e.key==='Enter'&&sel>=0){e.preventDefault();window.location.href=PLAYER_PREFIX+items[sel][1]+'.html';}
+      else if(e.key==='Escape'){ac.classList.remove('open');}});
+    inp.addEventListener('blur',function(){setTimeout(function(){ac.classList.remove('open');},150);});
+  }
+  document.querySelectorAll('.psearch').forEach(wire);
 })();
 </script>
 

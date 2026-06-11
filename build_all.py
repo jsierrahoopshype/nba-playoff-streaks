@@ -771,13 +771,13 @@ border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.12);max-height:20rem;overflo
 .ac-empty{padding:.7rem .8rem;color:var(--muted);font-size:.8rem;text-align:center;}
 
 /* nav tabs */
-.nav{display:flex;gap:.3rem;flex-wrap:wrap;max-width:1100px;margin:0 auto;padding:1.5rem 1.5rem .3rem;}
+.nav{display:flex;gap:.3rem;flex-wrap:wrap;max-width:1280px;margin:0 auto;padding:1.5rem 1.5rem .3rem;}
 .nav a{font-family:'JetBrains Mono',monospace;font-size:.72rem;font-weight:600;padding:.4rem .8rem;
 border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--muted);text-decoration:none;}
 .nav a:hover{border-color:var(--accent);color:var(--accent);}
 .nav a.active{background:var(--accent);border-color:var(--accent);color:#fff;}
 
-.wrap{max-width:1100px;margin:0 auto;padding:.5rem 1.5rem 4rem;}
+.wrap{max-width:1280px;margin:0 auto;padding:.5rem 1.5rem 4rem;}
 header{margin-bottom:1rem;}
 .brand{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--muted);
 text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:.3rem;}
@@ -801,8 +801,10 @@ font-size:.9rem;font-family:inherit;padding:.6rem .8rem;outline:none;transition:
 .count{color:var(--muted);font-size:.74rem;}
 .count b{color:var(--text);font-weight:600;}
 
-/* #3: section boxes expand to fit their rows — no internal scroll containers */
-.table-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+/* Section boxes: scroll horizontally WITHIN the card if a row is wider than the
+   viewport (mobile, or a rare 4–5 team streak) instead of clipping the Team column
+   or forcing the whole page to scroll. On desktop the content fits, so no scrollbar. */
+.table-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow-x:auto;}
 table.board{width:100%;border-collapse:collapse;font-size:.86rem;}
 table.board thead th{background:var(--surface-hover);color:var(--muted);text-align:left;
 font-weight:600;font-size:.66rem;letter-spacing:.04em;text-transform:uppercase;padding:.6rem .7rem;
@@ -815,8 +817,16 @@ table.board th.col-rank,table.board td.col-rank,
 table.board th.col-streak,table.board td.col-streak,
 table.board th.col-date,table.board td.col-date{text-align:center;}
 table.board th.col-team,table.board td.col-team{text-align:left;}
-table.board tbody td{padding:.5rem .7rem;border-bottom:1px solid var(--border);white-space:nowrap;
+/* Team column a hair smaller so even multi-city streaks fit on one line. NO
+   width:100% — a percentage width on a nowrap cell makes the browser size the whole
+   table past the card, pushing this last column off the right edge (the real cause
+   of the "Por..." cut-off). Let table-layout:auto size it from content instead. */
+table.board td.col-team{font-size:.76rem;}
+table.board thead th{padding:.6rem .55rem;}
+table.board tbody td{padding:.5rem .55rem;border-bottom:1px solid var(--border);white-space:nowrap;
 font-family:'JetBrains Mono',monospace;font-weight:500;font-variant-numeric:tabular-nums;}
+/* utility: keep a cell on one line (e.g. the Iron Man "Teams" list) */
+.nowrapcell{white-space:nowrap;}
 table.board tbody td.col-player{font-family:'DM Sans',sans-serif;text-align:left;}
 table.board tbody tr:last-child td{border-bottom:none;}
 table.board tbody tr:hover{background:var(--surface-hover);}
@@ -890,7 +900,51 @@ cursor:pointer;font-size:.7rem;line-height:1;padding:0;}
 .reasonblock h2 a:hover{color:var(--accent);}
 .rcount{color:var(--muted);font-size:.72rem;font-weight:500;font-family:'JetBrains Mono',monospace;}
 .foot{text-align:center;font-size:.72rem;color:var(--muted);margin-top:1.4rem;font-family:'JetBrains Mono',monospace;line-height:1.7;}
-@media(max-width:560px){.wrap{padding:.5rem 1rem 3rem;}.nav{padding:1rem 1rem .3rem;}.trow{flex-direction:column;gap:4px;}.tlabel{width:auto;}}
+/* Mobile (<=720px): turn every leaderboard / data table into a stacked list of
+   cards (Media Vote Tracker pattern) so the PAGE never scrolls horizontally. The
+   table/thead/tbody/tr/td go display:block; thead is hidden; each <tr> becomes a
+   rounded card and each <td> becomes a "LABEL ........ value" line via data-label. */
+@media(max-width:720px){
+.wrap{padding:.5rem .9rem 3rem;}
+.nav{padding:1rem .9rem .3rem;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.nav a{flex:0 0 auto;}
+h1{font-size:1.3rem;}h2{font-size:1.05rem;margin:1.5rem 0 .6rem;}
+.gpwrap{padding:.8rem .9rem;}.gplegend{gap:.7rem 1rem;font-size:.74rem;}.gpsub{font-size:.72rem;}
+.sq{width:9px;height:9px;margin:1px;}.tsquares{line-height:1;}
+
+/* scope to tables inside a .table-card so the small reasons-index lists are untouched.
+   Each <td> is display:block with the label ABSOLUTELY pinned left and the value
+   flowing in a left-padded region, so long values wrap inside the card (a flex
+   space-between row would let them spill past the right edge -> horizontal scroll). */
+.table-card{overflow:visible;border:none;background:transparent;border-radius:0;}
+.table-card table.board,.table-card table.board tbody,
+.table-card table.dtable,.table-card table.dtable tbody{display:block;width:100%;}
+.table-card table.board thead,.table-card table.dtable thead{display:none;}
+.table-card table.board tbody tr,.table-card table.dtable tbody tr{display:block;position:relative;
+background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:.7rem 3rem .7rem .9rem;margin-bottom:.6rem;}
+.table-card table.board tbody tr:hover,.table-card table.dtable tbody tr:hover{background:var(--surface);}
+.table-card table.board tbody td,.table-card table.dtable td{display:block;position:relative;border:none;
+white-space:normal;text-align:left;padding:.14rem 0 .14rem 6.4rem;font-size:.86rem;line-height:1.4;min-height:1.5em;
+overflow-wrap:anywhere;}
+.table-card table.board tbody td::before,.table-card table.dtable td::before{content:attr(data-label);
+position:absolute;left:0;top:.2rem;width:5.9rem;font-family:'DM Sans',sans-serif;font-size:.6rem;font-weight:700;
+text-transform:uppercase;letter-spacing:.05em;color:var(--muted);line-height:1.3;}
+.table-card table.dtable td.nowrapcell{white-space:normal;}
+/* a cell with no data-label (e.g. the empty-search row) shouldn't reserve a label gutter */
+.table-card td:not([data-label]){padding-left:0;}
+.table-card td:not([data-label])::before{content:none;}
+/* rank: small, pinned top-right, no label */
+.table-card table.board tbody td.col-rank{position:absolute;top:.55rem;right:.85rem;padding:0;font-size:.66rem;color:var(--muted);min-height:0;}
+.table-card table.board tbody td.col-rank::before{display:none;}
+/* player name: prominent, full-width, no label/indent */
+.table-card table.board tbody td.col-player{padding:0 0 .3rem;font-family:'DM Sans',sans-serif;font-size:1.02rem;font-weight:600;}
+.table-card table.board tbody td.col-player::before{display:none;}
+/* streak: big accent value (label stays small via ::before) */
+.table-card table.board tbody td.col-streak{font-size:1.1rem;font-weight:700;color:var(--accent);}
+/* dtable lead column (Games / Games Missed): emphasised accent value */
+.table-card table.dtable tbody td:first-child{font-size:1rem;font-weight:700;color:var(--accent);}
+}
+@media(max-width:560px){.wrap{padding:.5rem 1rem 3rem;}.nav{padding:1rem 1rem .3rem;}.trow{flex-direction:column;gap:4px;}.tlabel{width:auto;}.sq{width:8px;height:8px;}}
 """
 
 
@@ -950,14 +1004,23 @@ GLOBAL_SEARCH_JS = r"""
 """
 
 
-def page(title, body, scripts="", prefix=""):
+def page(title, body, scripts="", prefix="", meta_desc=""):
     # #11: every page loads the shared player index and wires the global search.
     search = (f'<script>var PLAYER_PREFIX={json.dumps(prefix + "players/")};</script>\n'
               f'<script src="{prefix}search-index.js"></script>\n{GLOBAL_SEARCH_JS}')
+    # SEO: a meta description + Open Graph title/description for search and social.
+    meta_tags = ""
+    if meta_desc:
+        d, t = esc(meta_desc), esc(title)
+        meta_tags = (f"<meta name=\"description\" content=\"{d}\">\n"
+                     f"<meta property=\"og:title\" content=\"{t}\">\n"
+                     f"<meta property=\"og:description\" content=\"{d}\">\n"
+                     f"<meta property=\"og:type\" content=\"website\">\n")
     return (
         "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n"
         "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n"
         f"<title>{title}</title>\n"
+        f"{meta_tags}"
         "<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n"
         "<link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n"
         "<link href=\"https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap\" rel=\"stylesheet\">\n"
@@ -994,7 +1057,9 @@ const tbody=document.getElementById('tbody'),countEl=document.getElementById('co
 headers=Array.from(document.querySelectorAll('#board thead th')),
 boxes=Array.from(document.querySelectorAll('.search'));
 function escapeHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
-const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+/* Abbreviated months on the leaderboard so two date columns + the Team column all
+   fit one line at >=1200px (player-page tables keep full month names). */
+const MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 function fmtDate(s){if(!s)return '';var p=s.split('-');return MONTHS[(+p[1])-1]+' '+(+p[2])+', '+p[0];}
 function compare(a,b,k){let av=a[k],bv=b[k];if(NUMERIC.has(k)){av=+av;bv=+bv;}else if(DATES.has(k)){av=av||'';bv=bv||'';}else{av=String(av).toLowerCase();bv=String(bv).toLowerCase();}return av<bv?-1:av>bv?1:0;}
 function render(){
@@ -1002,7 +1067,7 @@ function render(){
   let rows=q?DATA.filter(r=>r[1].toLowerCase().includes(q)):DATA.slice();
   rows.sort((a,b)=>{const c=compare(a,b,sortKey);return sortAsc?c:-c;});
   if(!rows.length){tbody.innerHTML='<tr><td class="empty" colspan="6">No players match “'+escapeHtml(boxes[0].value)+'”</td></tr>';}
-  else{const f=[];for(const r of rows){f.push('<tr><td class="col-rank">'+r[0]+'</td><td class="col-player"><a class="plink" href="players/'+r[5]+'.html">'+escapeHtml(r[1])+'</a>'+(r[6]?' <img class="flag-img" src="https://flagcdn.com/h20/'+r[6][0]+'.png" srcset="https://flagcdn.com/h40/'+r[6][0]+'.png 2x" height="14" alt="'+escapeHtml(r[6][1])+'" title="'+escapeHtml(r[6][1])+'" loading="lazy">':'')+'</td><td class="col-streak">'+r[2]+'</td><td class="col-date">'+fmtDate(r[3])+'</td><td class="col-date">'+fmtDate(r[4])+'</td><td class="col-team">'+escapeHtml(r[7]||'')+'</td></tr>');}tbody.innerHTML=f.join('');}
+  else{const f=[];for(const r of rows){f.push('<tr><td class="col-rank" data-label="Rank">'+r[0]+'</td><td class="col-player" data-label="Player"><a class="plink" href="players/'+r[5]+'.html">'+escapeHtml(r[1])+'</a>'+(r[6]?' <img class="flag-img" src="https://flagcdn.com/h20/'+r[6][0]+'.png" srcset="https://flagcdn.com/h40/'+r[6][0]+'.png 2x" height="14" alt="'+escapeHtml(r[6][1])+'" title="'+escapeHtml(r[6][1])+'" loading="lazy">':'')+'</td><td class="col-streak" data-label="Streak">'+r[2]+'</td><td class="col-date" data-label="Start">'+fmtDate(r[3])+'</td><td class="col-date" data-label="End">'+fmtDate(r[4])+'</td><td class="col-team" data-label="Team">'+escapeHtml(r[7]||'')+'</td></tr>');}tbody.innerHTML=f.join('');}
   countEl.innerHTML='<b>'+rows.length+'</b> of '+DATA.length+' players';
   headers.forEach(h=>{const k=+h.dataset.key;h.classList.toggle('active',k===sortKey);const e=h.querySelector('.arrow');if(e)e.remove();if(k===sortKey){const s=document.createElement('span');s.className='arrow';s.textContent=sortAsc?'▲':'▼';h.appendChild(s);}});
 }
@@ -1025,12 +1090,12 @@ def streak_section(title, rows):
     if not rows:
         return f'<h2>{title}</h2><p class="subtitle">No active streaks reaching into 2025-26.</p>'
     body = "".join(
-        f'<tr><td class="col-rank">{i}</td>'
-        f'<td class="col-player"><a class="plink" href="players/{r["slug"]}.html">{esc(r["name"])}</a>'
+        f'<tr><td class="col-rank" data-label="Rank">{i}</td>'
+        f'<td class="col-player" data-label="Player"><a class="plink" href="players/{r["slug"]}.html">{esc(r["name"])}</a>'
         f'{flag_html(r["flag"])}</td>'
-        f'<td class="col-streak">{r["len"]}</td>'
-        f'<td class="col-date">{fmt_iso(r["start"])}</td>'
-        f'<td class="col-team">{esc(r["team"])}</td></tr>'   # #3: Team column last
+        f'<td class="col-streak" data-label="Streak">{r["len"]}</td>'
+        f'<td class="col-date" data-label="Started">{fmt_iso(r["start"])}</td>'
+        f'<td class="col-team" data-label="Team">{esc(r["team"])}</td></tr>'   # #3: Team column last
         for i, r in enumerate(rows, start=1)
     )
     return (f'<h2>{title}</h2><div class="table-card">'
@@ -1038,6 +1103,18 @@ def streak_section(title, rows):
             '<th class="col-streak">Streak</th><th class="col-date">Started</th>'
             '<th class="col-team">Team</th></tr></thead>'
             f'<tbody>{body}</tbody></table></div>')
+
+
+# SEO meta descriptions for the three leaderboard pages, keyed by `active` type.
+LEADERBOARD_DESC = {
+    "combined": ("NBA Iron Man streaks: the longest consecutive games played runs in "
+                 "NBA history, regular season and playoffs combined. All-time and active "
+                 "leaderboards, 1947-present."),
+    "playoff": ("NBA Iron Man streaks: the longest consecutive games played runs in NBA "
+                "playoff history. All-time and active leaderboards, 1947-present."),
+    "regular": ("NBA Iron Man streaks: the longest consecutive games played runs in NBA "
+                "regular season history. All-time and active leaderboards, 1947-present."),
+}
 
 
 def leaderboard_page(title_html, board_sorted, active):
@@ -1052,7 +1129,7 @@ def leaderboard_page(title_html, board_sorted, active):
         "<div class=\"table-card\"><table class=\"board\" id=\"board\"><thead><tr>"
         "<th data-key=\"0\" class=\"col-rank\">Rank</th>"
         "<th data-key=\"1\">Player</th>"
-        "<th data-key=\"2\" class=\"col-streak\">Streak (games)</th>"
+        "<th data-key=\"2\" class=\"col-streak\">Streak</th>"
         "<th data-key=\"3\" class=\"col-date\">Start Date</th>"
         "<th data-key=\"4\" class=\"col-date\">End Date</th>"
         "<th data-key=\"7\" class=\"col-team\">Team</th>"
@@ -1068,7 +1145,8 @@ def leaderboard_page(title_html, board_sorted, active):
         "</div>"
     )
     scripts = LEADERBOARD_JS.replace("__DATA__", json.dumps(data_rows, separators=(",", ":"), ensure_ascii=False))
-    return page(re.sub("<[^>]+>", "", title_html), body, scripts, prefix="")
+    return page(re.sub("<[^>]+>", "", title_html), body, scripts, prefix="",
+                meta_desc=LEADERBOARD_DESC[active])
 
 
 # --------------------------------------------------------------------------- #
@@ -1117,7 +1195,9 @@ def player_page(pid, name, flag, data, similar, glossary_html, pct_lens):
     priority = {"combined": 3, "regular": 2, "playoff": 1}
     best = max(lens, key=lambda t: (lens[t], priority[t]))
     seo_word, back_name, back_href = TYPE_META[best]
-    title = f"{full}: {lens[best]} Consecutive {seo_word} Games | NBA Iron Man Streaks"
+    # SEO: lead with games played / missed / injury history — the high-volume search
+    # vector — rather than just the streak length.
+    title = f"{full} Games Played, Missed and Injury History | NBA Iron Man Streaks"
 
     def badge(t):
         on = lens[t] > 0
@@ -1189,11 +1269,27 @@ def player_page(pid, name, flag, data, similar, glossary_html, pct_lens):
     else:
         gp_html = '<p class="subtitle">No games on record.</p>'
 
+    # SEO meta description: real games-played / possible / pct + longest streak.
+    if gp_total:
+        played_pct = round(100 * gc / gp_total)
+        meta_desc = (
+            f"{full} has played {gc:,} of {gp_total:,} possible games ({played_pct}%) "
+            f"in his NBA career. Longest Iron Man streak: {lens[best]:,} consecutive games. "
+            f"Full season-by-season timeline of games played, games missed and injuries."
+        )
+    else:
+        meta_desc = (
+            f"{full}: NBA games played, games missed and injury history — full "
+            f"season-by-season timeline of every game his teams played."
+        )
+
     # #3 iron man streaks (no Type column); #13 Teams may list multiple cities
     if data["iron"]:
         cells = [
-            (f'<td class="num">{s["games"]}</td><td class="num">{format_date(s["start"])}</td>'
-             f'<td class="num">{format_date(s["end"])}</td><td>{esc(s["team"])}</td>')
+            (f'<td class="num" data-label="Games">{s["games"]}</td>'
+             f'<td class="num" data-label="Start">{format_date(s["start"])}</td>'
+             f'<td class="num" data-label="End">{format_date(s["end"])}</td>'
+             f'<td class="nowrapcell" data-label="Teams">{esc(s["team"])}</td>')
             for s in data["iron"]
         ]
         iron_html = table_showall("iron", ["Games", "Start", "End", "Teams"], cells,
@@ -1204,9 +1300,9 @@ def player_page(pid, name, flag, data, similar, glossary_html, pct_lens):
     # missed seasons
     if data["missed"]:
         mrows = "".join(
-            f'<tr><td>{esc(m["label"])}</td><td>{esc(m["team"])}</td>'
-            f'<td class="num">{m["games"]}</td>'
-            f'<td><a class="plink" href="../reasons/{m["rslug"]}.html">{esc(m["reason"])}</a></td></tr>'
+            f'<tr><td data-label="Season">{esc(m["label"])}</td><td data-label="Team">{esc(m["team"])}</td>'
+            f'<td class="num" data-label="Games Missed">{m["games"]}</td>'
+            f'<td data-label="Reason"><a class="plink" href="../reasons/{m["rslug"]}.html">{esc(m["reason"])}</a></td></tr>'
             for m in data["missed"]
         )
         missed_html = (
@@ -1221,9 +1317,11 @@ def player_page(pid, name, flag, data, similar, glossary_html, pct_lens):
     # #4 absences (no Type column), reason links to reason page
     if data["absences"]:
         cells = [
-            (f'<td class="num">{a["count"]}</td><td class="num">{a["days"]}</td>'
-             f'<td class="num">{format_date(a["frm"])}</td><td class="num">{format_date(a["to"])}</td>'
-             f'<td><a class="plink" href="../reasons/{a["rslug"]}.html">{esc(a["reason"])}</a></td>')
+            (f'<td class="num" data-label="Games Missed">{a["count"]}</td>'
+             f'<td class="num" data-label="Days">{a["days"]}</td>'
+             f'<td class="num" data-label="From">{format_date(a["frm"])}</td>'
+             f'<td class="num" data-label="To">{format_date(a["to"])}</td>'
+             f'<td data-label="Reason"><a class="plink" href="../reasons/{a["rslug"]}.html">{esc(a["reason"])}</a></td>')
             for a in data["absences"]
         ]
         abs_html = table_showall("abs", ["Games Missed", "Days", "From", "To", "Reason"], cells,
@@ -1255,7 +1353,7 @@ def player_page(pid, name, flag, data, similar, glossary_html, pct_lens):
         f'<h3 style="margin:0;">Absence reason glossary</h3>'
         f'<button class="gbtn gclose" onclick="cg()">✕</button></div>{glossary_html}</div></div>'
     )
-    return page(title, body, PLAYER_JS, prefix="../")
+    return page(title, body, PLAYER_JS, prefix="../", meta_desc=meta_desc)
 
 
 # --------------------------------------------------------------------------- #
@@ -1284,7 +1382,9 @@ def reasons_index_page(reason_total, reason_detail, names, summaries):
         "<p class=\"subtitle\">Every normalized reason in the data — how Iron Man streaks end. Click a reason for its own page.</p></header>\n"
         + "".join(blocks) + "\n</div>"
     )
-    return page("Absence Reasons | NBA Iron Man Streaks", body, prefix="")
+    return page("Absence Reasons | NBA Iron Man Streaks", body, prefix="",
+                meta_desc=("Every reason NBA players miss games: injuries, illness, rest, "
+                           "suspensions and more, with full player lists for each."))
 
 
 REASON_JS = r"""
@@ -1296,7 +1396,7 @@ const tb=document.getElementById('tbody'),hs=Array.from(document.querySelectorAl
 function eh(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
 function cmp(a,b,k){let av,bv;if(k===2){av=a[6];bv=b[6];}else{av=a[k];bv=b[k];}if(NUM.has(k)){av=+av;bv=+bv;}else{av=String(av).toLowerCase();bv=String(bv).toLowerCase();}return av<bv?-1:av>bv?1:0;}
 function rnd(){let rows=D.slice().sort((a,b)=>{const c=cmp(a,b,sk);return sa?c:-c;});
- tb.innerHTML=rows.map(r=>'<tr><td><a class="plink" href="../players/'+r[4]+'.html">'+eh(r[0])+'</a>'+(r[5]?' <img class="flag-img" src="https://flagcdn.com/h20/'+r[5][0]+'.png" srcset="https://flagcdn.com/h40/'+r[5][0]+'.png 2x" height="14" alt="'+eh(r[5][1])+'" title="'+eh(r[5][1])+'" loading="lazy">':'')+'</td><td class="num">'+r[1]+'</td><td class="num">'+eh(r[2])+'</td><td>'+eh(r[3])+'</td></tr>').join('');
+ tb.innerHTML=rows.map(r=>'<tr><td data-label="Player"><a class="plink" href="../players/'+r[4]+'.html">'+eh(r[0])+'</a>'+(r[5]?' <img class="flag-img" src="https://flagcdn.com/h20/'+r[5][0]+'.png" srcset="https://flagcdn.com/h40/'+r[5][0]+'.png 2x" height="14" alt="'+eh(r[5][1])+'" title="'+eh(r[5][1])+'" loading="lazy">':'')+'</td><td class="num" data-label="Games Missed">'+r[1]+'</td><td class="num" data-label="Date Range">'+eh(r[2])+'</td><td data-label="Team">'+eh(r[3])+'</td></tr>').join('');
  hs.forEach(h=>{const k=+h.dataset.key;h.classList.toggle('active',k===sk);const e=h.querySelector('.arrow');if(e)e.remove();if(k===sk){const s=document.createElement('span');s.className='arrow';s.textContent=sa?'▲':'▼';h.appendChild(s);}});}
 hs.forEach(h=>h.addEventListener('click',()=>{const k=+h.dataset.key;if(k===sk)sa=!sa;else{sk=k;sa=!(NUM.has(k)||k===2);}rnd();}));
 rnd();

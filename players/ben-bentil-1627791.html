@@ -3,7 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Ben Bentil: 2 Consecutive Combined Games | NBA Iron Man Streaks</title>
+<title>Ben Bentil Games Played, Missed and Injury History | NBA Iron Man Streaks</title>
+<meta name="description" content="Ben Bentil has played 3 of 82 possible games (4%) in his NBA career. Longest Iron Man streak: 2 consecutive games. Full season-by-season timeline of games played, games missed and injuries.">
+<meta property="og:title" content="Ben Bentil Games Played, Missed and Injury History | NBA Iron Man Streaks">
+<meta property="og:description" content="Ben Bentil has played 3 of 82 possible games (4%) in his NBA career. Longest Iron Man streak: 2 consecutive games. Full season-by-season timeline of games played, games missed and injuries.">
+<meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -38,13 +42,13 @@ border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.12);max-height:20rem;overflo
 .ac-empty{padding:.7rem .8rem;color:var(--muted);font-size:.8rem;text-align:center;}
 
 /* nav tabs */
-.nav{display:flex;gap:.3rem;flex-wrap:wrap;max-width:1100px;margin:0 auto;padding:1.5rem 1.5rem .3rem;}
+.nav{display:flex;gap:.3rem;flex-wrap:wrap;max-width:1280px;margin:0 auto;padding:1.5rem 1.5rem .3rem;}
 .nav a{font-family:'JetBrains Mono',monospace;font-size:.72rem;font-weight:600;padding:.4rem .8rem;
 border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--muted);text-decoration:none;}
 .nav a:hover{border-color:var(--accent);color:var(--accent);}
 .nav a.active{background:var(--accent);border-color:var(--accent);color:#fff;}
 
-.wrap{max-width:1100px;margin:0 auto;padding:.5rem 1.5rem 4rem;}
+.wrap{max-width:1280px;margin:0 auto;padding:.5rem 1.5rem 4rem;}
 header{margin-bottom:1rem;}
 .brand{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--muted);
 text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:.3rem;}
@@ -68,8 +72,10 @@ font-size:.9rem;font-family:inherit;padding:.6rem .8rem;outline:none;transition:
 .count{color:var(--muted);font-size:.74rem;}
 .count b{color:var(--text);font-weight:600;}
 
-/* #3: section boxes expand to fit their rows — no internal scroll containers */
-.table-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+/* Section boxes: scroll horizontally WITHIN the card if a row is wider than the
+   viewport (mobile, or a rare 4–5 team streak) instead of clipping the Team column
+   or forcing the whole page to scroll. On desktop the content fits, so no scrollbar. */
+.table-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow-x:auto;}
 table.board{width:100%;border-collapse:collapse;font-size:.86rem;}
 table.board thead th{background:var(--surface-hover);color:var(--muted);text-align:left;
 font-weight:600;font-size:.66rem;letter-spacing:.04em;text-transform:uppercase;padding:.6rem .7rem;
@@ -82,8 +88,16 @@ table.board th.col-rank,table.board td.col-rank,
 table.board th.col-streak,table.board td.col-streak,
 table.board th.col-date,table.board td.col-date{text-align:center;}
 table.board th.col-team,table.board td.col-team{text-align:left;}
-table.board tbody td{padding:.5rem .7rem;border-bottom:1px solid var(--border);white-space:nowrap;
+/* Team column a hair smaller so even multi-city streaks fit on one line. NO
+   width:100% — a percentage width on a nowrap cell makes the browser size the whole
+   table past the card, pushing this last column off the right edge (the real cause
+   of the "Por..." cut-off). Let table-layout:auto size it from content instead. */
+table.board td.col-team{font-size:.76rem;}
+table.board thead th{padding:.6rem .55rem;}
+table.board tbody td{padding:.5rem .55rem;border-bottom:1px solid var(--border);white-space:nowrap;
 font-family:'JetBrains Mono',monospace;font-weight:500;font-variant-numeric:tabular-nums;}
+/* utility: keep a cell on one line (e.g. the Iron Man "Teams" list) */
+.nowrapcell{white-space:nowrap;}
 table.board tbody td.col-player{font-family:'DM Sans',sans-serif;text-align:left;}
 table.board tbody tr:last-child td{border-bottom:none;}
 table.board tbody tr:hover{background:var(--surface-hover);}
@@ -157,7 +171,51 @@ cursor:pointer;font-size:.7rem;line-height:1;padding:0;}
 .reasonblock h2 a:hover{color:var(--accent);}
 .rcount{color:var(--muted);font-size:.72rem;font-weight:500;font-family:'JetBrains Mono',monospace;}
 .foot{text-align:center;font-size:.72rem;color:var(--muted);margin-top:1.4rem;font-family:'JetBrains Mono',monospace;line-height:1.7;}
-@media(max-width:560px){.wrap{padding:.5rem 1rem 3rem;}.nav{padding:1rem 1rem .3rem;}.trow{flex-direction:column;gap:4px;}.tlabel{width:auto;}}
+/* Mobile (<=720px): turn every leaderboard / data table into a stacked list of
+   cards (Media Vote Tracker pattern) so the PAGE never scrolls horizontally. The
+   table/thead/tbody/tr/td go display:block; thead is hidden; each <tr> becomes a
+   rounded card and each <td> becomes a "LABEL ........ value" line via data-label. */
+@media(max-width:720px){
+.wrap{padding:.5rem .9rem 3rem;}
+.nav{padding:1rem .9rem .3rem;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.nav a{flex:0 0 auto;}
+h1{font-size:1.3rem;}h2{font-size:1.05rem;margin:1.5rem 0 .6rem;}
+.gpwrap{padding:.8rem .9rem;}.gplegend{gap:.7rem 1rem;font-size:.74rem;}.gpsub{font-size:.72rem;}
+.sq{width:9px;height:9px;margin:1px;}.tsquares{line-height:1;}
+
+/* scope to tables inside a .table-card so the small reasons-index lists are untouched.
+   Each <td> is display:block with the label ABSOLUTELY pinned left and the value
+   flowing in a left-padded region, so long values wrap inside the card (a flex
+   space-between row would let them spill past the right edge -> horizontal scroll). */
+.table-card{overflow:visible;border:none;background:transparent;border-radius:0;}
+.table-card table.board,.table-card table.board tbody,
+.table-card table.dtable,.table-card table.dtable tbody{display:block;width:100%;}
+.table-card table.board thead,.table-card table.dtable thead{display:none;}
+.table-card table.board tbody tr,.table-card table.dtable tbody tr{display:block;position:relative;
+background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:.7rem 3rem .7rem .9rem;margin-bottom:.6rem;}
+.table-card table.board tbody tr:hover,.table-card table.dtable tbody tr:hover{background:var(--surface);}
+.table-card table.board tbody td,.table-card table.dtable td{display:block;position:relative;border:none;
+white-space:normal;text-align:left;padding:.14rem 0 .14rem 6.4rem;font-size:.86rem;line-height:1.4;min-height:1.5em;
+overflow-wrap:anywhere;}
+.table-card table.board tbody td::before,.table-card table.dtable td::before{content:attr(data-label);
+position:absolute;left:0;top:.2rem;width:5.9rem;font-family:'DM Sans',sans-serif;font-size:.6rem;font-weight:700;
+text-transform:uppercase;letter-spacing:.05em;color:var(--muted);line-height:1.3;}
+.table-card table.dtable td.nowrapcell{white-space:normal;}
+/* a cell with no data-label (e.g. the empty-search row) shouldn't reserve a label gutter */
+.table-card td:not([data-label]){padding-left:0;}
+.table-card td:not([data-label])::before{content:none;}
+/* rank: small, pinned top-right, no label */
+.table-card table.board tbody td.col-rank{position:absolute;top:.55rem;right:.85rem;padding:0;font-size:.66rem;color:var(--muted);min-height:0;}
+.table-card table.board tbody td.col-rank::before{display:none;}
+/* player name: prominent, full-width, no label/indent */
+.table-card table.board tbody td.col-player{padding:0 0 .3rem;font-family:'DM Sans',sans-serif;font-size:1.02rem;font-weight:600;}
+.table-card table.board tbody td.col-player::before{display:none;}
+/* streak: big accent value (label stays small via ::before) */
+.table-card table.board tbody td.col-streak{font-size:1.1rem;font-weight:700;color:var(--accent);}
+/* dtable lead column (Games / Games Missed): emphasised accent value */
+.table-card table.dtable tbody td:first-child{font-size:1rem;font-weight:700;color:var(--accent);}
+}
+@media(max-width:560px){.wrap{padding:.5rem 1rem 3rem;}.nav{padding:1rem 1rem .3rem;}.trow{flex-direction:column;gap:4px;}.tlabel{width:auto;}.sq{width:8px;height:8px;}}
 </style>
 </head>
 <body>
@@ -169,7 +227,7 @@ cursor:pointer;font-size:.7rem;line-height:1;padding:0;}
 <section><h2>Season Timeline</h2><div class="legend"><span><i class="sq g"></i> Played</span><span><i class="sq r"></i> Missed (injury/absence)</span><span><i class="sq d"></i> DNP (coach/other)</span></div><div class="tlcard"><div class="trow"><div class="tlabel"><span class="tseason">2016-17</span><span class="tteam">Dallas</span></div><div class="tsquares"><i class="sq r" title="2016-10-26 · @ Indiana · Missed (team played, no record for player)"></i><i class="sq r" title="2016-10-28 · vs Houston · Missed (team played, no record for player)"></i><i class="sq r" title="2016-10-30 · @ Houston · Missed (team played, no record for player)"></i><i class="sq r" title="2016-11-02 · @ Utah · Missed (team played, no record for player)"></i><i class="sq r" title="2016-11-04 · vs Portland · Missed (team played, no record for player)"></i><i class="sq r" title="2016-11-06 · vs Milwaukee · Missed (team played, no record for player)"></i><i class="sq r" title="2016-11-08 · @ Los Angeles · Missed (team played, no record for player)"></i><i class="sq r" title="2016-11-09 · @ Golden State · Missed (team played, no record for player)"></i><i class="sq r" title="2016-11-14 · @ New York · Missed (team played, no record for player)"></i><i class="sq r" title="2016-11-16 · @ Boston · Missed (team played, no record for player)"></i><i class="sq r" title="2016-11-18 · vs Memphis · Missed (team played, no record for player)"></i><i class="sq r" title="2016-11-19 · @ Orlando · Missed (team played, no record for player)"></i><i class="sq r" title="2016-11-21 · @ San Antonio · Missed (team played, no record for player)"></i><i class="sq r" title="2016-11-23 · vs Los Angeles · Missed (team played, no record for player)"></i><i class="sq r" title="2016-11-25 · @ Cleveland · Missed (team played, no record for player)"></i><i class="sq r" title="2016-11-27 · vs New Orleans · Missed (team played, no record for player)"></i><i class="sq r" title="2016-11-30 · vs San Antonio · Missed (team played, no record for player)"></i><i class="sq r" title="2016-12-01 · @ Charlotte · Missed (team played, no record for player)"></i><i class="sq r" title="2016-12-03 · vs Chicago · Missed (team played, no record for player)"></i><i class="sq r" title="2016-12-05 · vs Charlotte · Missed (team played, no record for player)"></i><i class="sq r" title="2016-12-07 · vs Sacramento · Missed (team played, no record for player)"></i><i class="sq r" title="2016-12-09 · vs Indiana · Missed (team played, no record for player)"></i><i class="sq r" title="2016-12-10 · @ Houston · Missed (team played, no record for player)"></i><i class="sq r" title="2016-12-12 · vs Denver · Missed (team played, no record for player)"></i><i class="sq r" title="2016-12-14 · vs Detroit · Missed (team played, no record for player)"></i><i class="sq r" title="2016-12-16 · @ Utah · Missed (team played, no record for player)"></i><i class="sq r" title="2016-12-18 · vs Sacramento · Missed (team played, no record for player)"></i><i class="sq r" title="2016-12-19 · @ Denver · Missed (team played, no record for player)"></i><i class="sq r" title="2016-12-21 · @ Portland · Missed (team played, no record for player)"></i><i class="sq r" title="2016-12-23 · @ Los Angeles · Missed (team played, no record for player)"></i><i class="sq r" title="2016-12-26 · @ New Orleans · Missed (team played, no record for player)"></i><i class="sq r" title="2016-12-27 · vs Houston · Missed (team played, no record for player)"></i><i class="sq r" title="2016-12-29 · @ Los Angeles · Missed (team played, no record for player)"></i><i class="sq r" title="2016-12-30 · @ Golden State · Missed (team played, no record for player)"></i><i class="sq r" title="2017-01-03 · vs Washington · Missed (team played, no record for player)"></i><i class="sq r" title="2017-01-05 · vs Phoenix · Missed (team played, no record for player)"></i><i class="sq r" title="2017-01-07 · vs Atlanta · Missed (team played, no record for player)"></i><i class="sq r" title="2017-01-09 · @ Minnesota · Missed (team played, no record for player)"></i><i class="sq r" title="2017-01-12 · @ Phoenix · Missed (team played, no record for player)"></i><i class="sq r" title="2017-01-15 · vs Minnesota · Missed (team played, no record for player)"></i><i class="sq r" title="2017-01-17 · @ Chicago · Missed (team played, no record for player)"></i><i class="sq r" title="2017-01-19 · @ Miami · Missed (team played, no record for player)"></i><i class="sq r" title="2017-01-20 · vs Utah · Missed (team played, no record for player)"></i><i class="sq r" title="2017-01-22 · vs Los Angeles · Missed (team played, no record for player)"></i><i class="sq r" title="2017-01-25 · vs New York · Missed (team played, no record for player)"></i><i class="sq r" title="2017-01-26 · @ Oklahoma City · Missed (team played, no record for player)"></i><i class="sq r" title="2017-01-29 · @ San Antonio · Missed (team played, no record for player)"></i><i class="sq r" title="2017-01-30 · vs Cleveland · Missed (team played, no record for player)"></i><i class="sq r" title="2017-02-01 · vs Philadelphia · Missed (team played, no record for player)"></i><i class="sq r" title="2017-02-03 · @ Portland · Missed (team played, no record for player)"></i><i class="sq r" title="2017-02-06 · @ Denver · Missed (team played, no record for player)"></i><i class="sq r" title="2017-02-07 · vs Portland · Missed (team played, no record for player)"></i><i class="sq r" title="2017-02-09 · vs Utah · Missed (team played, no record for player)"></i><i class="sq r" title="2017-02-11 · vs Orlando · Missed (team played, no record for player)"></i><i class="sq r" title="2017-02-13 · vs Boston · Missed (team played, no record for player)"></i><i class="sq r" title="2017-02-15 · @ Detroit · Missed (team played, no record for player)"></i><i class="sq r" title="2017-02-24 · @ Minnesota · Missed (team played, no record for player)"></i><i class="sq r" title="2017-02-25 · vs New Orleans · Missed (team played, no record for player)"></i><i class="sq d" title="2017-02-27 · vs Miami · DNP: Coach&#x27;s Decision"></i><i class="sq g" title="2017-03-01 · @ Atlanta · 4 min · 0 pts · 0 reb · 0 ast"></i><i class="sq d" title="2017-03-03 · vs Memphis · DNP: Coach&#x27;s Decision"></i><i class="sq g" title="2017-03-05 · vs Oklahoma City · 2 min · 0 pts · 2 reb · 0 ast"></i><i class="sq g" title="2017-03-07 · vs Los Angeles · 2 min · 0 pts · 0 reb · 0 ast"></i><i class="sq r" title="2017-03-10 · vs Brooklyn · Missed (team played, no record for player)"></i><i class="sq r" title="2017-03-11 · vs Phoenix · Missed (team played, no record for player)"></i><i class="sq r" title="2017-03-13 · @ Toronto · Missed (team played, no record for player)"></i><i class="sq r" title="2017-03-15 · @ Washington · Missed (team played, no record for player)"></i><i class="sq r" title="2017-03-17 · @ Philadelphia · Missed (team played, no record for player)"></i><i class="sq r" title="2017-03-19 · @ Brooklyn · Missed (team played, no record for player)"></i><i class="sq r" title="2017-03-21 · vs Golden State · Missed (team played, no record for player)"></i><i class="sq r" title="2017-03-23 · vs Los Angeles · Missed (team played, no record for player)"></i><i class="sq r" title="2017-03-25 · vs Toronto · Missed (team played, no record for player)"></i><i class="sq r" title="2017-03-27 · vs Oklahoma City · Missed (team played, no record for player)"></i><i class="sq r" title="2017-03-29 · @ New Orleans · Missed (team played, no record for player)"></i><i class="sq r" title="2017-03-31 · @ Memphis · Missed (team played, no record for player)"></i><i class="sq r" title="2017-04-02 · @ Milwaukee · Missed (team played, no record for player)"></i><i class="sq r" title="2017-04-04 · @ Sacramento · Missed (team played, no record for player)"></i><i class="sq r" title="2017-04-05 · @ Los Angeles · Missed (team played, no record for player)"></i><i class="sq r" title="2017-04-07 · vs San Antonio · Missed (team played, no record for player)"></i><i class="sq r" title="2017-04-09 · @ Phoenix · Missed (team played, no record for player)"></i><i class="sq r" title="2017-04-11 · vs Denver · Missed (team played, no record for player)"></i><i class="sq r" title="2017-04-12 · @ Memphis · Missed (team played, no record for player)"></i></div></div></div></section>
 <section><h2>Games Played</h2><div class="gpwrap"><div class="gpbar"><div class="gpseg g" style="width:3.7%"></div><div class="gpseg r" style="width:93.9%"></div><div class="gpseg d" style="width:2.4%"></div></div><div class="gplegend"><span><i class="sw g"></i> Played 3.7% (3)</span><span><i class="sw r"></i> Missed 93.9% (77)</span><span><i class="sw d"></i> DNP 2.4% (2)</span><span>82 team games while rostered</span></div><div class="gpsub">Regular season only: Played 3.7% (3) · Missed 93.9% (77) · DNP 2.4% (2) — 82 games</div></div></section>
 <section><h2>Iron Man Streaks</h2><p class="subtitle">No streaks of 5+ games.</p></section>
-<section><h2>Absences <button class="gbtn" title="What do these codes mean?" onclick="og()">ⓘ</button></h2><div class="table-card"><table class="dtable"><thead><tr><th class="num">Games Missed</th><th class="num">Days</th><th class="num">From</th><th class="num">To</th><th>Reason</th></tr></thead><tbody><tr><td class="num">58</td><td class="num">122</td><td class="num">October 26, 2016</td><td class="num">February 25, 2017</td><td><a class="plink" href="../reasons/unknown.html">—</a></td></tr><tr><td class="num">19</td><td class="num">33</td><td class="num">March 10, 2017</td><td class="num">April 12, 2017</td><td><a class="plink" href="../reasons/unknown.html">—</a></td></tr></tbody></table></div></section>
+<section><h2>Absences <button class="gbtn" title="What do these codes mean?" onclick="og()">ⓘ</button></h2><div class="table-card"><table class="dtable"><thead><tr><th class="num">Games Missed</th><th class="num">Days</th><th class="num">From</th><th class="num">To</th><th>Reason</th></tr></thead><tbody><tr><td class="num" data-label="Games Missed">58</td><td class="num" data-label="Days">122</td><td class="num" data-label="From">October 26, 2016</td><td class="num" data-label="To">February 25, 2017</td><td data-label="Reason"><a class="plink" href="../reasons/unknown.html">—</a></td></tr><tr><td class="num" data-label="Games Missed">19</td><td class="num" data-label="Days">33</td><td class="num" data-label="From">March 10, 2017</td><td class="num" data-label="To">April 12, 2017</td><td data-label="Reason"><a class="plink" href="../reasons/unknown.html">—</a></td></tr></tbody></table></div></section>
 <section><h2>Similar Players</h2><div class="simgrid"><a class="simcard" href="timothe-luwawu-cabarrot-1627789.html"><div class="nm">Timothe Luwawu-Cabarrot <img class="flag-img" src="https://flagcdn.com/h20/fr.png" srcset="https://flagcdn.com/h40/fr.png 2x" height="14" alt="France" title="France" loading="lazy"></div><div class="st">58 game streak</div></a><a class="simcard" href="isaiah-whitehead-1627785.html"><div class="nm">Isaiah Whitehead <img class="flag-img" src="https://flagcdn.com/h20/us.png" srcset="https://flagcdn.com/h40/us.png 2x" height="14" alt="United States" title="United States" loading="lazy"></div><div class="st">38 game streak</div></a><a class="simcard" href="patrick-mccaw-1627775.html"><div class="nm">Patrick McCaw <img class="flag-img" src="https://flagcdn.com/h20/us.png" srcset="https://flagcdn.com/h40/us.png 2x" height="14" alt="United States" title="United States" loading="lazy"></div><div class="st">36 game streak</div></a><a class="simcard" href="daniel-hamilton-1627772.html"><div class="nm">Daniel Hamilton <img class="flag-img" src="https://flagcdn.com/h20/us.png" srcset="https://flagcdn.com/h40/us.png 2x" height="14" alt="United States" title="United States" loading="lazy"></div><div class="st">6 game streak</div></a><a class="simcard" href="kay-felder-1627770.html"><div class="nm">Kay Felder <img class="flag-img" src="https://flagcdn.com/h20/us.png" srcset="https://flagcdn.com/h40/us.png 2x" height="14" alt="United States" title="United States" loading="lazy"></div><div class="st">9 game streak</div></a><a class="simcard" href="jakob-poeltl-1627751.html"><div class="nm">Jakob Poeltl <img class="flag-img" src="https://flagcdn.com/h20/at.png" srcset="https://flagcdn.com/h40/at.png 2x" height="14" alt="Austria" title="Austria" loading="lazy"></div><div class="st">101 game streak</div></a></div></section>
 <div class="psearch-wrap"><input class="psearch" type="search" placeholder="Search any player by name…" autocomplete="off" spellcheck="false"><div class="ac" role="listbox"></div></div>
 <a class="backtop" href="../index.html">← Back to Combined Leaderboard</a>

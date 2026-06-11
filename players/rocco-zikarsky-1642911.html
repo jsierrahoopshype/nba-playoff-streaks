@@ -3,7 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Rocco Zikarsky: 1 Consecutive Combined Games | NBA Iron Man Streaks</title>
+<title>Rocco Zikarsky Games Played, Missed and Injury History | NBA Iron Man Streaks</title>
+<meta name="description" content="Rocco Zikarsky has played 5 of 94 possible games (5%) in his NBA career. Longest Iron Man streak: 1 consecutive games. Full season-by-season timeline of games played, games missed and injuries.">
+<meta property="og:title" content="Rocco Zikarsky Games Played, Missed and Injury History | NBA Iron Man Streaks">
+<meta property="og:description" content="Rocco Zikarsky has played 5 of 94 possible games (5%) in his NBA career. Longest Iron Man streak: 1 consecutive games. Full season-by-season timeline of games played, games missed and injuries.">
+<meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -38,13 +42,13 @@ border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.12);max-height:20rem;overflo
 .ac-empty{padding:.7rem .8rem;color:var(--muted);font-size:.8rem;text-align:center;}
 
 /* nav tabs */
-.nav{display:flex;gap:.3rem;flex-wrap:wrap;max-width:1100px;margin:0 auto;padding:1.5rem 1.5rem .3rem;}
+.nav{display:flex;gap:.3rem;flex-wrap:wrap;max-width:1280px;margin:0 auto;padding:1.5rem 1.5rem .3rem;}
 .nav a{font-family:'JetBrains Mono',monospace;font-size:.72rem;font-weight:600;padding:.4rem .8rem;
 border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--muted);text-decoration:none;}
 .nav a:hover{border-color:var(--accent);color:var(--accent);}
 .nav a.active{background:var(--accent);border-color:var(--accent);color:#fff;}
 
-.wrap{max-width:1100px;margin:0 auto;padding:.5rem 1.5rem 4rem;}
+.wrap{max-width:1280px;margin:0 auto;padding:.5rem 1.5rem 4rem;}
 header{margin-bottom:1rem;}
 .brand{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--muted);
 text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:.3rem;}
@@ -68,8 +72,10 @@ font-size:.9rem;font-family:inherit;padding:.6rem .8rem;outline:none;transition:
 .count{color:var(--muted);font-size:.74rem;}
 .count b{color:var(--text);font-weight:600;}
 
-/* #3: section boxes expand to fit their rows — no internal scroll containers */
-.table-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+/* Section boxes: scroll horizontally WITHIN the card if a row is wider than the
+   viewport (mobile, or a rare 4–5 team streak) instead of clipping the Team column
+   or forcing the whole page to scroll. On desktop the content fits, so no scrollbar. */
+.table-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow-x:auto;}
 table.board{width:100%;border-collapse:collapse;font-size:.86rem;}
 table.board thead th{background:var(--surface-hover);color:var(--muted);text-align:left;
 font-weight:600;font-size:.66rem;letter-spacing:.04em;text-transform:uppercase;padding:.6rem .7rem;
@@ -82,8 +88,16 @@ table.board th.col-rank,table.board td.col-rank,
 table.board th.col-streak,table.board td.col-streak,
 table.board th.col-date,table.board td.col-date{text-align:center;}
 table.board th.col-team,table.board td.col-team{text-align:left;}
-table.board tbody td{padding:.5rem .7rem;border-bottom:1px solid var(--border);white-space:nowrap;
+/* Team column a hair smaller so even multi-city streaks fit on one line. NO
+   width:100% — a percentage width on a nowrap cell makes the browser size the whole
+   table past the card, pushing this last column off the right edge (the real cause
+   of the "Por..." cut-off). Let table-layout:auto size it from content instead. */
+table.board td.col-team{font-size:.76rem;}
+table.board thead th{padding:.6rem .55rem;}
+table.board tbody td{padding:.5rem .55rem;border-bottom:1px solid var(--border);white-space:nowrap;
 font-family:'JetBrains Mono',monospace;font-weight:500;font-variant-numeric:tabular-nums;}
+/* utility: keep a cell on one line (e.g. the Iron Man "Teams" list) */
+.nowrapcell{white-space:nowrap;}
 table.board tbody td.col-player{font-family:'DM Sans',sans-serif;text-align:left;}
 table.board tbody tr:last-child td{border-bottom:none;}
 table.board tbody tr:hover{background:var(--surface-hover);}
@@ -157,7 +171,51 @@ cursor:pointer;font-size:.7rem;line-height:1;padding:0;}
 .reasonblock h2 a:hover{color:var(--accent);}
 .rcount{color:var(--muted);font-size:.72rem;font-weight:500;font-family:'JetBrains Mono',monospace;}
 .foot{text-align:center;font-size:.72rem;color:var(--muted);margin-top:1.4rem;font-family:'JetBrains Mono',monospace;line-height:1.7;}
-@media(max-width:560px){.wrap{padding:.5rem 1rem 3rem;}.nav{padding:1rem 1rem .3rem;}.trow{flex-direction:column;gap:4px;}.tlabel{width:auto;}}
+/* Mobile (<=720px): turn every leaderboard / data table into a stacked list of
+   cards (Media Vote Tracker pattern) so the PAGE never scrolls horizontally. The
+   table/thead/tbody/tr/td go display:block; thead is hidden; each <tr> becomes a
+   rounded card and each <td> becomes a "LABEL ........ value" line via data-label. */
+@media(max-width:720px){
+.wrap{padding:.5rem .9rem 3rem;}
+.nav{padding:1rem .9rem .3rem;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.nav a{flex:0 0 auto;}
+h1{font-size:1.3rem;}h2{font-size:1.05rem;margin:1.5rem 0 .6rem;}
+.gpwrap{padding:.8rem .9rem;}.gplegend{gap:.7rem 1rem;font-size:.74rem;}.gpsub{font-size:.72rem;}
+.sq{width:9px;height:9px;margin:1px;}.tsquares{line-height:1;}
+
+/* scope to tables inside a .table-card so the small reasons-index lists are untouched.
+   Each <td> is display:block with the label ABSOLUTELY pinned left and the value
+   flowing in a left-padded region, so long values wrap inside the card (a flex
+   space-between row would let them spill past the right edge -> horizontal scroll). */
+.table-card{overflow:visible;border:none;background:transparent;border-radius:0;}
+.table-card table.board,.table-card table.board tbody,
+.table-card table.dtable,.table-card table.dtable tbody{display:block;width:100%;}
+.table-card table.board thead,.table-card table.dtable thead{display:none;}
+.table-card table.board tbody tr,.table-card table.dtable tbody tr{display:block;position:relative;
+background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:.7rem 3rem .7rem .9rem;margin-bottom:.6rem;}
+.table-card table.board tbody tr:hover,.table-card table.dtable tbody tr:hover{background:var(--surface);}
+.table-card table.board tbody td,.table-card table.dtable td{display:block;position:relative;border:none;
+white-space:normal;text-align:left;padding:.14rem 0 .14rem 6.4rem;font-size:.86rem;line-height:1.4;min-height:1.5em;
+overflow-wrap:anywhere;}
+.table-card table.board tbody td::before,.table-card table.dtable td::before{content:attr(data-label);
+position:absolute;left:0;top:.2rem;width:5.9rem;font-family:'DM Sans',sans-serif;font-size:.6rem;font-weight:700;
+text-transform:uppercase;letter-spacing:.05em;color:var(--muted);line-height:1.3;}
+.table-card table.dtable td.nowrapcell{white-space:normal;}
+/* a cell with no data-label (e.g. the empty-search row) shouldn't reserve a label gutter */
+.table-card td:not([data-label]){padding-left:0;}
+.table-card td:not([data-label])::before{content:none;}
+/* rank: small, pinned top-right, no label */
+.table-card table.board tbody td.col-rank{position:absolute;top:.55rem;right:.85rem;padding:0;font-size:.66rem;color:var(--muted);min-height:0;}
+.table-card table.board tbody td.col-rank::before{display:none;}
+/* player name: prominent, full-width, no label/indent */
+.table-card table.board tbody td.col-player{padding:0 0 .3rem;font-family:'DM Sans',sans-serif;font-size:1.02rem;font-weight:600;}
+.table-card table.board tbody td.col-player::before{display:none;}
+/* streak: big accent value (label stays small via ::before) */
+.table-card table.board tbody td.col-streak{font-size:1.1rem;font-weight:700;color:var(--accent);}
+/* dtable lead column (Games / Games Missed): emphasised accent value */
+.table-card table.dtable tbody td:first-child{font-size:1rem;font-weight:700;color:var(--accent);}
+}
+@media(max-width:560px){.wrap{padding:.5rem 1rem 3rem;}.nav{padding:1rem 1rem .3rem;}.trow{flex-direction:column;gap:4px;}.tlabel{width:auto;}.sq{width:8px;height:8px;}}
 </style>
 </head>
 <body>
@@ -169,7 +227,7 @@ cursor:pointer;font-size:.7rem;line-height:1;padding:0;}
 <section><h2>Season Timeline</h2><div class="legend"><span><i class="sq g"></i> Played</span><span><i class="sq r"></i> Missed (injury/absence)</span><span><i class="sq d"></i> DNP (coach/other)</span></div><div class="tlcard"><div class="trow"><div class="tlabel"><span class="tseason">2025-26</span><span class="tteam">Minnesota</span></div><div class="tsquares"><i class="sq r" title="2025-10-22 · @ Portland · Missed (team played, no record for player)"></i><i class="sq r" title="2025-10-24 · @ Los Angeles · Missed (team played, no record for player)"></i><i class="sq r" title="2025-10-26 · vs Indiana · Missed (team played, no record for player)"></i><i class="sq r" title="2025-10-27 · vs Denver · Missed (team played, no record for player)"></i><i class="sq r" title="2025-10-29 · vs Los Angeles · Missed (team played, no record for player)"></i><i class="sq r" title="2025-11-01 · @ Charlotte · Missed (team played, no record for player)"></i><i class="sq r" title="2025-11-03 · @ Brooklyn · Missed (team played, no record for player)"></i><i class="sq r" title="2025-11-05 · @ New York · Missed (team played, no record for player)"></i><i class="sq r" title="2025-11-07 · vs Utah · Missed (team played, no record for player)"></i><i class="sq r" title="2025-11-09 · @ Sacramento · Missed (team played, no record for player)"></i><i class="sq r" title="2025-11-10 · @ Utah · Missed (team played, no record for player)"></i><i class="sq r" title="2025-11-14 · vs Sacramento · Missed (team played, no record for player)"></i><i class="sq r" title="2025-11-15 · vs Denver · Missed (team played, no record for player)"></i><i class="sq r" title="2025-11-17 · vs Dallas · Missed (team played, no record for player)"></i><i class="sq r" title="2025-11-19 · vs Washington · Missed (team played, no record for player)"></i><i class="sq r" title="2025-11-21 · @ Phoenix · Missed (team played, no record for player)"></i><i class="sq r" title="2025-11-24 · @ Sacramento · Missed (team played, no record for player)"></i><i class="sq r" title="2025-11-26 · @ Oklahoma City · Missed (team played, no record for player)"></i><i class="sq r" title="2025-11-29 · vs Boston · Missed (team played, no record for player)"></i><i class="sq r" title="2025-11-30 · vs San Antonio · Missed (team played, no record for player)"></i><i class="sq r" title="2025-12-02 · @ New Orleans · Missed (team played, no record for player)"></i><i class="sq r" title="2025-12-04 · @ New Orleans · Missed (team played, no record for player)"></i><i class="sq r" title="2025-12-06 · vs LA · Missed (team played, no record for player)"></i><i class="sq r" title="2025-12-08 · vs Phoenix · Missed (team played, no record for player)"></i><i class="sq r" title="2025-12-12 · @ Golden State · Missed (team played, no record for player)"></i><i class="sq r" title="2025-12-14 · vs Sacramento · Missed (team played, no record for player)"></i><i class="sq r" title="2025-12-17 · vs Memphis · Missed (team played, no record for player)"></i><i class="sq r" title="2025-12-19 · vs Oklahoma City · Missed (team played, no record for player)"></i><i class="sq r" title="2025-12-21 · vs Milwaukee · Missed (team played, no record for player)"></i><i class="sq r" title="2025-12-23 · vs New York · Missed (team played, no record for player)"></i><i class="sq r" title="2025-12-25 · @ Denver · Missed (team played, no record for player)"></i><i class="sq r" title="2025-12-27 · vs Brooklyn · Missed (team played, no record for player)"></i><i class="sq r" title="2025-12-29 · @ Chicago · Missed (team played, no record for player)"></i><i class="sq r" title="2025-12-31 · @ Atlanta · Missed (team played, no record for player)"></i><i class="sq r" title="2026-01-03 · @ Miami · Missed (team played, no record for player)"></i><i class="sq r" title="2026-01-04 · @ Washington · Missed (team played, no record for player)"></i><i class="sq r" title="2026-01-06 · vs Miami · Missed (team played, no record for player)"></i><i class="sq r" title="2026-01-08 · vs Cleveland · Missed (team played, no record for player)"></i><i class="sq r" title="2026-01-10 · @ Cleveland · Missed (team played, no record for player)"></i><i class="sq r" title="2026-01-11 · vs San Antonio · Missed (team played, no record for player)"></i><i class="sq r" title="2026-01-13 · @ Milwaukee · Missed (team played, no record for player)"></i><i class="sq r" title="2026-01-16 · @ Houston · Missed (team played, no record for player)"></i><i class="sq r" title="2026-01-17 · @ San Antonio · Missed (team played, no record for player)"></i><i class="sq r" title="2026-01-20 · @ Utah · Missed (team played, no record for player)"></i><i class="sq r" title="2026-01-22 · vs Chicago · Missed (team played, no record for player)"></i><i class="sq r" title="2026-01-25 · vs Golden State · Missed (team played, no record for player)"></i><i class="sq r" title="2026-01-26 · vs Golden State · Missed (team played, no record for player)"></i><i class="sq r" title="2026-01-28 · @ Dallas · Missed (team played, no record for player)"></i><i class="sq r" title="2026-01-29 · vs Oklahoma City · Missed (team played, no record for player)"></i><i class="sq r" title="2026-01-31 · @ Memphis · Missed (team played, no record for player)"></i><i class="sq r" title="2026-02-02 · @ Memphis · Missed (team played, no record for player)"></i><i class="sq r" title="2026-02-04 · @ Toronto · Missed (team played, no record for player)"></i><i class="sq r" title="2026-02-06 · vs New Orleans · Missed (team played, no record for player)"></i><i class="sq r" title="2026-02-08 · vs LA · Missed (team played, no record for player)"></i><i class="sq r" title="2026-02-09 · vs Atlanta · Missed (team played, no record for player)"></i><i class="sq r" title="2026-02-11 · vs Portland · Missed (team played, no record for player)"></i><i class="sq r" title="2026-02-20 · vs Dallas · Missed (team played, no record for player)"></i><i class="sq g" title="2026-02-22 · vs Philadelphia · 4 min · 0 pts · 1 reb · 0 ast"></i><i class="sq r" title="2026-02-24 · @ Portland · Missed (team played, no record for player)"></i><i class="sq r" title="2026-02-26 · @ LA · Missed (team played, no record for player)"></i><i class="sq r" title="2026-03-01 · @ Denver · Missed (team played, no record for player)"></i><i class="sq r" title="2026-03-03 · vs Memphis · Missed (team played, no record for player)"></i><i class="sq r" title="2026-03-05 · vs Toronto · Missed (team played, no record for player)"></i><i class="sq g" title="2026-03-07 · vs Orlando · 4 min · 2 pts · 0 reb · 0 ast"></i><i class="sq r" title="2026-03-10 · @ Los Angeles · Missed (team played, no record for player)"></i><i class="sq g" title="2026-03-11 · @ LA · 6 min · 2 pts · 3 reb · 0 ast"></i><i class="sq d" title="2026-03-13 · @ Golden State · DNP: Coach&#x27;s Decision"></i><i class="sq g" title="2026-03-15 · @ Oklahoma City · 1 min · 2 pts · 1 reb · 0 ast"></i><i class="sq d" title="2026-03-17 · vs Phoenix · DNP: Coach&#x27;s Decision"></i><i class="sq r" title="2026-03-18 · vs Utah · Missed (team played, no record for player)"></i><i class="sq r" title="2026-03-20 · vs Portland · Missed (team played, no record for player)"></i><i class="sq r" title="2026-03-22 · @ Boston · Missed (team played, no record for player)"></i><i class="sq r" title="2026-03-25 · vs Houston · Missed (team played, no record for player)"></i><i class="sq r" title="2026-03-28 · vs Detroit · Missed (team played, no record for player)"></i><i class="sq r" title="2026-03-30 · @ Dallas · Missed (team played, no record for player)"></i><i class="sq r" title="2026-04-02 · @ Detroit · Missed (team played, no record for player)"></i><i class="sq r" title="2026-04-03 · @ Philadelphia · Missed (team played, no record for player)"></i><i class="sq r" title="2026-04-05 · vs Charlotte · Missed (team played, no record for player)"></i><i class="sq r" title="2026-04-07 · @ Indiana · Missed (team played, no record for player)"></i><i class="sq d" title="2026-04-08 · @ Orlando · DNP: Coach&#x27;s Decision"></i><i class="sq d" title="2026-04-10 · @ Houston · DNP: Coach&#x27;s Decision"></i><i class="sq g" title="2026-04-12 · vs New Orleans · 20 min · 8 pts · 9 reb · 2 ast"></i></div></div><div class="trow"><div class="tlabel"><span class="tseason">2026 Playoffs</span><span class="tteam">Minnesota</span></div><div class="tsquares"><i class="sq r" title="2026-04-18 · @ Denver · Missed (team played, no record for player)"></i><i class="sq r" title="2026-04-20 · @ Denver · Missed (team played, no record for player)"></i><i class="sq r" title="2026-04-23 · vs Denver · Missed (team played, no record for player)"></i><i class="sq r" title="2026-04-25 · vs Denver · Missed (team played, no record for player)"></i><i class="sq r" title="2026-04-27 · @ Denver · Missed (team played, no record for player)"></i><i class="sq r" title="2026-04-30 · vs Denver · Missed (team played, no record for player)"></i><i class="sq r" title="2026-05-04 · @ San Antonio · Missed (team played, no record for player)"></i><i class="sq r" title="2026-05-06 · @ San Antonio · Missed (team played, no record for player)"></i><i class="sq r" title="2026-05-08 · vs San Antonio · Missed (team played, no record for player)"></i><i class="sq r" title="2026-05-10 · vs San Antonio · Missed (team played, no record for player)"></i><i class="sq r" title="2026-05-12 · @ San Antonio · Missed (team played, no record for player)"></i><i class="sq r" title="2026-05-15 · vs San Antonio · Missed (team played, no record for player)"></i></div></div></div></section>
 <section><h2>Games Played</h2><div class="gpwrap"><div class="gpbar"><div class="gpseg g" style="width:5.3%"></div><div class="gpseg r" style="width:90.4%"></div><div class="gpseg d" style="width:4.3%"></div></div><div class="gplegend"><span><i class="sw g"></i> Played 5.3% (5)</span><span><i class="sw r"></i> Missed 90.4% (85)</span><span><i class="sw d"></i> DNP 4.3% (4)</span><span>94 team games while rostered</span></div><div class="gpsub">Regular season only: Played 6.1% (5) · Missed 89.0% (73) · DNP 4.9% (4) — 82 games</div></div></section>
 <section><h2>Iron Man Streaks</h2><p class="subtitle">No streaks of 5+ games.</p></section>
-<section><h2>Absences <button class="gbtn" title="What do these codes mean?" onclick="og()">ⓘ</button></h2><div class="table-card"><table class="dtable"><thead><tr><th class="num">Games Missed</th><th class="num">Days</th><th class="num">From</th><th class="num">To</th><th>Reason</th></tr></thead><tbody><tr><td class="num">57</td><td class="num">121</td><td class="num">October 22, 2025</td><td class="num">February 20, 2026</td><td><a class="plink" href="../reasons/unknown.html">—</a></td></tr><tr><td class="num">12</td><td class="num">27</td><td class="num">April 18, 2026</td><td class="num">May 15, 2026</td><td><a class="plink" href="../reasons/unknown.html">—</a></td></tr><tr><td class="num">10</td><td class="num">20</td><td class="num">March 18, 2026</td><td class="num">April 7, 2026</td><td><a class="plink" href="../reasons/unknown.html">—</a></td></tr><tr><td class="num">5</td><td class="num">9</td><td class="num">February 24, 2026</td><td class="num">March 5, 2026</td><td><a class="plink" href="../reasons/unknown.html">—</a></td></tr><tr><td class="num">1</td><td class="num">0</td><td class="num">March 10, 2026</td><td class="num">March 10, 2026</td><td><a class="plink" href="../reasons/unknown.html">—</a></td></tr></tbody></table></div></section>
+<section><h2>Absences <button class="gbtn" title="What do these codes mean?" onclick="og()">ⓘ</button></h2><div class="table-card"><table class="dtable"><thead><tr><th class="num">Games Missed</th><th class="num">Days</th><th class="num">From</th><th class="num">To</th><th>Reason</th></tr></thead><tbody><tr><td class="num" data-label="Games Missed">57</td><td class="num" data-label="Days">121</td><td class="num" data-label="From">October 22, 2025</td><td class="num" data-label="To">February 20, 2026</td><td data-label="Reason"><a class="plink" href="../reasons/unknown.html">—</a></td></tr><tr><td class="num" data-label="Games Missed">12</td><td class="num" data-label="Days">27</td><td class="num" data-label="From">April 18, 2026</td><td class="num" data-label="To">May 15, 2026</td><td data-label="Reason"><a class="plink" href="../reasons/unknown.html">—</a></td></tr><tr><td class="num" data-label="Games Missed">10</td><td class="num" data-label="Days">20</td><td class="num" data-label="From">March 18, 2026</td><td class="num" data-label="To">April 7, 2026</td><td data-label="Reason"><a class="plink" href="../reasons/unknown.html">—</a></td></tr><tr><td class="num" data-label="Games Missed">5</td><td class="num" data-label="Days">9</td><td class="num" data-label="From">February 24, 2026</td><td class="num" data-label="To">March 5, 2026</td><td data-label="Reason"><a class="plink" href="../reasons/unknown.html">—</a></td></tr><tr><td class="num" data-label="Games Missed">1</td><td class="num" data-label="Days">0</td><td class="num" data-label="From">March 10, 2026</td><td class="num" data-label="To">March 10, 2026</td><td data-label="Reason"><a class="plink" href="../reasons/unknown.html">—</a></td></tr></tbody></table></div></section>
 <section><h2>Similar Players</h2><div class="simgrid"><a class="simcard" href="ben-saraf-1642879.html"><div class="nm">Ben Saraf <img class="flag-img" src="https://flagcdn.com/h20/il.png" srcset="https://flagcdn.com/h40/il.png 2x" height="14" alt="Israel" title="Israel" loading="lazy"></div><div class="st">10 game streak</div></a><a class="simcard" href="joan-beringer-1642866.html"><div class="nm">Joan Beringer <img class="flag-img" src="https://flagcdn.com/h20/fr.png" srcset="https://flagcdn.com/h40/fr.png 2x" height="14" alt="France" title="France" loading="lazy"></div><div class="st">10 game streak</div></a><a class="simcard" href="hugo-gonzalez-1642864.html"><div class="nm">Hugo Gonzalez <img class="flag-img" src="https://flagcdn.com/h20/es.png" srcset="https://flagcdn.com/h40/es.png 2x" height="14" alt="Spain" title="Spain" loading="lazy"></div><div class="st">59 game streak</div></a><a class="simcard" href="khaman-maluach-1642863.html"><div class="nm">Khaman Maluach <img class="flag-img" src="https://flagcdn.com/h20/ss.png" srcset="https://flagcdn.com/h40/ss.png 2x" height="14" alt="South Sudan" title="South Sudan" loading="lazy"></div><div class="st">16 game streak</div></a><a class="simcard" href="will-riley-1642860.html"><div class="nm">Will Riley <img class="flag-img" src="https://flagcdn.com/h20/ca.png" srcset="https://flagcdn.com/h40/ca.png 2x" height="14" alt="Canada" title="Canada" loading="lazy"></div><div class="st">45 game streak</div></a><a class="simcard" href="kasparas-jakucionis-1642857.html"><div class="nm">Kasparas Jakucionis <img class="flag-img" src="https://flagcdn.com/h20/lt.png" srcset="https://flagcdn.com/h40/lt.png 2x" height="14" alt="Lithuania" title="Lithuania" loading="lazy"></div><div class="st">22 game streak</div></a></div></section>
 <div class="psearch-wrap"><input class="psearch" type="search" placeholder="Search any player by name…" autocomplete="off" spellcheck="false"><div class="ac" role="listbox"></div></div>
 <a class="backtop" href="../index.html">← Back to Combined Leaderboard</a>

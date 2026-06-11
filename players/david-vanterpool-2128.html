@@ -3,7 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>David Vanterpool: 22 Consecutive Combined Games | NBA Iron Man Streaks</title>
+<title>David Vanterpool Games Played, Missed and Injury History | NBA Iron Man Streaks</title>
+<meta name="description" content="David Vanterpool has played 22 of 82 possible games (27%) in his NBA career. Longest Iron Man streak: 22 consecutive games. Full season-by-season timeline of games played, games missed and injuries.">
+<meta property="og:title" content="David Vanterpool Games Played, Missed and Injury History | NBA Iron Man Streaks">
+<meta property="og:description" content="David Vanterpool has played 22 of 82 possible games (27%) in his NBA career. Longest Iron Man streak: 22 consecutive games. Full season-by-season timeline of games played, games missed and injuries.">
+<meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -38,13 +42,13 @@ border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.12);max-height:20rem;overflo
 .ac-empty{padding:.7rem .8rem;color:var(--muted);font-size:.8rem;text-align:center;}
 
 /* nav tabs */
-.nav{display:flex;gap:.3rem;flex-wrap:wrap;max-width:1100px;margin:0 auto;padding:1.5rem 1.5rem .3rem;}
+.nav{display:flex;gap:.3rem;flex-wrap:wrap;max-width:1280px;margin:0 auto;padding:1.5rem 1.5rem .3rem;}
 .nav a{font-family:'JetBrains Mono',monospace;font-size:.72rem;font-weight:600;padding:.4rem .8rem;
 border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--muted);text-decoration:none;}
 .nav a:hover{border-color:var(--accent);color:var(--accent);}
 .nav a.active{background:var(--accent);border-color:var(--accent);color:#fff;}
 
-.wrap{max-width:1100px;margin:0 auto;padding:.5rem 1.5rem 4rem;}
+.wrap{max-width:1280px;margin:0 auto;padding:.5rem 1.5rem 4rem;}
 header{margin-bottom:1rem;}
 .brand{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--muted);
 text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:.3rem;}
@@ -68,8 +72,10 @@ font-size:.9rem;font-family:inherit;padding:.6rem .8rem;outline:none;transition:
 .count{color:var(--muted);font-size:.74rem;}
 .count b{color:var(--text);font-weight:600;}
 
-/* #3: section boxes expand to fit their rows — no internal scroll containers */
-.table-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+/* Section boxes: scroll horizontally WITHIN the card if a row is wider than the
+   viewport (mobile, or a rare 4–5 team streak) instead of clipping the Team column
+   or forcing the whole page to scroll. On desktop the content fits, so no scrollbar. */
+.table-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow-x:auto;}
 table.board{width:100%;border-collapse:collapse;font-size:.86rem;}
 table.board thead th{background:var(--surface-hover);color:var(--muted);text-align:left;
 font-weight:600;font-size:.66rem;letter-spacing:.04em;text-transform:uppercase;padding:.6rem .7rem;
@@ -82,8 +88,16 @@ table.board th.col-rank,table.board td.col-rank,
 table.board th.col-streak,table.board td.col-streak,
 table.board th.col-date,table.board td.col-date{text-align:center;}
 table.board th.col-team,table.board td.col-team{text-align:left;}
-table.board tbody td{padding:.5rem .7rem;border-bottom:1px solid var(--border);white-space:nowrap;
+/* Team column a hair smaller so even multi-city streaks fit on one line. NO
+   width:100% — a percentage width on a nowrap cell makes the browser size the whole
+   table past the card, pushing this last column off the right edge (the real cause
+   of the "Por..." cut-off). Let table-layout:auto size it from content instead. */
+table.board td.col-team{font-size:.76rem;}
+table.board thead th{padding:.6rem .55rem;}
+table.board tbody td{padding:.5rem .55rem;border-bottom:1px solid var(--border);white-space:nowrap;
 font-family:'JetBrains Mono',monospace;font-weight:500;font-variant-numeric:tabular-nums;}
+/* utility: keep a cell on one line (e.g. the Iron Man "Teams" list) */
+.nowrapcell{white-space:nowrap;}
 table.board tbody td.col-player{font-family:'DM Sans',sans-serif;text-align:left;}
 table.board tbody tr:last-child td{border-bottom:none;}
 table.board tbody tr:hover{background:var(--surface-hover);}
@@ -157,7 +171,51 @@ cursor:pointer;font-size:.7rem;line-height:1;padding:0;}
 .reasonblock h2 a:hover{color:var(--accent);}
 .rcount{color:var(--muted);font-size:.72rem;font-weight:500;font-family:'JetBrains Mono',monospace;}
 .foot{text-align:center;font-size:.72rem;color:var(--muted);margin-top:1.4rem;font-family:'JetBrains Mono',monospace;line-height:1.7;}
-@media(max-width:560px){.wrap{padding:.5rem 1rem 3rem;}.nav{padding:1rem 1rem .3rem;}.trow{flex-direction:column;gap:4px;}.tlabel{width:auto;}}
+/* Mobile (<=720px): turn every leaderboard / data table into a stacked list of
+   cards (Media Vote Tracker pattern) so the PAGE never scrolls horizontally. The
+   table/thead/tbody/tr/td go display:block; thead is hidden; each <tr> becomes a
+   rounded card and each <td> becomes a "LABEL ........ value" line via data-label. */
+@media(max-width:720px){
+.wrap{padding:.5rem .9rem 3rem;}
+.nav{padding:1rem .9rem .3rem;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.nav a{flex:0 0 auto;}
+h1{font-size:1.3rem;}h2{font-size:1.05rem;margin:1.5rem 0 .6rem;}
+.gpwrap{padding:.8rem .9rem;}.gplegend{gap:.7rem 1rem;font-size:.74rem;}.gpsub{font-size:.72rem;}
+.sq{width:9px;height:9px;margin:1px;}.tsquares{line-height:1;}
+
+/* scope to tables inside a .table-card so the small reasons-index lists are untouched.
+   Each <td> is display:block with the label ABSOLUTELY pinned left and the value
+   flowing in a left-padded region, so long values wrap inside the card (a flex
+   space-between row would let them spill past the right edge -> horizontal scroll). */
+.table-card{overflow:visible;border:none;background:transparent;border-radius:0;}
+.table-card table.board,.table-card table.board tbody,
+.table-card table.dtable,.table-card table.dtable tbody{display:block;width:100%;}
+.table-card table.board thead,.table-card table.dtable thead{display:none;}
+.table-card table.board tbody tr,.table-card table.dtable tbody tr{display:block;position:relative;
+background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:.7rem 3rem .7rem .9rem;margin-bottom:.6rem;}
+.table-card table.board tbody tr:hover,.table-card table.dtable tbody tr:hover{background:var(--surface);}
+.table-card table.board tbody td,.table-card table.dtable td{display:block;position:relative;border:none;
+white-space:normal;text-align:left;padding:.14rem 0 .14rem 6.4rem;font-size:.86rem;line-height:1.4;min-height:1.5em;
+overflow-wrap:anywhere;}
+.table-card table.board tbody td::before,.table-card table.dtable td::before{content:attr(data-label);
+position:absolute;left:0;top:.2rem;width:5.9rem;font-family:'DM Sans',sans-serif;font-size:.6rem;font-weight:700;
+text-transform:uppercase;letter-spacing:.05em;color:var(--muted);line-height:1.3;}
+.table-card table.dtable td.nowrapcell{white-space:normal;}
+/* a cell with no data-label (e.g. the empty-search row) shouldn't reserve a label gutter */
+.table-card td:not([data-label]){padding-left:0;}
+.table-card td:not([data-label])::before{content:none;}
+/* rank: small, pinned top-right, no label */
+.table-card table.board tbody td.col-rank{position:absolute;top:.55rem;right:.85rem;padding:0;font-size:.66rem;color:var(--muted);min-height:0;}
+.table-card table.board tbody td.col-rank::before{display:none;}
+/* player name: prominent, full-width, no label/indent */
+.table-card table.board tbody td.col-player{padding:0 0 .3rem;font-family:'DM Sans',sans-serif;font-size:1.02rem;font-weight:600;}
+.table-card table.board tbody td.col-player::before{display:none;}
+/* streak: big accent value (label stays small via ::before) */
+.table-card table.board tbody td.col-streak{font-size:1.1rem;font-weight:700;color:var(--accent);}
+/* dtable lead column (Games / Games Missed): emphasised accent value */
+.table-card table.dtable tbody td:first-child{font-size:1rem;font-weight:700;color:var(--accent);}
+}
+@media(max-width:560px){.wrap{padding:.5rem 1rem 3rem;}.nav{padding:1rem 1rem .3rem;}.trow{flex-direction:column;gap:4px;}.tlabel{width:auto;}.sq{width:8px;height:8px;}}
 </style>
 </head>
 <body>
@@ -168,8 +226,8 @@ cursor:pointer;font-size:.7rem;line-height:1;padding:0;}
 <header><h1>David Vanterpool <img class="flag-img flag-lg" src="https://flagcdn.com/h40/us.png" alt="United States" title="United States"></h1><div class="badges"><span class="badge off">Playoffs Iron Man: <b>0</b> consecutive games</span><span class="badge on">Regular Season Iron Man: <b>22</b> consecutive games (47th percentile)</span><span class="badge on">Combined Iron Man: <b>22</b> consecutive games (47th percentile)</span></div></header>
 <section><h2>Season Timeline</h2><div class="legend"><span><i class="sq g"></i> Played</span><span><i class="sq r"></i> Missed (injury/absence)</span><span><i class="sq d"></i> DNP (coach/other)</span></div><div class="tlcard"><div class="trow"><div class="tlabel"><span class="tseason">2000-01</span><span class="tteam">Washington</span></div><div class="tsquares"><i class="sq r" title="2000-10-31 · @ Orlando · Missed (team played, no record for player)"></i><i class="sq r" title="2000-11-01 · @ Charlotte · Missed (team played, no record for player)"></i><i class="sq r" title="2000-11-03 · vs New York · Missed (team played, no record for player)"></i><i class="sq r" title="2000-11-04 · @ Toronto · Missed (team played, no record for player)"></i><i class="sq r" title="2000-11-07 · @ Chicago · Missed (team played, no record for player)"></i><i class="sq r" title="2000-11-08 · vs New Jersey · Missed (team played, no record for player)"></i><i class="sq r" title="2000-11-10 · vs Indiana · Missed (team played, no record for player)"></i><i class="sq r" title="2000-11-11 · @ Cleveland · Missed (team played, no record for player)"></i><i class="sq r" title="2000-11-15 · @ Boston · Missed (team played, no record for player)"></i><i class="sq r" title="2000-11-16 · vs San Antonio · Missed (team played, no record for player)"></i><i class="sq r" title="2000-11-18 · vs Boston · Missed (team played, no record for player)"></i><i class="sq r" title="2000-11-21 · vs Portland · Missed (team played, no record for player)"></i><i class="sq r" title="2000-11-24 · @ Indiana · Missed (team played, no record for player)"></i><i class="sq r" title="2000-11-25 · vs Milwaukee · Missed (team played, no record for player)"></i><i class="sq r" title="2000-11-28 · vs Atlanta · Missed (team played, no record for player)"></i><i class="sq r" title="2000-11-29 · @ Philadelphia · Missed (team played, no record for player)"></i><i class="sq r" title="2000-12-02 · vs Miami · Missed (team played, no record for player)"></i><i class="sq r" title="2000-12-03 · @ Detroit · Missed (team played, no record for player)"></i><i class="sq r" title="2000-12-06 · vs Los Angeles · Missed (team played, no record for player)"></i><i class="sq r" title="2000-12-07 · @ Minnesota · Missed (team played, no record for player)"></i><i class="sq r" title="2000-12-09 · @ Milwaukee · Missed (team played, no record for player)"></i><i class="sq r" title="2000-12-13 · vs Philadelphia · Missed (team played, no record for player)"></i><i class="sq r" title="2000-12-15 · vs Charlotte · Missed (team played, no record for player)"></i><i class="sq r" title="2000-12-17 · @ Los Angeles · Missed (team played, no record for player)"></i><i class="sq r" title="2000-12-19 · @ Sacramento · Missed (team played, no record for player)"></i><i class="sq r" title="2000-12-20 · @ Vancouver · Missed (team played, no record for player)"></i><i class="sq r" title="2000-12-22 · @ Seattle · Missed (team played, no record for player)"></i><i class="sq r" title="2000-12-23 · @ Portland · Missed (team played, no record for player)"></i><i class="sq r" title="2000-12-27 · vs New York · Missed (team played, no record for player)"></i><i class="sq r" title="2000-12-29 · @ Miami · Missed (team played, no record for player)"></i><i class="sq r" title="2000-12-31 · vs Detroit · Missed (team played, no record for player)"></i><i class="sq r" title="2001-01-02 · vs Minnesota · Missed (team played, no record for player)"></i><i class="sq r" title="2001-01-04 · @ Chicago · Missed (team played, no record for player)"></i><i class="sq r" title="2001-01-06 · vs Dallas · Missed (team played, no record for player)"></i><i class="sq r" title="2001-01-07 · @ New York · Missed (team played, no record for player)"></i><i class="sq r" title="2001-01-09 · @ Milwaukee · Missed (team played, no record for player)"></i><i class="sq r" title="2001-01-10 · vs Seattle · Missed (team played, no record for player)"></i><i class="sq r" title="2001-01-12 · vs Philadelphia · Missed (team played, no record for player)"></i><i class="sq r" title="2001-01-15 · vs Milwaukee · Missed (team played, no record for player)"></i><i class="sq r" title="2001-01-17 · @ New Jersey · Missed (team played, no record for player)"></i><i class="sq r" title="2001-01-19 · @ Toronto · Missed (team played, no record for player)"></i><i class="sq r" title="2001-01-21 · vs Atlanta · Missed (team played, no record for player)"></i><i class="sq r" title="2001-01-23 · vs Charlotte · Missed (team played, no record for player)"></i><i class="sq r" title="2001-01-26 · @ Atlanta · Missed (team played, no record for player)"></i><i class="sq r" title="2001-01-27 · vs Phoenix · Missed (team played, no record for player)"></i><i class="sq r" title="2001-01-29 · vs Cleveland · Missed (team played, no record for player)"></i><i class="sq r" title="2001-01-31 · vs Orlando · Missed (team played, no record for player)"></i><i class="sq r" title="2001-02-03 · vs Denver · Missed (team played, no record for player)"></i><i class="sq r" title="2001-02-07 · @ Orlando · Missed (team played, no record for player)"></i><i class="sq r" title="2001-02-13 · @ Houston · Missed (team played, no record for player)"></i><i class="sq r" title="2001-02-15 · @ San Antonio · Missed (team played, no record for player)"></i><i class="sq r" title="2001-02-17 · @ Dallas · Missed (team played, no record for player)"></i><i class="sq r" title="2001-02-18 · @ Denver · Missed (team played, no record for player)"></i><i class="sq r" title="2001-02-20 · vs Vancouver · Missed (team played, no record for player)"></i><i class="sq r" title="2001-02-22 · vs Sacramento · Missed (team played, no record for player)"></i><i class="sq r" title="2001-02-24 · vs Toronto · Missed (team played, no record for player)"></i><i class="sq r" title="2001-02-25 · @ New Jersey · Missed (team played, no record for player)"></i><i class="sq r" title="2001-02-27 · @ Miami · Missed (team played, no record for player)"></i><i class="sq r" title="2001-03-02 · @ Philadelphia · Missed (team played, no record for player)"></i><i class="sq r" title="2001-03-04 · vs Utah · Missed (team played, no record for player)"></i><i class="sq g" title="2001-03-07 · @ Cleveland · 3 min · 0 pts · 0 reb · 0 ast"></i><i class="sq g" title="2001-03-09 · @ Boston · 14 min · 2 pts · 2 reb · 0 ast"></i><i class="sq g" title="2001-03-10 · vs New Jersey · 20 min · 6 pts · 0 reb · 7 ast"></i><i class="sq g" title="2001-03-14 · vs Detroit · 11 min · 2 pts · 2 reb · 4 ast"></i><i class="sq g" title="2001-03-16 · vs Los Angeles · 17 min · 7 pts · 2 reb · 3 ast"></i><i class="sq g" title="2001-03-17 · @ Charlotte · 22 min · 9 pts · 2 reb · 2 ast"></i><i class="sq g" title="2001-03-20 · @ Phoenix · 25 min · 4 pts · 0 reb · 2 ast"></i><i class="sq g" title="2001-03-21 · @ Golden State · 16 min · 4 pts · 0 reb · 1 ast"></i><i class="sq g" title="2001-03-23 · @ Los Angeles · 26 min · 8 pts · 2 reb · 4 ast"></i><i class="sq g" title="2001-03-24 · @ Utah · 24 min · 6 pts · 2 reb · 3 ast"></i><i class="sq g" title="2001-03-27 · vs Indiana · 15 min · 2 pts · 0 reb · 3 ast"></i><i class="sq g" title="2001-03-29 · vs Golden State · 27 min · 21 pts · 2 reb · 1 ast"></i><i class="sq g" title="2001-03-31 · vs Houston · 27 min · 8 pts · 3 reb · 5 ast"></i><i class="sq g" title="2001-04-04 · vs Miami · 19 min · 4 pts · 6 reb · 3 ast"></i><i class="sq g" title="2001-04-05 · @ New York · 13 min · 2 pts · 1 reb · 2 ast"></i><i class="sq g" title="2001-04-07 · vs Boston · 12 min · 2 pts · 3 reb · 2 ast"></i><i class="sq g" title="2001-04-09 · @ Indiana · 23 min · 10 pts · 3 reb · 4 ast"></i><i class="sq g" title="2001-04-11 · vs Chicago · 15 min · 5 pts · 1 reb · 0 ast"></i><i class="sq g" title="2001-04-13 · vs Orlando · 18 min · 8 pts · 2 reb · 2 ast"></i><i class="sq g" title="2001-04-15 · vs Cleveland · 19 min · 9 pts · 1 reb · 5 ast"></i><i class="sq g" title="2001-04-17 · @ Atlanta · 14 min · 3 pts · 2 reb · 7 ast"></i><i class="sq g" title="2001-04-18 · vs Toronto · 17 min · 0 pts · 1 reb · 6 ast"></i></div></div></div></section>
 <section><h2>Games Played</h2><div class="gpwrap"><div class="gpbar"><div class="gpseg g" style="width:26.8%"></div><div class="gpseg r" style="width:73.2%"></div><div class="gpseg d" style="width:0.0%"></div></div><div class="gplegend"><span><i class="sw g"></i> Played 26.8% (22)</span><span><i class="sw r"></i> Missed 73.2% (60)</span><span><i class="sw d"></i> DNP 0.0% (0)</span><span>82 team games while rostered</span></div><div class="gpsub">Regular season only: Played 26.8% (22) · Missed 73.2% (60) · DNP 0.0% (0) — 82 games</div></div></section>
-<section><h2>Iron Man Streaks</h2><div class="table-card"><table class="dtable"><thead><tr><th class="num">Games</th><th class="num">Start</th><th class="num">End</th><th>Teams</th></tr></thead><tbody><tr><td class="num">22</td><td class="num">March 7, 2001</td><td class="num">April 18, 2001</td><td>Washington</td></tr></tbody></table></div></section>
-<section><h2>Absences <button class="gbtn" title="What do these codes mean?" onclick="og()">ⓘ</button></h2><div class="table-card"><table class="dtable"><thead><tr><th class="num">Games Missed</th><th class="num">Days</th><th class="num">From</th><th class="num">To</th><th>Reason</th></tr></thead><tbody><tr><td class="num">60</td><td class="num">124</td><td class="num">October 31, 2000</td><td class="num">March 4, 2001</td><td><a class="plink" href="../reasons/unknown.html">—</a></td></tr></tbody></table></div></section>
+<section><h2>Iron Man Streaks</h2><div class="table-card"><table class="dtable"><thead><tr><th class="num">Games</th><th class="num">Start</th><th class="num">End</th><th>Teams</th></tr></thead><tbody><tr><td class="num" data-label="Games">22</td><td class="num" data-label="Start">March 7, 2001</td><td class="num" data-label="End">April 18, 2001</td><td class="nowrapcell" data-label="Teams">Washington</td></tr></tbody></table></div></section>
+<section><h2>Absences <button class="gbtn" title="What do these codes mean?" onclick="og()">ⓘ</button></h2><div class="table-card"><table class="dtable"><thead><tr><th class="num">Games Missed</th><th class="num">Days</th><th class="num">From</th><th class="num">To</th><th>Reason</th></tr></thead><tbody><tr><td class="num" data-label="Games Missed">60</td><td class="num" data-label="Days">124</td><td class="num" data-label="From">October 31, 2000</td><td class="num" data-label="To">March 4, 2001</td><td data-label="Reason"><a class="plink" href="../reasons/unknown.html">—</a></td></tr></tbody></table></div></section>
 <section><h2>Similar Players</h2><div class="simgrid"><a class="simcard" href="garth-joseph-2123.html"><div class="nm">Garth Joseph</div><div class="st">2 game streak</div></a><a class="simcard" href="ruben-wolkowyski-2106.html"><div class="nm">Ruben Wolkowyski <img class="flag-img" src="https://flagcdn.com/h20/ar.png" srcset="https://flagcdn.com/h40/ar.png 2x" height="14" alt="Argentina" title="Argentina" loading="lazy"></div><div class="st">5 game streak</div></a><a class="simcard" href="ruben-garces-2092.html"><div class="nm">Ruben Garces <img class="flag-img" src="https://flagcdn.com/h20/pa.png" srcset="https://flagcdn.com/h40/pa.png 2x" height="14" alt="Panama" title="Panama" loading="lazy"></div><div class="st">8 game streak</div></a><a class="simcard" href="rick-hughes-1965.html"><div class="nm">Rick Hughes <img class="flag-img" src="https://flagcdn.com/h20/us.png" srcset="https://flagcdn.com/h40/us.png 2x" height="14" alt="United States" title="United States" loading="lazy"></div><div class="st">6 game streak</div></a><a class="simcard" href="peter-aluma-1824.html"><div class="nm">Peter Aluma <img class="flag-img" src="https://flagcdn.com/h20/ng.png" srcset="https://flagcdn.com/h40/ng.png 2x" height="14" alt="Nigeria" title="Nigeria" loading="lazy"></div><div class="st">2 game streak</div></a><a class="simcard" href="makhtar-ndiaye-1823.html"><div class="nm">Makhtar N&#x27;diaye <img class="flag-img" src="https://flagcdn.com/h20/sn.png" srcset="https://flagcdn.com/h40/sn.png 2x" height="14" alt="Senegal" title="Senegal" loading="lazy"></div><div class="st">2 game streak</div></a></div></section>
 <div class="psearch-wrap"><input class="psearch" type="search" placeholder="Search any player by name…" autocomplete="off" spellcheck="false"><div class="ac" role="listbox"></div></div>
 <a class="backtop" href="../index.html">← Back to Combined Leaderboard</a>
